@@ -1,0 +1,1 @@
+/opt/bin/defluff	--	gen_context(system_u:object_r:defluff_exec_t,s0)

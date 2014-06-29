@@ -1,0 +1,1 @@
+/usr/bin/Xephyr	--	gen_context(system_u:object_r:xephyr_exec_t,s0)

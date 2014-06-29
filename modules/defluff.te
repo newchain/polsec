@@ -1,0 +1,10 @@
+policy_module(defluff, 1.00)
+
+
+type defluff_t;
+type defluff_exec_t;
+
+
+application_domain(defluff_t, defluff_exec_t)
+
+ubac_constrained(defluff_t);

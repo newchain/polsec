@@ -1,0 +1,7 @@
+HOME_DIR/\.purple(/.*)?			gen_context(system_u:object_r:purple_home_t,s0)
+
+/usr/bin/pidgin			--	gen_context(system_u:object_r:pidgin_exec_t,s0)
+
+/usr/share/pixmaps/purple(/.*)?		gen_context(system_u:object_r:purple_data_t,s0)
+/usr/share/purple(/.*)?			gen_context(system_u:object_r:purple_data_t,s0)
+/usr/share/sounds/purple(/.*)?		gen_context(system_u:object_r:purple_data_t,s0)

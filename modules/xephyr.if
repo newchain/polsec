@@ -1,0 +1,83 @@
+## <summary>Xephyr policy</summary>
+## <desc>
+##	<p>
+##		Policy for Xephyr.
+##	</p>
+## </desc>
+
+
+###############################
+## <summary>
+##	Transition to xephyr.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary
+## </param>
+
+interface(`xephyr_domtrans',`
+	gen_require(`
+		type xephyr_t, xephyr_exec_t;
+	')
+
+	domtrans_pattern($1, xephyr_exec_t, xephyr_t)
+')
+
+
+###############################
+## <summary>
+##	Run Xephyr in xephyr domain.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to exec Xephyr.
+##	</summary
+## </param>
+
+interface(`xephyr_role',`
+	gen_require(`
+		type xephyr_t;
+	')
+
+	xephyr_domtrans($1)
+	role $2 types xephyr_t;
+')
+
+
+###############################
+## <summary>
+##	Connect to Xephyr via unix socket.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to connect.
+##	</summary
+## </param>
+
+interface(`xephyr_connect',`
+	gen_require(`
+		type xephyr_t;
+	')
+
+	allow $1 xephyr_t : unix_stream_socket connectto;
+')
+
+
+###############################
+## <summary>
+##	Share memory with Xephyr.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to share.
+##	</summary
+## </param>
+
+interface(`xephyr_xshm_client',`
+	gen_require(`
+		type xephyr_t;
+	')
+
+	allow xephyr_t $1 : shm rw_sem_perms;
+')

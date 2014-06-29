@@ -1,0 +1,45 @@
+## <summary>pidgin policy</summary>
+## <desc>
+##	<p>
+##		Policy for pidgin.
+##	</p>
+## </desc>
+
+
+###############################
+## <summary>
+##	Transition to pidgin.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary
+## </param>
+
+interface(`pidgin_domtrans',`
+	gen_require(`
+		type pidgin_t, pidgin_exec_t;
+	')
+
+	domtrans_pattern($1, pidgin_exec_t, pidgin_t)
+')
+
+
+###############################
+## <summary>
+##	Allow role to exec pidgin.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to exec pidgin.
+##	</summary
+## </param>
+
+interface(`pidgin_role',`
+	gen_require(`
+		type pidgin_t;
+	')
+
+	pidgin_domtrans($1)
+	role $2 types pidgin_t;
+')

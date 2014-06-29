@@ -1,0 +1,65 @@
+policy_module(xephyr, 1.00)
+
+
+gen_require(`
+	type bin_t;
+	type fonts_t;
+	type shell_exec_t;
+	type tmp_t;
+	type tmpfs_t;
+	type user_devpts_t;
+	type usr_t;
+	type var_lib_t;
+	type xdm_tmp_t;
+	type xserver_t;
+')
+
+
+type xephyr_t;
+type xephyr_exec_t;
+type xephyr_tmp_t;
+
+
+application_domain(xephyr_t, xephyr_exec_t)
+ubac_constrained(xephyr_t);
+
+
+files_type(xephyr_tmp_t);
+
+
+filetrans_pattern(xephyr_t, { tmp_t xdm_tmp_t }, xephyr_tmp_t, { file dir sock_file } )
+
+
+## <desc>
+## <p>
+## Allow xephyr to create and use shared memory.
+## xshm is needed for e.g. qt4 apps.
+## </p>
+## </desc>
+gen_tunable(xephyr_shm, true)
+
+tunable_policy(`xephyr_shm',`
+	allow xephyr_t self : shm create_shm_perms;
+	allow xephyr_t tmpfs_t : file { read write };
+	allow xserver_t xephyr_t : shm { unix_read read getattr associate unix_write write };
+')
+
+
+miscfiles_read_fonts(xephyr_t);
+miscfiles_read_localization(xephyr_t);
+
+xserver_read_user_xauth(xephyr_t);
+
+xserver_stream_connect(xephyr_t);
+
+
+allow xephyr_t bin_t : dir search_dir_perms;
+allow xephyr_t bin_t : file exec_file_perms;
+allow xephyr_t bin_t : lnk_file read_lnk_file_perms;
+allow xephyr_t self : fifo_file rw_fifo_file_perms;
+allow xephyr_t shell_exec_t : file exec_file_perms;
+allow xephyr_t user_devpts_t : chr_file rw_chr_file_perms;
+allow xephyr_t usr_t : file read_file_perms;
+allow xephyr_t xdm_tmp_t : dir { add_entry_dir_perms del_entry_dir_perms };
+allow xephyr_t xephyr_tmp_t : file manage_file_perms;
+allow xephyr_t xephyr_tmp_t : sock_file { create_sock_file_perms delete_sock_file_perms };

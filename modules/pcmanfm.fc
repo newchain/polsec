@@ -1,0 +1,12 @@
+/etc/xdg/pcmanfm(/.*)?			gen_context(system_u:object_r:pcmanfm_data_t,s0)
+
+HOME_DIR/\.cache/pcmanfm(/.*)?		gen_context(system_u:object_r:pcmanfm_home_t,s0)
+HOME_DIR/\.config/pcmanfm(/.*)?		gen_context(system_u:object_r:pcmanfm_home_t,s0)
+HOME_DIR/\.local/share/pcmanfm(/.*)?	gen_context(system_u:object_r:pcmanfm_home_t,s0)
+
+/usr/bin/pcmanfm		--	gen_context(system_u:object_r:pcmanfm_exec_t,s0)
+
+/usr/share/pcmanfm(/.*)?		gen_context(system_u:object_r:pcmanfm_data_t,s0)
+
+
+/tmp/\.(private/\.)?pcmanfm-socket--\d-\w+$	gen_context(system_u:object_r:pcmanfm_socket_t,s0)

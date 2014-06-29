@@ -1,0 +1,13 @@
+HOME_DIR/\.config/enchant(/.*)?		gen_context(system_u:object_r:user_spelldict_t,s0)
+
+HOME_DIR/\.config/gtk-[23]\.0(/.*)?	gen_context(system_u:object_r:gtk_config_home_t,s0)
+
+HOME_DIR/\.config/Trolltech\.conf	gen_context(system_u:object_r:qt_config_home_t,s0)
+
+HOME_DIR/\.icons(/.*)?			gen_context(system_u:object_r:user_themes_t,s0)
+HOME_DIR/\.themes(/.*)?			gen_context(system_u:object_r:user_themes_t,s0)
+
+HOME_DIR/\.thumbnails(/.*)?		gen_context(system_u:object_r:user_thumbnails_t,s0)
+
+HOME_DIR/Videos		-d		gen_context(system_u:object_r:video_home_t,s0)
+HOME_DIR/Videos/.*	--		gen_context(system_u:object_r:video_home_t,s0)

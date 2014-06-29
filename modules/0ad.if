@@ -1,0 +1,46 @@
+## <summary>0ad policy</summary>
+## <desc>
+##	<p>
+##		Policy for 0ad/pyrogenesis
+##	</p>
+## </desc>
+
+
+###############################
+## <summary>
+##	Transition to zad
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary
+## </param>
+
+interface(`zad_domain_transition_pattern',`
+	gen_require(`
+		type zad_t, zad_exec_t;
+	')
+
+#	domain_transition_pattern($1, zad_exec_t, zad_t)
+	domtrans_pattern($1, zad_exec_t, zad_t)
+')
+
+
+###############################
+## <summary>
+##	Run 0ad in zad domain
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role to exec 0ad
+##	</summary
+## </param>
+
+interface(`zad_role',`
+	gen_require(`
+		type zad_t;
+	')
+
+	zad_domain_transition_pattern($1)
+	role $2 types zad_t;
+')

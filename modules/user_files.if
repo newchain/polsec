@@ -1,0 +1,237 @@
+## <summary>user files</summary>
+## <desc>
+##	<p>
+##		A (vain) attempt at making *generic_user_content and
+##		*generic_user_settings redundant.
+##		IOW, xkcd.com/1200
+##	</p>
+## </desc>
+
+
+###############################
+## <summary>
+##	Allow domain to read user gtk config
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read
+##	</summary
+## </param>
+
+interface(`userdom_read_gtk_config',`
+	gen_require(`
+		type gtk_config_home_t;
+		type home_root_t;
+		type user_home_dir_t;
+		type xdg_config_home_t;
+	')
+
+	search_dirs_pattern($1, home_root_t, user_home_dir_t)
+	search_dirs_pattern($1, user_home_dir_t, xdg_config_home_t)
+	read_files_pattern($1, gtk_config_home_t, gtk_config_home_t)
+	read_lnk_files_pattern($1, gtk_config_home_t, gtk_config_home_t)
+')
+
+
+###############################
+## <summary>
+##	Allow domain to read user qt config.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read.
+##	</summary
+## </param>
+
+interface(`userdom_read_qt_config',`
+	gen_require(`
+		type home_root_t;
+		type qt_config_home_t;
+		type user_home_dir_t;
+		type xdg_config_home_t;
+	')
+
+	search_dirs_pattern($1, home_root_t, user_home_dir_t)
+	read_files_pattern($1, xdg_config_home_t, qt_config_home_t)
+	read_lnk_files_pattern($1, xdg_config_home_t, qt_config_home_t)
+')
+
+
+###############################
+## <summary>
+##	Allow domain to read user spell dictionaries
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read
+##	</summary
+## </param>
+
+interface(`userdom_read_user_spelldict',`
+	gen_require(`
+		type home_root_t;
+		type user_home_dir_t;
+		type user_spelldict_t;
+		type xdg_config_home_t;
+	')
+
+	search_dirs_pattern($1, home_root_t, user_home_dir_t)
+	search_dirs_pattern($1, user_home_dir_t, xdg_config_home_t)
+	read_files_pattern($1, user_spelldict_t, user_spelldict_t)
+')
+
+
+###############################
+## <summary>
+##	Allow domain to append to spell dictionaries.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read.
+##	</summary
+## </param>
+
+interface(`userdom_append_user_spelldict',`
+	gen_require(`
+		type home_root_t;
+		type user_home_dir_t;
+		type user_spelldict_t;
+		type xdg_config_home_t;
+	')
+
+	search_dirs_pattern($1, home_root_t, user_home_dir_t)
+	search_dirs_pattern($1, user_home_dir_t, xdg_config_home_t)
+	append_files_pattern($1, user_spelldict_t, user_spelldict_t)
+')
+
+
+###############################
+## <summary>
+##	Allow domain to read user themes.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read.
+##	</summary
+## </param>
+
+interface(`userdom_read_user_themes',`
+	gen_require(`
+		type home_root_t;
+		type user_home_dir_t;
+		type user_themes_t;
+	')
+
+	search_dirs_pattern($1, home_root_t, user_home_dir_t)
+	read_files_pattern($1, user_themes_t, user_themes_t)
+	read_lnk_files_pattern($1, user_themes_t, user_themes_t)
+')
+
+
+###############################
+## <summary>
+##	Allow domain to read user thumbnails.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read
+##	</summary
+## </param>
+
+interface(`userdom_read_user_thumbnails',`
+	gen_require(`
+		type home_root_t;
+		type user_home_dir_t;
+		type user_thumbnails_t;
+	')
+
+	search_dirs_pattern($1, home_root_t, user_home_dir_t)
+	read_files_pattern($1, user_thumbnails_t, user_thumbnails_t)
+')
+
+
+###############################
+## <summary>
+##	Allow role to read user thumbnails.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to read.
+##	</summary
+## </param>
+
+interface(`user_thumbnails_role',`
+	gen_require(`
+		type user_thumbnails_t;
+	')
+
+	userdom_read_user_thumbnails($1)
+	role $2 types user_thumbnails_t;
+')
+
+
+###############################
+## <summary>
+##	Allow domain to create user thumbnails.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to create.
+##	</summary
+## </param>
+
+interface(`userdom_create_thumbnails',`
+	gen_require(`
+		type home_root_t;
+		type user_home_dir_t;
+		type user_thumbnails_t;
+	')
+
+	search_dirs_pattern($1, home_root_t, user_home_dir_t)
+	create_files_pattern($1, user_thumbnails_t, user_thumbnails_t)
+')
+
+
+###############################
+## <summary>
+##	Allow domain to delete user thumbnails.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to delete.
+##	</summary
+## </param>
+
+interface(`userdom_manage_thumbnails',`
+	gen_require(`
+		type home_root_t;
+		type user_home_dir_t;
+		type user_thumbnails_t;
+	')
+
+	search_dirs_pattern($1, home_root_t, user_home_dir_t)
+	delete_files_pattern($1, user_thumbnails_t, user_thumbnails_t)
+')
+
+
+
+###############################
+## <summary>
+##	Allow domain to read user videos.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read.
+##	</summary
+## </param>
+
+interface(`userdom_read_user_videos',`
+	gen_require(`
+		type home_root_t;
+		type user_home_dir_t;
+		type video_home_t;
+	')
+
+	search_dirs_pattern($1, home_root_t, user_home_dir_t)
+	read_files_pattern($1, video_home_t, video_home_t)
+')

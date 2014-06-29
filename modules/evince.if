@@ -1,0 +1,98 @@
+## <summary>evince policy</summary>
+## <desc>
+##	<p>
+##		Policy for evince.
+##	</p>
+## </desc>
+
+
+###############################
+## <summary>
+##	Transition to evince.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary
+## </param>
+
+interface(`evince_domtrans',`
+	gen_require(`
+		type evince_t, evince_exec_t;
+	')
+
+	domtrans_pattern($1, evince_exec_t, evince_t)
+
+# Preserve pam_mktemp.
+#
+	allow $1 evince_t : process noatsecure;
+')
+
+
+###############################
+## <summary>
+##	Run evince in evince domain.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to exec evince.
+##	</summary
+## </param>
+
+interface(`evince_role',`
+	gen_require(`
+		type evince_t;
+		type evince_previewer_t;
+		type evince_previewer_exec_t;
+	')
+
+	evince_domtrans($1)
+	role $2 types { evince_t evince_previewer_t evince_previewer_exec_t };
+	allow evince_previewer_t $1 : fd use;
+')
+
+
+###############################
+## <summary>
+##	Transition to evince_thumbnailer.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary
+## </param>
+
+interface(`evince_thumbnailer_domtrans',`
+	gen_require(`
+		type evince_thumbnailer_t, evince_thumbnailer_exec_t;
+	')
+
+	domtrans_pattern($1, evince_thumbnailer_exec_t, evince_thumbnailer_t)
+
+# Preserve pam_mktemp.
+#
+	allow $1 evince_thumbnailer_t : process noatsecure;
+')
+
+
+
+###############################
+## <summary>
+##	Run evince-thumbnailer in evince-thumbnailer domain.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to exec evince-thumbnailer.
+##	</summary
+## </param>
+
+interface(`evince_thumbnailer_role',`
+	gen_require(`
+		type bin_t;
+		type evince_thumbnailer_t, evince_thumbnailer_exec_t;
+	')
+
+	evince_thumbnailer_domtrans($1)
+	domtrans_pattern(evince_thumbnailer_t, bin_t, $1);
+	role $2 types { bin_t evince_thumbnailer_t };
+')

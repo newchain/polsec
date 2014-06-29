@@ -1,0 +1,205 @@
+policy_module(pcmanfm, 1.0)
+
+
+gen_require(`
+	type bin_t;
+	type fs_t;
+	type mnt_t;
+	type tmpfs_t;
+	type unlabeled_t;
+	type user_devpts_t;
+	type user_home_t;
+	type user_tmp_t;
+	type xdg_cache_home_t;
+	type xdg_config_home_t;
+	type xdg_data_home_t;
+
+')
+
+
+type pcmanfm_t;
+type pcmanfm_data_t;
+type pcmanfm_exec_t;
+type pcmanfm_home_t;
+type pcmanfm_socket_t;
+type pcmanfm_tmp_t;
+
+
+application_domain(pcmanfm_t, pcmanfm_exec_t)
+
+ubac_constrained(pcmanfm_t);
+
+
+files_type(pcmanfm_data_t);
+files_type(pcmanfm_home_t);
+files_type(pcmanfm_socket_t);
+files_type(pcmanfm_tmp_t);
+
+
+filetrans_pattern(pcmanfm_t, { xdg_cache_home_t xdg_config_home_t xdg_data_home_t }, pcmanfm_home_t, dir)
+filetrans_pattern(pcmanfm_t, { tmp_t user_tmp_t }, pcmanfm_tmp_t, { file dir } )
+filetrans_pattern(pcmanfm_t, { tmp_t user_tmp_t }, pcmanfm_socket_t, sock_file )
+
+
+## <desc>
+## <p>
+## Allow pcmanfm to read all config
+## </p>
+## </desc>
+gen_tunable(pcmanfm_read_generic_config, true)
+
+tunable_policy(`pcmanfm_read_generic_config',`
+
+	read_files_pattern(pcmanfm_t, xdg_cache_home_t, xdg_cache_home_t)
+	read_files_pattern(pcmanfm_t, xdg_config_home_t, xdg_config_home_t)
+	read_files_pattern(pcmanfm_t, xdg_data_home_t, xdg_data_home_t)
+	read_lnk_files_pattern(pcmanfm_t, xdg_cache_home_t, xdg_cache_home_t)
+	read_lnk_files_pattern(pcmanfm_t, xdg_config_home_t, xdg_config_home_t)
+	read_lnk_files_pattern(pcmanfm_t, xdg_data_home_t, xdg_data_home_t)
+')
+
+
+
+## <desc>
+## <p>
+## Allow pcmanfm to read generic data in HOME.
+## </p>
+## </desc>
+gen_tunable(pcmanfm_read_generic_user_content, true)
+
+tunable_policy(`pcmanfm_read_generic_user_content',`
+
+	list_dirs_pattern(pcmanfm_t, home_root_t, user_home_dir_t)
+	list_dirs_pattern(pcmanfm_t, user_home_dir_t, user_home_t)
+
+	read_files_pattern(pcmanfm_t, user_home_t, user_home_t)
+	read_lnk_files_pattern(pcmanfm_t, user_home_t, user_home_t)
+')
+
+
+## <desc>
+## <p>
+## Allow pcmanfm to manage user data and settings.
+## Disable to prevent pcmanfm from writing to HOME.
+## </p>
+## </desc>
+gen_tunable(pcmanfm_manage_home, false)
+
+tunable_policy(`pcmanfm_manage_home',`
+
+	manage_dirs_pattern(pcmanfm_t, user_home_t, user_home_t)
+	manage_dirs_pattern(pcmanfm_t, user_home_dir_t, user_home_t)
+
+	manage_files_pattern(pcmanfm_t, pcmanfm_home_t, pcmanfm_home_t)
+	manage_files_pattern(pcmanfm_t, xdg_cache_home_t, xdg_cache_home_t)
+	manage_files_pattern(pcmanfm_t, xdg_config_home_t, xdg_config_home_t)
+	manage_files_pattern(pcmanfm_t, xdg_data_home_t, xdg_data_home_t)
+	manage_files_pattern(pcmanfm_t, user_home_dir_t, user_home_t)
+')
+
+
+## <desc>
+## <p>
+## Allow pcmanfm to exec apps without dedicated domains. Note that
+## pam_mktemp may be broken for such apps due to at_secure.
+## </p>
+## </desc>
+gen_tunable(pcmanfm_exec_generic, true)
+
+tunable_policy(`pcmanfm_exec_generic',`
+
+	allow pcmanfm_t bin_t : dir search_dir_perms;
+	can_exec(pcmanfm_t, bin_t)
+')
+
+
+## <desc>
+## <p>
+## Allow pcmanfm to read mounts.
+## </p>
+## </desc>
+gen_tunable(pcmanfm_read_mounts, false)
+
+tunable_policy(`pcmanfm_read_mounts',`
+
+	allow pcmanfm_t mnt_t : dir list_dir_perms;
+	allow pcmanfm_t mnt_t : file read_file_perms;
+')
+
+
+## <desc>
+## <p>
+## Allow pcmanfm to read unlabeled files and directories.
+## </p>
+## </desc>
+gen_tunable(pcmanfm_read_unlabeled, false)
+
+tunable_policy(`pcmanfm_read_unlabeled',`
+
+	allow pcmanfm_t unlabeled_t : dir list_dir_perms;
+	allow pcmanfm_t unlabeled_t : file read_file_perms;
+	allow pcmanfm_t unlabeled_t : lnk_file read_lnk_file_perms;
+')
+
+
+
+optional_policy(`
+
+	mplayer_domtrans(pcmanfm_t)
+')
+
+optional_policy(`
+
+# Here be local types defined in local modules.
+#
+	evince_domtrans(pcmanfm_t)
+	evince_thumbnailer_domtrans(pcmanfm_t)
+	ffmpegthumbnailer_domtrans(pcmanfm_t)
+
+	userdom_manage_thumbnails(pcmanfm_t)
+	userdom_read_gtk_config(pcmanfm_t)
+	userdom_read_user_themes(pcmanfm_t)
+	userdom_read_user_videos(pcmanfm_t)
+')
+
+
+# begin stuff for menu-cached
+
+allow pcmanfm_t user_tmp_t : sock_file write;
+
+# end stuff for menu-cached
+
+
+auth_use_nsswitch(pcmanfm_t)
+
+
+files_read_etc_files(pcmanfm_t)
+
+files_read_usr_files(pcmanfm_t)
+
+
+miscfiles_read_fonts(pcmanfm_t)
+
+miscfiles_read_localization(pcmanfm_t)
+
+
+xserver_read_user_xauth(pcmanfm_t)
+xserver_stream_connect(pcmanfm_t)
+
+
+create_sock_files_pattern(pcmanfm_t, { tmp_t user_tmp_t }, pcmanfm_socket_t)
+write_sock_files_pattern(pcmanfm_t, { tmp_t user_tmp_t }, pcmanfm_socket_t)
+delete_sock_files_pattern(pcmanfm_t, { tmp_t user_tmp_t }, pcmanfm_socket_t)
+
+
+read_files_pattern(pcmanfm_t, pcmanfm_data_t, pcmanfm_data_t)
+read_files_pattern(pcmanfm_t, pcmanfm_home_t, pcmanfm_home_t)
+
+
+allow pcmanfm_t self : fifo_file { read write };
+allow pcmanfm_t self : unix_stream_socket connectto;
+allow pcmanfm_t user_devpts_t : chr_file { read write };
+
+
+dontaudit pcmanfm_t fs_t : filesystem getattr;
+dontaudit pcmanfm_t home_root_t : dir read;

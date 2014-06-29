@@ -1,0 +1,45 @@
+## <summary>defluff policy</summary>
+## <desc>
+##	<p>
+##		Policy for defluff.
+##	</p>
+## </desc>
+
+
+###############################
+## <summary>
+##	Transition to defluff.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary
+## </param>
+
+interface(`defluff_domain_transition_pattern',`
+	gen_require(`
+		type defluff_t, defluff_exec_t;
+	')
+
+	domtrans_pattern($1, defluff_exec_t, defluff_t)
+')
+
+
+###############################
+## <summary>
+##	Allow role to exec defluff.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to exec defluff.
+##	</summary
+## </param>
+
+interface(`defluff_role',`
+	gen_require(`
+		type defluff_t;
+	')
+
+	defluff_domain_transition_pattern($1)
+	role $2 types defluff_t;
+')

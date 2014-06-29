@@ -1,0 +1,55 @@
+## <summary>pcmanfm policy</summary>
+## <desc>
+##	<p>
+##		Policy for pcmanfm.
+##	</p>
+## </desc>
+
+
+###############################
+## <summary>
+##	Transition to pcmanfm.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary
+## </param>
+
+interface(`pcmanfm_domtrans',`
+	gen_require(`
+		type pcmanfm_t, pcmanfm_exec_t;
+	')
+
+	domtrans_pattern($1, pcmanfm_exec_t, pcmanfm_t);
+')
+
+
+###############################
+## <summary>
+##	Allow role to exec pcmanfm.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to exec pcmanfm.
+#	
+##	</summary>
+## </param>
+
+interface(`pcmanfm_role',`
+	gen_require(`
+		type bin_t;
+		type pcmanfm_t;
+	')
+
+	pcmanfm_domtrans($1);
+	domtrans_pattern(pcmanfm_t, bin_t, $1);
+	role $2 types { bin_t pcmanfm_t };
+
+
+# neverallow violated =/
+#
+# (required for pam_mktemp)
+#
+#	allow pcmanfm_t bin_t : process noatsecure;
+')
