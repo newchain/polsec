@@ -10,6 +10,134 @@
 
 ###############################
 ## <summary>
+##	Allow domain to list user documents.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to list.
+##	</summary
+## </param>
+
+interface(`userdom_list_user_documents',`
+	gen_require(`
+		type home_root_t;
+		type user_home_dir_t;
+		type xdg_documents_home_t;
+	')
+
+	search_dirs_pattern($1, home_root_t, user_home_dir_t)
+	list_dirs_pattern($1, user_home_dir_t, xdg_documents_home_t)
+')
+
+
+###############################
+## <summary>
+##	Allow role to list user documents.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to list.
+##	</summary
+## </param>
+
+interface(`user_list_documents_role',`
+	gen_require(`
+		type xdg_documents_home_t;
+	')
+
+	userdom_list_xdg_documents_home($1)
+	role $2 types xdg_documents_home_t;
+')
+
+
+###############################
+## <summary>
+##	Allow domain to read user documents.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read.
+##	</summary
+## </param>
+
+interface(`userdom_read_user_documents',`
+	gen_require(`
+		type home_root_t;
+		type user_home_dir_t;
+		type xdg_documents_home_t;
+	')
+
+	search_dirs_pattern($1, home_root_t, user_home_dir_t)
+	read_files_pattern($1, xdg_documents_home_t, xdg_documents_home_t)
+')
+
+
+###############################
+## <summary>
+##	Allow role to read user documents.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to read.
+##	</summary
+## </param>
+
+interface(`user_read_documents_role',`
+	gen_require(`
+		type xdg_documents_home_t;
+	')
+
+	userdom_read_xdg_documents_home($1)
+	role $2 types xdg_documents_home_t;
+')
+
+
+###############################
+## <summary>
+##	Allow domain to read user mime definitions.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read.
+##	</summary
+## </param>
+
+interface(`userdom_read_user_mime',`
+	gen_require(`
+		type home_root_t;
+		type user_home_dir_t;
+		type user_mime_t;
+		type xdg_data_home_t;
+	')
+
+	search_dirs_pattern($1, home_root_t, user_home_dir_t)
+	search_dirs_pattern($1, user_home_dir_t, xdg_data_home_t)
+	read_files_pattern($1, user_mime_t, user_mime_t)
+')
+
+
+###############################
+## <summary>
+##	Allow role to read user mime definitions.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to read.
+##	</summary
+## </param>
+
+interface(`user_mime_role',`
+	gen_require(`
+		type user_mime_t;
+	')
+
+	userdom_read_user_mime($1)
+	role $2 types user_mime_t;
+')
+
+
+###############################
+## <summary>
 ##	Allow domain to read user gtk config
 ## </summary>
 ## <param name="domain">
@@ -130,6 +258,26 @@ interface(`userdom_read_user_themes',`
 
 ###############################
 ## <summary>
+##	Allow role to read user themes.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to read.
+##	</summary
+## </param>
+
+interface(`user_themes_role',`
+	gen_require(`
+		type user_themes_t;
+	')
+
+	userdom_read_user_themes($1)
+	role $2 types user_themes_t;
+')
+
+
+###############################
+## <summary>
 ##	Allow domain to read user thumbnails.
 ## </summary>
 ## <param name="domain">
@@ -147,6 +295,7 @@ interface(`userdom_read_user_thumbnails',`
 
 	search_dirs_pattern($1, home_root_t, user_home_dir_t)
 	read_files_pattern($1, user_thumbnails_t, user_thumbnails_t)
+	read_lnk_files_pattern($1, user_thumbnails_t, user_thumbnails_t)
 ')
 
 
@@ -180,7 +329,7 @@ interface(`user_thumbnails_role',`
 ##	</summary
 ## </param>
 
-interface(`userdom_create_thumbnails',`
+interface(`userdom_create_user_thumbnails',`
 	gen_require(`
 		type home_root_t;
 		type user_home_dir_t;
@@ -188,7 +337,11 @@ interface(`userdom_create_thumbnails',`
 	')
 
 	search_dirs_pattern($1, home_root_t, user_home_dir_t)
+	create_dirs_pattern($1, user_thumbnails_t, user_thumbnails_t)
 	create_files_pattern($1, user_thumbnails_t, user_thumbnails_t)
+	rename_files_pattern($1, user_thumbnails_t, user_thumbnails_t)
+	write_files_pattern($1, user_thumbnails_t, user_thumbnails_t)
+	read_lnk_files_pattern($1, user_thumbnails_t, user_thumbnails_t)
 ')
 
 
@@ -202,7 +355,7 @@ interface(`userdom_create_thumbnails',`
 ##	</summary
 ## </param>
 
-interface(`userdom_manage_thumbnails',`
+interface(`userdom_delete_user_thumbnails',`
 	gen_require(`
 		type home_root_t;
 		type user_home_dir_t;
@@ -229,9 +382,9 @@ interface(`userdom_read_user_videos',`
 	gen_require(`
 		type home_root_t;
 		type user_home_dir_t;
-		type video_home_t;
+		type xdg_videos_home_t;
 	')
 
 	search_dirs_pattern($1, home_root_t, user_home_dir_t)
-	read_files_pattern($1, video_home_t, video_home_t)
+	read_files_pattern($1, xdg_videos_home_t, xdg_videos_home_t)
 ')

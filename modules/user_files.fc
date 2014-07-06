@@ -7,7 +7,10 @@ HOME_DIR/\.config/Trolltech\.conf	gen_context(system_u:object_r:qt_config_home_t
 HOME_DIR/\.icons(/.*)?			gen_context(system_u:object_r:user_themes_t,s0)
 HOME_DIR/\.themes(/.*)?			gen_context(system_u:object_r:user_themes_t,s0)
 
+HOME_DIR/\.local/share/mime(/.*)?	gen_context(system_u:object_r:user_mime_t,s0)
+
 HOME_DIR/\.thumbnails(/.*)?		gen_context(system_u:object_r:user_thumbnails_t,s0)
 
-HOME_DIR/Videos		-d		gen_context(system_u:object_r:video_home_t,s0)
-HOME_DIR/Videos/.*	--		gen_context(system_u:object_r:video_home_t,s0)
+HOME_DIR/Documents(/.*)?		gen_context(system_u:object_r:xdg_documents_home_t,s0)
+HOME_DIR/Downloads(/.*)?		gen_context(system_u:object_r:xdg_downloads_home_t,s0)
+HOME_DIR/Videos(/.*)?			gen_context(system_u:object_r:xdg_videos_home_t,s0)

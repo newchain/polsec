@@ -5,60 +5,70 @@ gen_require(`
 	type bin_t;
 	type etc_t;
 	type fs_t;
+	type mnt_t;
 	type proc_t;
 	type sysctl_t;
 	type system_dbusd_var_lib_t;
-	type tmp_t;
 	type tmpfs_t;
 	type user_devpts_t;
 	type user_home_t;
 	type user_tmp_t;
 	type var_lib_t;
+	type unlabeled_t;
 	type xdg_cache_home_t;
 	type xdg_config_home_t;
 	type xdg_data_home_t;
-
-
-	type mnt_t;
-	type unlabeled_t;
+	type xdg_documents_home_t;
 ')
 
 
 type evince_t;
 type evince_exec_t;
-type evince_home_t;
+userdom_user_application_domain(evince_t, evince_exec_t)
+
+
 type evince_previewer_t;
 type evince_previewer_exec_t;
-type evince_thumbnailer_t;
-type evince_thumbnailer_exec_t;
-type evince_thumbnailer_tmp_t;
-type evince_tmp_t;
-
-
-application_domain(evince_t, evince_exec_t)
-application_domain(evince_previewer_t, evince_previewer_exec_t)
-application_domain(evince_thumbnailer_t, evince_thumbnailer_exec_t)
-
-ubac_constrained(evince_t);
-ubac_constrained(evince_previewer_t);
-ubac_constrained(evince_thumbnailer_t);
-
-
-files_type(evince_home_t);
-files_type(evince_tmp_t);
-files_type(evince_thumbnailer_tmp_t);
-
+userdom_user_application_domain(evince_previewer_t, evince_previewer_exec_t)
 
 domtrans_pattern(evince_t, evince_previewer_exec_t, evince_previewer_t)
 
-filetrans_pattern(evince_t, { xdg_cache_home_t xdg_config_home_t xdg_data_home_t }, evince_home_t, dir)
-filetrans_pattern(evince_t, { tmp_t user_tmp_t }, evince_tmp_t, { file dir } )
+
+type evince_thumbnailer_t;
+type evince_thumbnailer_exec_t;
+
+userdom_user_application_domain(evince_thumbnailer_t, evince_thumbnailer_exec_t)
 
 
-filetrans_pattern(evince_thumbnailer_t, { tmp_t user_tmp_t }, evince_thumbnailer_tmp_t, { file dir } )
+
+type evince_cache_home_t;
+xdg_cache_home_content(evince_cache_home_t)
+
+xdg_cache_home_filetrans(evince_t, evince_cache_home_t, dir, "evince")
 
 
-permissive evince_thumbnailer_t;
+type evince_config_home_t;
+xdg_config_home_content(evince_config_home_t)
+
+xdg_config_home_filetrans(evince_t, evince_config_home_t, dir, "evince")
+
+
+type evince_tmp_t;
+userdom_user_tmp_file(evince_tmp_t)
+
+userdom_user_tmp_filetrans(evince_t, evince_tmp_t, { dir file })
+create_dirs_pattern(evince_t, user_tmp_t, evince_tmp_t)
+manage_files_pattern({ evince_t evince_previewer_t }, evince_tmp_t, evince_tmp_t)
+delete_dirs_pattern({ evince_t evince_previewer_t }, user_tmp_t, evince_tmp_t)
+
+
+type evince_thumbnailer_tmp_t;
+userdom_user_tmp_file(evince_thumbnailer_tmp_t)
+
+userdom_user_tmp_filetrans(evince_thumbnailer_t, evince_thumbnailer_tmp_t, dir)
+create_dirs_pattern(evince_thumbnailer_t, user_tmp_t, evince_thumbnailer_tmp_t)
+manage_files_pattern(evince_thumbnailer_t, evince_thumbnailer_tmp_t, evince_thumbnailer_tmp_t)
+delete_dirs_pattern(evince_thumbnailer_t, user_tmp_t, evince_thumbnailer_tmp_t)
 
 
 ## <desc>
@@ -69,6 +79,7 @@ permissive evince_thumbnailer_t;
 gen_tunable(evince_dbus, false)
 
 tunable_policy(`evince_dbus',`
+
 	allow { evince_t evince_previewer_t } system_dbusd_var_lib_t : dir search;
 	allow { evince_t evince_previewer_t } system_dbusd_var_lib_t : lnk_file read;
 	allow { evince_t evince_previewer_t } var_lib_t : dir search;
@@ -84,11 +95,7 @@ gen_tunable(evince_read_generic_user_content, false)
 
 tunable_policy(`evince_read_generic_user_content',`
 
-	allow evince_t user_home_t : dir list_dir_perms;
-	allow { evince_t evince_thumbnailer_t } user_home_t  : file read_file_perms;
-
-	allow evince_thumbnailer_t user_home_t : dir search_dir_perms;
-	allow evince_thumbnailer_t user_home_dir_t : dir search_dir_perms;
+	userdom_read_user_home_content_files({ evince_t evince_thumbnailer_t })
 ')
 
 
@@ -100,13 +107,9 @@ tunable_policy(`evince_read_generic_user_content',`
 gen_tunable(evince_read_generic_config, false)
 
 tunable_policy(`evince_read_generic_config',`
-	allow evince_t { xdg_cache_home_t xdg_config_home_t xdg_data_home_t } : dir search_dir_perms;
-	allow evince_t { xdg_cache_home_t xdg_config_home_t xdg_data_home_t } : file read_file_perms;
-	allow evince_t { xdg_cache_home_t xdg_config_home_t xdg_data_home_t } : lnk_file read_lnk_file_perms;
 
-	allow evince_thumbnailer_t xdg_cache_home_t : file read_file_perms;
-	allow evince_thumbnailer_t xdg_data_home_t : dir search_dir_perms;
-	allow evince_thumbnailer_t xdg_data_home_t : file read_file_perms;
+	xdg_read_config_home_files({ evince_t evince_previewer_t })
+	xdg_read_data_home_files({ evince_t evince_previewer_t })
 ')
 
 
@@ -119,91 +122,105 @@ tunable_policy(`evince_read_generic_config',`
 gen_tunable(evince_write_to_home, true)
 
 tunable_policy(`evince_write_to_home',`
-	allow evince_t evince_home_t : dir manage_dir_perms;
-	allow evince_t evince_home_t : file manage_file_perms;
-	allow evince_t { xdg_cache_home_t xdg_config_home_t xdg_data_home_t } : dir search_dir_perms;
+
+	manage_files_pattern(evince_t, evince_cache_home_t, evince_cache_home_t)
+
+	manage_files_pattern(evince_t, evince_config_home_t, evince_config_home_t)
 ')
 
 
-can_exec(evince_t, bin_t);
+## <desc>
+## <p>
+## Allow evince to read /media and /mnt.
+## </p>
+## </desc>
+gen_tunable(evince_read_mounts, false)
 
-files_read_usr_files(evince_t);
-files_read_usr_files(evince_previewer_t);
-files_read_usr_files(evince_thumbnailer_t);
+tunable_policy(`evince_read_mounts',`
 
-files_search_tmp(evince_t);
-files_search_tmp(evince_previewer_t);
-files_search_tmp(evince_thumbnailer_t);
+	read_files_pattern({ evince_t evince_thumbnailer_t }, mnt_t, mnt_t)
+')
 
-miscfiles_read_fonts(evince_t);
-miscfiles_read_fonts(evince_previewer_t);
-miscfiles_read_fonts(evince_thumbnailer_t);
 
-miscfiles_read_localization(evince_t);
-miscfiles_read_localization(evince_previewer_t);
-miscfiles_read_localization(evince_thumbnailer_t);
+## <desc>
+## <p>
+## Allow evince to read unlabeled files.
+## </p>
+## </desc>
+gen_tunable(evince_read_unlabeled, false)
+
+tunable_policy(`evince_read_unlabeled',`
+
+	read_files_pattern({ evince_t evince_thumbnailer_t }, unlabeled_t, unlabeled_t)
+')
+
+
+# For bzip, gzip, and xz.
+#
+can_exec(evince_t, bin_t)
+can_exec(evince_thumbnailer_t, bin_t)
+
+corecmd_search_bin(evince_t)
+corecmd_search_bin(evince_thumbnailer_t)
+
+
+files_read_etc_files({ evince_t evince_previewer_t })
+
+files_read_usr_files({ evince_t evince_previewer_t evince_thumbnailer_t })
+
+files_search_tmp({ evince_t evince_previewer_t evince_thumbnailer_t })
+
+
+miscfiles_read_fonts({ evince_t evince_previewer_t evince_thumbnailer_t })
+
+miscfiles_read_localization({ evince_t evince_previewer_t evince_thumbnailer_t })
+
+
+xserver_read_user_xauth({ evince_t evince_previewer_t })
+
+xserver_stream_connect({ evince_t evince_previewer_t })
+
+xserver_use_user_fonts({ evince_t evince_previewer_t evince_thumbnailer_t })
+
 
 optional_policy(`
-	userdom_create_thumbnails(evince_thumbnailer_t);
-	userdom_read_gtk_config(evince_t);
-	userdom_read_user_themes(evince_t);
-	userdom_read_user_themes(evince_previewer_t);
+
+# Here be local types defined in local modules.
+#
+	userdom_create_user_thumbnails(evince_thumbnailer_t)
+	userdom_read_gtk_config({ evince_t evince_previewer_t })
+	userdom_read_user_documents({ evince_t evince_thumbnailer_t })
+	userdom_read_user_mime({ evince_t evince_previewer_t evince_thumbnailer_t })
+	userdom_read_user_themes({ evince_t evince_previewer_t })
 
 	xephyr_connect(evince_t)
+
+	dontaudit { evince_t evince_previewer_t } user_themes_t : dir read;
 ')
 
 
-xserver_read_user_xauth(evince_t);
-xserver_read_user_xauth(evince_previewer_t);
 
-xserver_stream_connect(evince_t);
-xserver_stream_connect(evince_previewer_t);
-
-
-can_exec(evince_thumbnailer_t, bin_t);
-allow evince_t bin_t : dir search_dir_perms;
-allow { evince_t evince_previewer_t } etc_t : file read_file_perms;
 allow evince_t self : fifo_file rw_fifo_file_perms;
 allow { evince_t evince_previewer_t } user_devpts_t : chr_file rw_chr_file_perms;
+#
+# execs itself before previewer.
+#
 allow evince_t evince_exec_t : file execute_no_trans;
 #
 # disallow exec into evince_t
 #
 allow evince_t evince_previewer_exec_t : file { execute read open };
-allow evince_t evince_tmp_t : dir manage_dir_perms;
-allow { evince_t evince_previewer_t } evince_tmp_t : file manage_file_perms;
-allow evince_previewer_t user_tmp_t : dir del_entry_dir_perms;
-#allow evince_thumbnailer_t user_tmp_t : dir search_dir_perms;
 
 
-#allow evince_thumbnailer_t evince_thumbnailer_tmp_t : dir { create_dir_perms delete_dir_perms };
-
-#allow evince_thumbnailer_t evince_thumbnailer_tmp_t:dir { write remove_name add_name };
-#allow evince_thumbnailer_t evince_thumbnailer_tmp_t:file { write getattr read create unlink open };
-
-create_dirs_pattern(evince_thumbnailer_t, { tmp_t user_tmp_t }, evince_thumbnailer_tmp_t);
-delete_dirs_pattern(evince_thumbnailer_t, { tmp_t user_tmp_t }, evince_thumbnailer_tmp_t);
-
-create_files_pattern(evince_thumbnailer_t, evince_thumbnailer_tmp_t, evince_thumbnailer_tmp_t);
-rw_files_pattern(evince_thumbnailer_t, evince_thumbnailer_tmp_t, evince_thumbnailer_tmp_t);
-delete_files_pattern(evince_thumbnailer_t, evince_thumbnailer_tmp_t, evince_thumbnailer_tmp_t);
-
-
-
-allow evince_thumbnailer_t tmpfs_t:filesystem getattr;
+allow evince_thumbnailer_t tmpfs_t : filesystem getattr;
 
 
 dontaudit { evince_t evince_previewer_t evince_thumbnailer_t } fs_t : filesystem getattr;
 dontaudit { evince_t evince_previewer_t evince_thumbnailer_t } proc_t : file read;
 dontaudit { evince_t evince_previewer_t } self : shm create;
 dontaudit evince_t sysctl_t : dir search;
-dontaudit evince_previewer_t user_home_t : dir { search getattr };
-
+dontaudit evince_t xdg_documents_home_t : dir read;
 
 # testing:
 
-allow evince_thumbnailer_t proc_t:file { getattr open };
-allow evince_thumbnailer_t self:fifo_file { write read getattr };
-allow evince_thumbnailer_t user_devpts_t:chr_file { read write };
-allow evince_thumbnailer_t mnt_t:file getattr;
-allow evince_thumbnailer_t unlabeled_t:file getattr;
+allow evince_thumbnailer_t self : fifo_file { write read getattr };

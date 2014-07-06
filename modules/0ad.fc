@@ -1,8 +1,8 @@
-HOME_DIR/\.cache/0ad(/.*)?		gen_context(system_u:object_r:zad_home_t,s0)
-HOME_DIR/\.config/0ad(/.*)?		gen_context(system_u:object_r:zad_home_t,s0)
-HOME_DIR/\.local/share/0ad(/.*)?	gen_context(system_u:object_r:zad_home_t,s0)
+HOME_DIR/\.cache/0ad(/.*)?		gen_context(system_u:object_r:zad_cache_home_t,s0)
+HOME_DIR/\.config/0ad(/.*)?		gen_context(system_u:object_r:zad_config_home_t,s0)
+HOME_DIR/\.local/share/0ad(/.*)?	gen_context(system_u:object_r:zad_data_home_t,s0)
 
-/tmp/\.private/\w+/cache/0ad(/.*)?	gen_context(system_u:object_r:zad_home_t,s0)
+/tmp/\.private/\w+/cache/0ad(/.*)?	gen_context(system_u:object_r:zad_cache_home_t,s0)
 
 /usr/games/bin/0ad		--	gen_context(system_u:object_r:zad_exec_t,s0)
 /usr/games/bin/pyrogenesis	--	gen_context(system_u:object_r:zad_bin_t,s0)

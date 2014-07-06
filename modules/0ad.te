@@ -20,46 +20,66 @@ gen_require(`
 
 
 type zad_t;
-type zad_bin_t;
-type zad_data_t;
 type zad_exec_t;
-type zad_home_t;
+
+userdom_user_application_domain(zad_t, zad_exec_t)
 
 
-application_domain(zad_t, zad_exec_t)
-
-ubac_constrained(zad_t);
-
-
+type zad_bin_t;
 files_type(zad_bin_t);
-files_type(zad_data_t);
-files_type(zad_home_t);
 
-filetrans_pattern(zad_t, { xdg_cache_home_t xdg_config_home_t xdg_data_home_t }, zad_home_t, dir)
-
-
-
+allow zad_t bin_t : dir search_dir_perms;
 can_exec(zad_t, zad_bin_t)
 
-files_read_etc_files(zad_t)
-files_read_usr_files(zad_t)
 
-miscfiles_read_localization(zad_t)
-
-xserver_read_user_xauth(zad_t)
-xserver_stream_connect(zad_t)
-
-
-
+type zad_data_t;
+files_type(zad_data_t);
 
 # pyrogenesis segfaults if unable to list zad_data_t
 #
 list_dirs_pattern(zad_t, zad_data_t, zad_data_t)
 read_files_pattern(zad_t, zad_data_t, zad_data_t)
-manage_files_pattern(zad_t, zad_home_t, zad_home_t)
+
+
+type zad_cache_home_t;
+xdg_cache_home_content(zad_cache_home_t)
+
+xdg_cache_home_filetrans(zad_t, zad_cache_home_t, dir, "0ad")
+create_dirs_pattern(zad_t, zad_cache_home_t, zad_cache_home_t)
+manage_files_pattern(zad_t, zad_cache_home_t, zad_cache_home_t)
+
+
+type zad_config_home_t;
+xdg_config_home_content(zad_config_home_t)
+
+xdg_config_home_filetrans(zad_t, zad_config_home_t, dir, "0ad")
+create_dirs_pattern(zad_t, zad_config_home_t, zad_config_home_t)
+manage_files_pattern(zad_t, zad_config_home_t, zad_config_home_t)
+
+
+type zad_data_home_t;
+xdg_data_home_content(zad_data_home_t)
+
+xdg_data_home_filetrans(zad_t, zad_data_home_t, dir, "0ad")
+create_dirs_pattern(zad_t, zad_data_home_t, zad_data_home_t)
+manage_files_pattern(zad_t, zad_data_home_t, zad_data_home_t)
+
+
+files_read_etc_files(zad_t)
+
+files_read_usr_files(zad_t)
+
+
+miscfiles_read_localization(zad_t)
+
+
+xserver_read_user_xauth(zad_t)
+
+xserver_stream_connect(zad_t)
 
 
 # audio stuff
+#
 alsa_read_rw_config(zad_t)
 
 allow zad_t sound_device_t : chr_file rw_chr_file_perms;
@@ -78,7 +98,6 @@ allow zad_t proc_t : file read_file_perms;
 allow zad_t sysfs_t : dir list_dir_perms;
 
 
-allow zad_t bin_t : dir search_dir_perms;
 allow zad_t dri_device_t : chr_file rw_chr_file_perms;
 allow zad_t self : process { execmem getsched setsched signal };
 allow zad_t self : sem create_sem_perms;

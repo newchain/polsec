@@ -1,9 +1,16 @@
 policy_module(user_files, 1.0)
 
 
+gen_require(`
+	type xdg_documents_home_t;
+	type xdg_downloads_home_t;
+	type xdg_videos_home_t;
+')
+
+
 type gtk_config_home_t;
 type qt_config_home_t;
-type video_home_t;
+type user_mime_t;
 type user_spelldict_t;
 type user_themes_t;
 type user_thumbnails_t;
@@ -11,6 +18,6 @@ type user_thumbnails_t;
 
 files_type(gtk_config_home_t);
 files_type(qt_config_home_t);
-files_type(video_home_t);
+files_type(user_mime_t);
 files_type(user_themes_t);
 files_type(user_thumbnails_t);

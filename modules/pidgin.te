@@ -68,6 +68,7 @@ tunable_policy(`pidgin_dbus',`
 gen_tunable(pidgin_read_generic_user_content, false)
 
 tunable_policy(`pidgin_read_generic_user_content',`
+
 	list_dirs_pattern(pidgin_t, user_home_t, user_home_t)
 	list_dirs_pattern(pidgin_t, home_root_t, user_home_dir_t)
 	read_files_pattern(pidgin_t, user_home_t, user_home_t)
@@ -82,6 +83,7 @@ tunable_policy(`pidgin_read_generic_user_content',`
 gen_tunable(pidgin_read_generic_config, false)
 
 tunable_policy(`pidgin_read_generic_config',`
+
 	read_files_pattern(pidgin_t, { xdg_cache_home_t xdg_config_home_t xdg_data_home_t }, { xdg_cache_home_t xdg_config_home_t xdg_data_home_t })
 ')
 
@@ -94,6 +96,7 @@ tunable_policy(`pidgin_read_generic_config',`
 gen_tunable(pidgin_rand, false)
 
 tunable_policy(`pidgin_rand',`
+
 	dev_read_rand(pidgin_t)
 ')
 
@@ -106,6 +109,7 @@ tunable_policy(`pidgin_rand',`
 gen_tunable(pidgin_tor, false)
 
 tunable_policy(`pidgin_tor',`
+
 	allow pidgin_t tor_port_t : tcp_socket name_connect;
 ')
 
@@ -119,6 +123,7 @@ tunable_policy(`pidgin_tor',`
 gen_tunable(pidgin_write_to_home, true)
 
 tunable_policy(`pidgin_write_to_home',`
+
 	create_dirs_pattern(pidgin_t, { xdg_cache_home_t xdg_config_home_t xdg_data_home_t }, purple_home_t)
 	manage_files_pattern(pidgin_t, purple_home_t, purple_home_t)
 ')
@@ -130,6 +135,7 @@ optional_policy(`
 #
 	userdom_append_user_spelldict(pidgin_t)
 	userdom_read_gtk_config(pidgin_t)
+	userdom_read_user_mime(pidgin_t)
 	userdom_read_user_spelldict(pidgin_t)
 	userdom_read_user_themes(pidgin_t)
 
@@ -138,6 +144,7 @@ optional_policy(`
 
 
 optional_policy(`
+
 	gen_require(`
 		type jabber_client_port_t;
 	')
@@ -145,28 +152,34 @@ optional_policy(`
 ')
 
 
-
-auth_use_nsswitch(pidgin_t);
-
-
-dev_read_urand(pidgin_t);
+auth_use_nsswitch(pidgin_t)
 
 
-files_read_etc_files(pidgin_t);
-files_read_usr_files(pidgin_t);
+dev_read_urand(pidgin_t)
 
 
-miscfiles_read_fonts(pidgin_t);
+files_read_etc_files(pidgin_t)
 
-miscfiles_read_localization(pidgin_t);
-
-
-sysnet_dns_name_resolve(pidgin_t);
+files_read_usr_files(pidgin_t)
 
 
-xserver_read_user_xauth(pidgin_t);
+miscfiles_read_fonts(pidgin_t)
 
-#xserver_stream_connect(pidgin_t);
+miscfiles_read_generic_certs(pidgin_t)
+
+miscfiles_read_localization(pidgin_t)
+
+
+sysnet_dns_name_resolve(pidgin_t)
+
+
+xserver_read_user_xauth(pidgin_t)
+
+#xserver_stream_connect(pidgin_t)
+
+
+list_dirs_pattern(pidgin_t, purple_data_t, purple_data_t)
+read_files_pattern(pidgin_t, purple_data_t, purple_data_t)
 
 
 allow pidgin_t self : fifo_file rw_fifo_file_perms;
