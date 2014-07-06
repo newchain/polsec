@@ -1,0 +1,314 @@
+policy_module(jabberd2, 1.0)
+
+
+gen_require(`
+	attribute client_packet_type;
+	attribute defined_port_type;
+	attribute packet_type;
+	attribute port_type;
+	attribute server_packet_type;
+	attribute unreserved_port_type;
+
+	type etc_t;
+	type initrc_t;
+	type locale_t;
+	type node_t;
+	type tmp_t;
+	type user_tmp_t;
+	type var_spool_t;
+')
+
+
+# Router port
+# ===========
+#
+# Given that jabber.te gives jabberd1 the permission to connect via
+# jabber_client_port_t, jabberd2's router presumably has a different
+# function. It doesn't connect to clients - that's the function of c2s
+# - rather, it acts as an intemediary between jabberd2 modules.
+#
+
+type jabberd2_interprocess_port_t, port_type, defined_port_type;
+type jabberd2_interprocess_client_packet_t, packet_type, client_packet_type;
+type jabberd2_interprocess_server_packet_t, packet_type, server_packet_type;
+typeattribute jabberd2_interprocess_port_t unreserved_port_type;
+#portcon tcp 5347 gen_context(system_u:object_r:jabberd2_interprocess_port_t,s0)
+
+#
+# End router port config
+
+
+
+
+# Init script
+# ===========
+#
+# initrc checks config and then execs a perl script that execs each
+# module. The script is given the domain jabberd2_t.
+#
+
+type jabberd2_t;
+type jabberd2_exec_t;
+init_daemon_domain(jabberd2_t, jabberd2_exec_t)
+application_executable_file(jabberd2_exec_t)
+
+type jabberd2_initrc_exec_t;
+init_script_file(jabberd2_initrc_exec_t)
+
+
+type jabberd2_etc_t;
+files_config_file(jabberd2_etc_t)
+
+type jabberd2-c2s_etc_t;
+files_config_file(jabberd2-c2s_etc_t)
+
+type jabberd2-router_etc_t;
+files_config_file(jabberd2-router_etc_t)
+
+type jabberd2-s2s_etc_t;
+files_config_file(jabberd2-s2s_etc_t)
+
+type jabberd2-sm_etc_t;
+files_config_file(jabberd2-sm_etc_t)
+
+
+read_files_pattern(initrc_t, jabberd2_etc_t, jabberd2_etc_t)
+read_files_pattern(initrc_t, jabberd2_etc_t, jabberd2-c2s_etc_t)
+read_files_pattern(initrc_t, jabberd2_etc_t, jabberd2-router_etc_t)
+read_files_pattern(initrc_t, jabberd2_etc_t, jabberd2-sm_etc_t)
+read_files_pattern(initrc_t, jabberd2_etc_t, jabberd2-s2s_etc_t)
+
+setattr_dirs_pattern(initrc_t, tmp_t, user_tmp_t)
+
+
+type jabberd2_run_t;
+files_pid_file(jabberd2_run_t)
+
+#
+# End init script
+
+
+
+# Certificates
+# ============
+#
+# The default config doesn't help here by setting the same path for all
+# keys.
+#
+# pems are given the generic jabberd2_key type which is readable by all
+# jabberd2 daemons, except for those having names in line with the
+# separate bins, leaving the option of using separate keys for each.
+#
+
+type jabberd2_key_t;
+files_type(jabberd2_key_t)
+
+type jabberd2-c2s_key_t;
+files_type(jabberd2-c2s_key_t)
+
+type jabberd2-router_key_t;
+files_type(jabberd2-router_key_t)
+
+type jabberd2-s2s_key_t;
+files_type(jabberd2-s2s_key_t)
+
+type jabberd2-sm_key_t;
+files_type(jabberd2-sm_key_t)
+
+#
+# End certificates
+
+
+
+
+# c2s
+# ===
+#
+# Client to server process.
+#
+# Connects to clients directly and through router to sm.
+#
+
+type jabberd2-c2s_t;
+type jabberd2-c2s_exec_t;
+init_daemon_domain(jabberd2-c2s_t, jabberd2-c2s_exec_t)
+
+
+dev_read_urand(jabberd2-c2s_t)
+
+logging_send_syslog_msg(jabberd2-c2s_t)
+
+
+allow jabberd2-c2s_t jabberd2_interprocess_port_t : tcp_socket name_connect;
+
+allow jabberd2-c2s_t node_t : tcp_socket node_bind;
+
+allow jabberd2-c2s_t self : tcp_socket { setopt read bind create accept write getattr connect listen };
+
+
+read_files_pattern(jabberd2-c2s_t, jabberd2_etc_t, jabberd2-c2s_etc_t)
+
+read_files_pattern(jabberd2-c2s_t, jabberd2_etc_t, { jabberd2_key_t jabberd2-c2s_key_t })
+
+type jabberd2-c2s_run_t;
+files_pid_file(jabberd2-c2s_run_t)
+
+filetrans_pattern(jabberd2-c2s_t, jabberd2_run_t, jabberd2-c2s_run_t, file, "jabberd2-c2s.pid")
+create_files_pattern(jabberd2-c2s_t, jabberd2_run_t, jabberd2-c2s_run_t)
+rw_files_pattern(jabberd2-c2s_t, jabberd2_run_t, jabberd2-c2s_run_t)
+
+#
+# End c2s
+
+
+
+
+# router
+# ======
+#
+# Handles communications between processes. Doesn't connect to clients nor servers.
+#
+
+type jabberd2-router_t;
+type jabberd2-router_exec_t;
+init_daemon_domain(jabberd2-router_t, jabberd2-router_exec_t)
+
+
+dev_read_urand(jabberd2-router_t)
+
+logging_send_syslog_msg(jabberd2-router_t)
+
+
+allow jabberd2-router_t node_t : tcp_socket node_bind;
+
+allow jabberd2-router_t self : tcp_socket { setopt read bind create accept write getattr listen };
+
+
+read_files_pattern(jabberd2-router_t, jabberd2_etc_t, jabberd2-router_etc_t)
+
+read_files_pattern(jabberd2-router_t, jabberd2_etc_t, { jabberd2_key_t jabberd2-router_key_t })
+
+type jabberd2-router_run_t;
+files_pid_file(jabberd2-router_run_t)
+
+filetrans_pattern(jabberd2-router_t, jabberd2_run_t, jabberd2-router_run_t, file, "jabberd2-router.pid")
+create_files_pattern(jabberd2-router_t, jabberd2_run_t, jabberd2-router_run_t)
+rw_files_pattern(jabberd2-router_t, jabberd2_run_t, jabberd2-router_run_t)
+
+#
+# End router
+
+
+
+
+# s2s
+# ===
+#
+# Server to server process.
+#
+# Connects to servers directly and through router to sm.
+#
+
+type jabberd2-s2s_t;
+type jabberd2-s2s_exec_t;
+init_daemon_domain(jabberd2-s2s_t, jabberd2-s2s_exec_t)
+
+
+dev_read_urand(jabberd2-s2s_t)
+
+logging_send_syslog_msg(jabberd2-s2s_t)
+
+
+allow jabberd2-s2s_t jabberd2_interprocess_port_t : tcp_socket name_connect;
+
+allow jabberd2-c2s_t node_t : tcp_socket node_bind;
+
+allow jabberd2-s2s_t self : tcp_socket { setopt read bind create accept write getattr connect listen };
+
+
+read_files_pattern(jabberd2-s2s_t, jabberd2_etc_t, jabberd2-s2s_etc_t)
+
+read_files_pattern(jabberd2-s2s_t, jabberd2_etc_t, { jabberd2_key_t jabberd2-s2s_key_t })
+
+type jabberd2-s2s_run_t;
+files_pid_file(jabberd2-s2s_run_t)
+
+filetrans_pattern(jabberd2-s2s_t, jabberd2_run_t, jabberd2-s2s_run_t, file, "jabberd2-s2s.pid")
+create_files_pattern(jabberd2-s2s_t, jabberd2_run_t, jabberd2-s2s_run_t)
+rw_files_pattern(jabberd2-s2s_t, jabberd2_run_t, jabberd2-s2s_run_t)
+
+#
+# End s2s
+
+
+
+
+# sm
+# ==
+#
+# Session management process.
+#
+# Doesn't connect to clients nor servers. Connects via router to c2s and s2s.
+
+type jabberd2-sm_t;
+type jabberd2-sm_exec_t;
+init_daemon_domain(jabberd2-sm_t, jabberd2-sm_exec_t)
+
+
+dev_read_urand(jabberd2-sm_t)
+
+logging_send_syslog_msg(jabberd2-sm_t)
+
+
+allow jabberd2-sm_t jabberd2_interprocess_port_t : tcp_socket name_connect;
+
+allow jabberd2-sm_t self : tcp_socket { read write getattr create connect };
+
+
+read_files_pattern(jabberd2-sm_t, jabberd2_etc_t, jabberd2-sm_etc_t)
+
+read_files_pattern(jabberd2-sm_t, jabberd2_etc_t, { jabberd2_key_t jabberd2-sm_key_t })
+
+type jabberd2-sm_run_t;
+files_pid_file(jabberd2-sm_run_t)
+
+filetrans_pattern(jabberd2-sm_t, jabberd2_run_t, jabberd2-sm_run_t, file, "jabberd2-sm.pid")
+create_files_pattern(jabberd2-sm_t, jabberd2_run_t, jabberd2-sm_run_t)
+rw_files_pattern(jabberd2-sm_t, jabberd2_run_t, jabberd2-sm_run_t)
+
+#
+# End sm
+
+
+
+
+# Database
+# ========
+#
+
+type jabberd2_spool_t;
+files_type(jabberd2_spool_t)
+
+
+filetrans_pattern({ jabberd2-c2s_t jabberd2-s2s_t jabberd2-sm_t }, var_spool_t, jabberd2_spool_t, dir)
+
+create_dirs_pattern({ jabberd2-c2s_t jabberd2-s2s_t jabberd2-sm_t }, var_spool_t, jabberd2_spool_t)
+manage_files_pattern({ jabberd2-c2s_t jabberd2-s2s_t jabberd2-sm_t }, jabberd2_spool_t, jabberd2_spool_t)
+
+#
+# End database
+
+
+
+
+## <desc>
+## <p>
+## Allow jabberd2 to read local timezone.
+## </p>
+## </desc>
+gen_tunable(jabberd2_read_timezone, false)
+
+tunable_policy(`jabberd2_read_timezone',`
+
+	read_files_pattern({ jabberd2-c2s_t jabberd2-router_t jabberd2-s2s_t jabberd2-sm_t }, etc_t, locale_t)
+')

@@ -1,0 +1,29 @@
+/etc/jabber(/.*)?			gen_context(system_u:object_r:jabberd2_etc_t,s0)
+/etc/jabber/c2s\.xml		--	gen_context(system_u:object_r:jabberd2-c2s_etc_t,s0)
+/etc/jabber/router\.xml		--	gen_context(system_u:object_r:jabberd2-router_etc_t,s0)
+/etc/jabber/router-filter\.xml	--	gen_context(system_u:object_r:jabberd2-router_etc_t,s0)
+/etc/jabber/router-users\.xml	--	gen_context(system_u:object_r:jabberd2-router_etc_t,s0)
+/etc/jabber/s2s\.xml		--	gen_context(system_u:object_r:jabberd2-s2s_etc_t,s0)
+/etc/jabber/sm\.xml		--	gen_context(system_u:object_r:jabberd2-sm_etc_t,s0)
+
+/etc/jabber/.*\.pem		--	gen_context(system_u:object_r:jabberd2_key_t,s0)
+/etc/jabber/c2s\.pem		--	gen_context(system_u:object_r:jabberd2-c2s_key_t,s0)
+/etc/jabber/router\.pem		--	gen_context(system_u:object_r:jabberd2-router_key_t,s0)
+/etc/jabber/s2s\.pem		--	gen_context(system_u:object_r:jabberd2-s2s_key_t,s0)
+/etc/jabber/sm\.pem		--	gen_context(system_u:object_r:jabberd2-sm_key_t,s0)
+
+/etc/init\.d/jabberd		--	gen_context(system_u:object_r:jabberd2_initrc_exec_t,s0)
+
+/var/run/jabber			-d	gen_context(system_u:object_r:jabberd2_run_t,s0)
+/var/run/jabber/jabberd2-c2s\.pid	--	gen_context(system_u:object_r:jabberd2-c2s_run_t,s0)
+/var/run/jabber/jabberd2-router\.pid	--	gen_context(system_u:object_r:jabberd2-router_run_t,s0)
+/var/run/jabber/jabberd2-s2s\.pid	--	gen_context(system_u:object_r:jabberd2-s2s_run_t,s0)
+/var/run/jabber/jabberd2-sm\.pid	--	gen_context(system_u:object_r:jabberd2-sm_run_t,s0)
+
+/usr/bin/jabberd		--	gen_context(system_u:object_r:jabberd2_exec_t,s0)
+/usr/bin/jabberd2-c2s		--	gen_context(system_u:object_r:jabberd2-c2s_exec_t,s0)
+/usr/bin/jabberd2-router	--	gen_context(system_u:object_r:jabberd2-router_exec_t,s0)
+/usr/bin/jabberd2-s2s		--	gen_context(system_u:object_r:jabberd2-s2s_exec_t,s0)
+/usr/bin/jabberd2-sm		--	gen_context(system_u:object_r:jabberd2-sm_exec_t,s0)
+
+/var/spool/jabber(/.*)?			gen_context(system_u:object_r:jabberd2_spool_t,s0)
