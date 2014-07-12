@@ -1,6 +1,6 @@
-HOME_DIR/\.cache/evince(/.*)?		gen_context(system_u:object_r:evince_home_t,s0)
-HOME_DIR/\.config/evince(/.*)?		gen_context(system_u:object_r:evince_home_t,s0)
-HOME_DIR/\.local/share/evince(/.*)?	gen_context(system_u:object_r:evince_home_t,s0)
+HOME_DIR/\.cache/evince(/.*)?		gen_context(system_u:object_r:evince_cache_home_t,s0)
+HOME_DIR/\.config/evince(/.*)?		gen_context(system_u:object_r:evince_config_home_t,s0)
+HOME_DIR/\.local/share/evince(/.*)?	gen_context(system_u:object_r:evince_data_home_t,s0)
 
 /usr/bin/evince			--	gen_context(system_u:object_r:evince_exec_t,s0)
 /usr/bin/evince-previewer	--	gen_context(system_u:object_r:evince_previewer_exec_t,s0)
