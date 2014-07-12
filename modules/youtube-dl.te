@@ -1,0 +1,74 @@
+policy_module(youtube-dl, 1.0)
+
+
+gen_require(`
+	type bin_t;
+	type proc_t;
+	type shell_exec_t;
+	type user_devpts_t;
+	type xdg_cache_home_t;
+	type xdg_videos_home_t;
+
+	role staff_r;
+	role user_r;
+	type staff_t;
+	type user_t;
+')
+
+
+########################################
+#
+# Declarations
+#
+
+type youtube-dl_t;
+type youtube-dl_exec_t;
+userdom_user_application_domain(youtube-dl_t, youtube-dl_exec_t)
+
+type youtube-dl_cache_home_t;
+xdg_cache_home_content(youtube-dl_cache_home_t)
+
+########################################
+#
+# Local policy
+#
+
+youtube_dl_role(staff_t, staff_r)
+youtube_dl_role(user_t, user_r)
+
+allow youtube-dl_t self : fifo_file rw_fifo_file_perms;
+
+# No need to list bin_t.
+#
+corecmd_search_bin(youtube-dl_t)
+corecmd_read_bin_symlinks(youtube-dl_t)
+can_exec(youtube-dl_t, bin_t)
+can_exec(youtube-dl_t, shell_exec_t)
+
+allow youtube-dl_t user_devpts_t : chr_file { read write ioctl getattr };
+
+auth_use_nsswitch(youtube-dl_t)
+
+xdg_cache_home_filetrans(youtube-dl_t, youtube-dl_cache_home_t, dir, "youtube-dl")
+create_dirs_pattern(youtube-dl_t, xdg_cache_home_t, youtube-dl_cache_home_t)
+create_files_pattern(youtube-dl_t, youtube-dl_cache_home_t, youtube-dl_cache_home_t)
+
+# Stray empty files created by sqlite.
+#
+allow youtube-dl_t xdg_videos_home_t : file read;
+
+miscfiles_read_localization(youtube-dl_t)
+
+dontaudit youtube-dl_t proc_t : file read;
+
+allow youtube-dl_t self : tcp_socket { write getattr connect read getopt create };
+corenet_tcp_connect_http_port(youtube-dl_t)
+allow youtube-dl_t self : udp_socket { write read create connect getattr };
+
+optional_policy(`
+#
+# Here be local types defined in local modules.
+#
+	userdom_create_user_videos(youtube-dl_t)
+	userdom_rename_user_videos(youtube-dl_t)
+')
