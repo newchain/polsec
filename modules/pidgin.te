@@ -18,30 +18,10 @@ gen_require(`
 ')
 
 
-type pidgin_t;
-type pidgin_exec_t;
-type pidgin_tmp_t;
+########################################
 #
-# These could be shared with finch.
+# Declarations
 #
-type purple_data_t;
-type purple_home_t;
-
-
-application_domain(pidgin_t, pidgin_exec_t)
-ubac_constrained(pidgin_t);
-
-
-files_type(pidgin_tmp_t);
-files_type(purple_data_t);
-files_type(purple_home_t);
-
-
-# pidgin has yet to convert to XDG
-#
-filetrans_pattern(pidgin_t, user_home_dir_t, purple_home_t, dir)
-filetrans_pattern(pidgin_t, { tmp_t user_tmp_t }, pidgin_tmp_t, dir)
-
 
 ## <desc>
 ## <p>
@@ -49,6 +29,104 @@ filetrans_pattern(pidgin_t, { tmp_t user_tmp_t }, pidgin_tmp_t, dir)
 ## </p>
 ## </desc>
 gen_tunable(pidgin_dbus, false)
+
+## <desc>
+## <p>
+## Allow pidgin to read generic data in HOME.
+## </p>
+## </desc>
+gen_tunable(pidgin_read_generic_user_content, false)
+
+## <desc>
+## <p>
+## Allow pidgin to read all config in HOME
+## </p>
+## </desc>
+gen_tunable(pidgin_read_generic_config, false)
+
+## <desc>
+## <p>
+## Allow pidgin to read /dev/random. Doing so is required for OTR.
+## </p>
+## </desc>
+gen_tunable(pidgin_rand, false)
+
+## <desc>
+## <p>
+## Allow pidgin to connect via tor.
+## </p>
+## </desc>
+gen_tunable(pidgin_tor, false)
+
+## <desc>
+## <p>
+## Allow pidgin to save settings. Disable to prevent pidgin from writing
+## to HOME.
+## </p>
+## </desc>
+gen_tunable(pidgin_write_to_home, true)
+
+type pidgin_t;
+type pidgin_exec_t;
+userdom_user_application_domain(pidgin_t, pidgin_exec_t)
+
+type pidgin_tmp_t;
+files_type(pidgin_tmp_t)
+
+# These could be shared with finch.
+#
+type purple_home_t;
+files_type(purple_home_t)
+
+type purple_data_t;
+files_type(purple_data_t)
+
+
+########################################
+#
+# Local policy
+#
+
+allow pidgin_t self : fifo_file rw_fifo_file_perms;
+dontaudit pidgin_t self : shm create;
+
+allow pidgin_t user_devpts_t : chr_file rw_chr_file_perms;
+
+dev_read_urand(pidgin_t)
+
+files_read_etc_files(pidgin_t)
+
+auth_use_nsswitch(pidgin_t)
+
+miscfiles_read_generic_certs(pidgin_t)
+
+xserver_read_user_xauth(pidgin_t)
+
+# pidgin has yet to convert to XDG
+#
+filetrans_pattern(pidgin_t, user_home_dir_t, purple_home_t, dir)
+
+dontaudit pidgin_t fs_t : filesystem getattr;
+
+dontaudit pidgin_t sysctl_t : dir search;
+
+#xserver_stream_connect(pidgin_t)
+
+filetrans_pattern(pidgin_t, { tmp_t user_tmp_t }, pidgin_tmp_t, dir)
+
+files_read_usr_files(pidgin_t)
+
+miscfiles_read_fonts(pidgin_t)
+
+miscfiles_read_localization(pidgin_t)
+
+list_dirs_pattern(pidgin_t, purple_data_t, purple_data_t)
+read_files_pattern(pidgin_t, purple_data_t, purple_data_t)
+
+sysnet_dns_name_resolve(pidgin_t)
+allow pidgin_t self : tcp_socket { create ioctl };
+allow pidgin_t unreserved_port_t : tcp_socket name_connect;
+
 
 tunable_policy(`pidgin_dbus',`
 #
@@ -59,14 +137,6 @@ tunable_policy(`pidgin_dbus',`
 	allow pidgin_t var_lib_t : dir search;
 ')
 
-
-## <desc>
-## <p>
-## Allow pidgin to read generic data in HOME.
-## </p>
-## </desc>
-gen_tunable(pidgin_read_generic_user_content, false)
-
 tunable_policy(`pidgin_read_generic_user_content',`
 
 	list_dirs_pattern(pidgin_t, user_home_t, user_home_t)
@@ -74,53 +144,20 @@ tunable_policy(`pidgin_read_generic_user_content',`
 	read_files_pattern(pidgin_t, user_home_t, user_home_t)
 ')
 
-
-## <desc>
-## <p>
-## Allow pidgin to read all config in HOME
-## </p>
-## </desc>
-gen_tunable(pidgin_read_generic_config, false)
-
 tunable_policy(`pidgin_read_generic_config',`
 
 	read_files_pattern(pidgin_t, { xdg_cache_home_t xdg_config_home_t xdg_data_home_t }, { xdg_cache_home_t xdg_config_home_t xdg_data_home_t })
 ')
-
-
-## <desc>
-## <p>
-## Allow pidgin to read /dev/random. Doing so is required for OTR.
-## </p>
-## </desc>
-gen_tunable(pidgin_rand, false)
 
 tunable_policy(`pidgin_rand',`
 
 	dev_read_rand(pidgin_t)
 ')
 
-
-## <desc>
-## <p>
-## Allow pidgin to connect via tor.
-## </p>
-## </desc>
-gen_tunable(pidgin_tor, false)
-
 tunable_policy(`pidgin_tor',`
 
 	allow pidgin_t tor_port_t : tcp_socket name_connect;
 ')
-
-
-## <desc>
-## <p>
-## Allow pidgin to save settings. Disable to prevent pidgin from writing
-## to HOME.
-## </p>
-## </desc>
-gen_tunable(pidgin_write_to_home, true)
 
 tunable_policy(`pidgin_write_to_home',`
 
@@ -128,6 +165,15 @@ tunable_policy(`pidgin_write_to_home',`
 	manage_files_pattern(pidgin_t, purple_home_t, purple_home_t)
 ')
 
+
+optional_policy(`
+
+	gen_require(`
+		type jabber_client_port_t;
+	')
+
+	allow pidgin_t jabber_client_port_t : tcp_socket name_connect;
+')
 
 optional_policy(`
 #
@@ -141,54 +187,3 @@ optional_policy(`
 
 	xephyr_connect(pidgin_t)
 ')
-
-
-optional_policy(`
-
-	gen_require(`
-		type jabber_client_port_t;
-	')
-	allow pidgin_t jabber_client_port_t : tcp_socket name_connect;
-')
-
-
-auth_use_nsswitch(pidgin_t)
-
-
-dev_read_urand(pidgin_t)
-
-
-files_read_etc_files(pidgin_t)
-
-files_read_usr_files(pidgin_t)
-
-
-miscfiles_read_fonts(pidgin_t)
-
-miscfiles_read_generic_certs(pidgin_t)
-
-miscfiles_read_localization(pidgin_t)
-
-
-sysnet_dns_name_resolve(pidgin_t)
-
-
-xserver_read_user_xauth(pidgin_t)
-
-#xserver_stream_connect(pidgin_t)
-
-
-list_dirs_pattern(pidgin_t, purple_data_t, purple_data_t)
-read_files_pattern(pidgin_t, purple_data_t, purple_data_t)
-
-
-allow pidgin_t self : fifo_file rw_fifo_file_perms;
-allow pidgin_t self : tcp_socket { create ioctl };
-allow pidgin_t unreserved_port_t : tcp_socket name_connect;
-allow pidgin_t user_devpts_t : chr_file rw_chr_file_perms;
-
-
-
-dontaudit pidgin_t fs_t : filesystem getattr;
-dontaudit pidgin_t self : shm create;
-dontaudit pidgin_t sysctl_t : dir search;
