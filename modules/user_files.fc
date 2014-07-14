@@ -1,8 +1,12 @@
+HOME_DIR/\.alsoftrc		--	gen_context(system_u:object_r:openal_home_t,s0)
+
 HOME_DIR/\.config/enchant(/.*)?		gen_context(system_u:object_r:user_spelldict_t,s0)
 
 HOME_DIR/\.config/gtk-[23]\.0(/.*)?	gen_context(system_u:object_r:gtk_config_home_t,s0)
 
 HOME_DIR/\.config/Trolltech\.conf	gen_context(system_u:object_r:qt_config_home_t,s0)
+
+HOME_DIR/\.drirc		--	gen_context(system_u:object_r:dri_home_t,s0)
 
 HOME_DIR/\.icons(/.*)?			gen_context(system_u:object_r:icons_home_t,s0)
 

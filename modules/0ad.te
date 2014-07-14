@@ -93,8 +93,11 @@ alsa_domain(zad_t, zad_alsa_shm_t)
 
 allow zad_t sound_device_t : chr_file rw_chr_file_perms;
 fs_tmpfs_filetrans(zad_t, zad_alsa_shm_t, file)
-#
-# this is only needed for .alsoftrc :/
-#
-#allow zad_t user_home_t : file { open read };
-dontaudit zad_t user_home_t : file { open read };
+
+
+optional_policy(`
+
+	userdom_read_dri_home(zad_t)
+	userdom_read_openal_home(zad_t)
+')
+

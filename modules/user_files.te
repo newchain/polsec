@@ -5,8 +5,16 @@ gen_require(`
 	type xdg_documents_home_t;
 	type xdg_downloads_home_t;
 	type xdg_videos_home_t;
+
+	role staff_r;
+	type staff_t;
+	role user_r;
+	type user_t;
 ')
 
+
+type dri_home_t;
+userdom_user_home_content(dri_home_t)
 
 type gtk_config_home_t;
 files_type(gtk_config_home_t)
@@ -20,6 +28,9 @@ files_type(qt_config_home_t)
 type user_mime_t;
 files_type(user_mime_t)
 
+type openal_home_t;
+userdom_user_home_content(openal_home_t)
+
 type user_spelldict_t;
 files_type(user_spelldict_t)
 
@@ -28,3 +39,7 @@ files_type(themes_home_t)
 
 type user_thumbnails_t;
 files_type(user_thumbnails_t)
+
+
+user_dri_role(staff_t, staff_r)
+user_dri_role(user_t, user_r)

@@ -10,6 +10,47 @@
 
 ###############################
 ## <summary>
+##	Allow domain to read user dri config.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read.
+##	</summary
+## </param>
+
+interface(`userdom_read_dri_home',`
+	gen_require(`
+		type dri_home_t;
+		type user_home_dir_t;
+	')
+
+	userdom_search_user_home_dirs($1)
+	read_files_pattern($1, user_home_dir_t, dri_home_t)
+')
+
+
+###############################
+## <summary>
+##	Allow role to read user dri config.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to read.
+##	</summary
+## </param>
+
+interface(`user_dri_role',`
+	gen_require(`
+		type dri_home_t;
+	')
+
+	userdom_read_dri_home($1)
+	role $2 types dri_home_t;
+')
+
+
+###############################
+## <summary>
 ##	Allow domain to list user documents.
 ## </summary>
 ## <param name="domain">
@@ -202,6 +243,47 @@ interface(`user_icons_role',`
 
 	userdom_read_icons_home($1)
 	role $2 types icons_home_t;
+')
+
+
+###############################
+## <summary>
+##	Allow domain to read user openal config.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read.
+##	</summary
+## </param>
+
+interface(`userdom_read_openal_home',`
+	gen_require(`
+		type openal_home_t;
+		type user_home_dir_t;
+	')
+
+	userdom_search_user_home_dirs($1)
+	read_files_pattern($1, user_home_dir_t, openal_home_t)
+')
+
+
+###############################
+## <summary>
+##	Allow role to read user openal config.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to read.
+##	</summary
+## </param>
+
+interface(`user_openal_role',`
+	gen_require(`
+		type openal_home_t;
+	')
+
+	userdom_read_openal_home($1)
+	role $2 types openal_home_t;
 ')
 
 
