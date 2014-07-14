@@ -8,7 +8,7 @@
 
 ###############################
 ## <summary>
-##	Transition to zad
+##	Transition to zad.
 ## </summary>
 ## <param name="domain">
 ##	<summary>
@@ -28,11 +28,11 @@ interface(`zad_domain_transition_pattern',`
 
 ###############################
 ## <summary>
-##	Run 0ad in zad domain
+##	Run 0ad in zad domain.
 ## </summary>
 ## <param name="role">
 ##	<summary>
-##	Role to exec 0ad
+##	Role to exec 0ad.
 ##	</summary
 ## </param>
 

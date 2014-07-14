@@ -55,7 +55,7 @@ create_files_pattern(youtube-dl_t, youtube-dl_cache_home_t, youtube-dl_cache_hom
 
 # Stray empty files created by sqlite.
 #
-allow youtube-dl_t xdg_videos_home_t : file read;
+dontaudit youtube-dl_t xdg_videos_home_t : file read;
 
 miscfiles_read_localization(youtube-dl_t)
 
