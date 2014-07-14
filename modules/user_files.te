@@ -17,28 +17,28 @@ type dri_home_t;
 userdom_user_home_content(dri_home_t)
 
 type gtk_config_home_t;
-files_type(gtk_config_home_t)
+xdg_config_home_content(gtk_config_home_t)
 
 type icons_home_t;
-files_type(icons_home_t)
+userdom_user_home_content(icons_home_t)
 
 type qt_config_home_t;
-files_type(qt_config_home_t)
+xdg_config_home_content(qt_config_home_t)
 
 type user_mime_t;
-files_type(user_mime_t)
+xdg_data_home_content(user_mime_t)
 
 type openal_home_t;
 userdom_user_home_content(openal_home_t)
 
 type user_spelldict_t;
-files_type(user_spelldict_t)
+xdg_config_home_content(user_spelldict_t)
 
 type themes_home_t;
-files_type(themes_home_t)
+userdom_user_home_content(themes_home_t)
 
 type user_thumbnails_t;
-files_type(user_thumbnails_t)
+userdom_user_home_content(user_thumbnails_t)
 
 
 user_dri_role(staff_t, staff_r)
