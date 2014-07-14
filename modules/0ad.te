@@ -7,8 +7,6 @@ gen_require(`
 	type shell_exec_t;
 	type sound_device_t;
 	type sysfs_t;
-	type tmp_t;
-	type tmpfs_t;
 	type user_devpts_t;
 	type user_home_t;
 ')
@@ -35,6 +33,9 @@ xdg_cache_home_content(zad_cache_home_t)
 type zad_config_home_t;
 xdg_config_home_content(zad_config_home_t)
 
+type zad_alsa_shm_t;
+files_tmpfs_file(zad_alsa_shm_t)
+
 type zad_data_home_t;
 xdg_data_home_content(zad_data_home_t)
 
@@ -44,7 +45,6 @@ xdg_data_home_content(zad_data_home_t)
 #
 
 allow zad_t self : process { execmem getsched setsched signal };
-allow zad_t self : sem create_sem_perms;
 allow zad_t self : shm create_sem_perms;
 
 corecmd_search_bin(zad_t)
@@ -83,17 +83,16 @@ allow zad_t sysfs_t : dir list_dir_perms;
 
 xserver_stream_connect(zad_t)
 
-files_read_usr_files(zad_t)
-
 miscfiles_read_localization(zad_t)
 
 
 # audio stuff
 #
-alsa_read_rw_config(zad_t)
+
+alsa_domain(zad_t, zad_alsa_shm_t)
 
 allow zad_t sound_device_t : chr_file rw_chr_file_perms;
-#allow zad_t tmpfs_t : file rw_file_perms;
+fs_tmpfs_filetrans(zad_t, zad_alsa_shm_t, file)
 #
 # this is only needed for .alsoftrc :/
 #
