@@ -163,6 +163,50 @@ interface(`userdom_read_gtk_config',`
 
 ###############################
 ## <summary>
+##	Allow domain to read user icons
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read.
+##	</summary
+## </param>
+
+interface(`userdom_read_icons_home',`
+	gen_require(`
+		type home_root_t;
+		type user_home_dir_t;
+		type icons_home_t;
+	')
+
+	search_dirs_pattern($1, home_root_t, user_home_dir_t)
+	list_dirs_pattern($1, user_home_dir_t, icons_home_t)
+	read_files_pattern($1, icons_home_t, icons_home_t)
+	read_lnk_files_pattern($1, icons_home_t, icons_home_t)
+')
+
+
+###############################
+## <summary>
+##	Allow role to read user icons.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to read.
+##	</summary
+## </param>
+
+interface(`user_icons_role',`
+	gen_require(`
+		type icons_home_t;
+	')
+
+	userdom_read_icons_home($1)
+	role $2 types icons_home_t;
+')
+
+
+###############################
+## <summary>
 ##	Allow domain to read user qt config.
 ## </summary>
 ## <param name="domain">
@@ -247,12 +291,12 @@ interface(`userdom_read_user_themes',`
 	gen_require(`
 		type home_root_t;
 		type user_home_dir_t;
-		type user_themes_t;
+		type themes_home_t;
 	')
 
 	search_dirs_pattern($1, home_root_t, user_home_dir_t)
-	read_files_pattern($1, user_themes_t, user_themes_t)
-	read_lnk_files_pattern($1, user_themes_t, user_themes_t)
+	read_files_pattern($1, themes_home_t, themes_home_t)
+	read_lnk_files_pattern($1, themes_home_t, themes_home_t)
 ')
 
 
@@ -268,11 +312,11 @@ interface(`userdom_read_user_themes',`
 
 interface(`user_themes_role',`
 	gen_require(`
-		type user_themes_t;
+		type themes_home_t;
 	')
 
-	userdom_read_user_themes($1)
-	role $2 types user_themes_t;
+	userdom_read_themes_home($1)
+	role $2 types themes_home_t;
 ')
 
 

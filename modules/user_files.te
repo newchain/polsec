@@ -9,15 +9,22 @@ gen_require(`
 
 
 type gtk_config_home_t;
+files_type(gtk_config_home_t)
+
+type icons_home_t;
+files_type(icons_home_t)
+
 type qt_config_home_t;
+files_type(qt_config_home_t)
+
 type user_mime_t;
+files_type(user_mime_t)
+
 type user_spelldict_t;
-type user_themes_t;
+files_type(user_spelldict_t)
+
+type themes_home_t;
+files_type(themes_home_t)
+
 type user_thumbnails_t;
-
-
-files_type(gtk_config_home_t);
-files_type(qt_config_home_t);
-files_type(user_mime_t);
-files_type(user_themes_t);
-files_type(user_thumbnails_t);
+files_type(user_thumbnails_t)
