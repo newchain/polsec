@@ -1,0 +1,56 @@
+policy_module(slock, 1.00)
+
+
+gen_require(`
+	type usr_t;
+
+	role staff_r;
+	type staff_t;
+	role user_r;
+	type user_t;
+')
+
+
+########################################
+#
+# Declarations
+#
+
+type slock_t;
+type slock_exec_t;
+userdom_user_application_domain(slock_t, slock_exec_t)
+
+########################################
+#
+# Local policy
+#
+
+slock_role(staff_t, staff_r)
+slock_role(user_t, user_r)
+
+allow slock_t self : capability dac_read_search;
+
+auth_read_shadow(slock_t)
+
+auth_use_nsswitch(slock_t)
+
+xserver_read_user_xauth(slock_t)
+
+xserver_stream_connect(slock_t)
+
+dontaudit slock_t usr_t : file { read getattr };
+dontaudit slock_t usr_t : lnk_file read;
+
+miscfiles_read_localization(slock_t)
+
+
+optional_policy(`
+
+# Here be local types defined in local modules.
+#
+	gen_require(`
+		type icons_home_t;
+	')
+
+	dontaudit slock_t icons_home_t : dir search;
+')
