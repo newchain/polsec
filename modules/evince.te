@@ -191,11 +191,9 @@ optional_policy(`
 	userdom_read_gtk_config({ evince_t evince_previewer_t })
 	userdom_read_user_documents({ evince_t evince_thumbnailer_t })
 	userdom_read_user_mime({ evince_t evince_previewer_t evince_thumbnailer_t })
-	userdom_read_user_themes({ evince_t evince_previewer_t })
+	userdom_read_themes_home({ evince_t evince_previewer_t })
 
 	xephyr_connect(evince_t)
-
-	dontaudit { evince_t evince_previewer_t } user_themes_t : dir read;
 ')
 
 

@@ -5,10 +5,8 @@ gen_require(`
 	type fs_t;
 	type sysctl_t;
 	type system_dbusd_var_lib_t;
-	type tmp_t;
 	type unreserved_port_t;
 	type user_devpts_t;
-	type user_tmp_t;
 	type var_lib_t;
 ')
 
@@ -67,12 +65,12 @@ type pidgin_exec_t;
 userdom_user_application_domain(pidgin_t, pidgin_exec_t)
 
 type pidgin_tmp_t;
-files_type(pidgin_tmp_t)
+userdom_user_tmp_file(pidgin_tmp_t)
 
 # These could be shared with finch.
 #
 type purple_home_t;
-files_type(purple_home_t)
+userdom_user_home_content(purple_home_t)
 
 type purple_data_t;
 files_type(purple_data_t)
@@ -99,7 +97,7 @@ xserver_read_user_xauth(pidgin_t)
 
 # pidgin has yet to convert to XDG
 #
-filetrans_pattern(pidgin_t, user_home_dir_t, purple_home_t, dir)
+userdom_home_filetrans_user_home_dir(purple_home_t, ".purple")
 
 dontaudit pidgin_t fs_t : filesystem getattr;
 
@@ -107,7 +105,7 @@ dontaudit pidgin_t sysctl_t : dir search;
 
 #xserver_stream_connect(pidgin_t)
 
-filetrans_pattern(pidgin_t, { tmp_t user_tmp_t }, pidgin_tmp_t, dir)
+userdom_user_tmp_filetrans(pidgin_t, pidgin_tmp_t, dir)
 
 files_read_usr_files(pidgin_t)
 
