@@ -1,0 +1,45 @@
+## <summary>youtube-dl policy</summary>
+## <desc>
+##	<p>
+##		Policy for youtube-dl.
+##	</p>
+## </desc>
+
+
+###############################
+## <summary>
+##	Transition to youtube-dl.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary
+## </param>
+
+interface(`youtube_dl_domtrans',`
+	gen_require(`
+		type youtube-dl_t, youtube-dl_exec_t;
+	')
+
+	domtrans_pattern($1, youtube-dl_exec_t, youtube-dl_t)
+')
+
+
+###############################
+## <summary>
+##	Run youtube-dl in youtube-dl domain.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to exec youtube-dl.
+##	</summary
+## </param>
+
+interface(`youtube_dl_role',`
+	gen_require(`
+		type youtube-dl_t;
+	')
+
+	youtube_dl_domtrans($1)
+	role $2 types youtube-dl_t;
+')

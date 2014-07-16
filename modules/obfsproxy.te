@@ -1,0 +1,76 @@
+policy_module(obfsproxy, 1.0)
+
+
+gen_require(`
+	role system_r;
+
+	type bin_t;
+	type lib_t;
+	type proc_t;
+	type tor_t;
+	type tor_var_lib_t;
+')
+
+
+########################################
+#
+# Declarations
+#
+
+type obfsproxy_t;
+type obfsproxy_exec_t;
+application_domain(obfsproxy_t, obfsproxy_exec_t)
+ubac_constrained(obfsproxy_t)
+
+type obfsproxy_var_lib_t;
+files_type(obfsproxy_var_lib_t)
+
+type obfsproxy_var_log_t;
+logging_log_file(obfsproxy_var_log_t)
+
+########################################
+#
+# Local policy
+#
+
+obfsproxy_role(tor_t, system_r)
+
+allow obfsproxy_t self : fifo_file { read write getattr };
+ 
+corecmd_read_bin_files(obfsproxy_t)
+
+dev_read_urand(obfsproxy_t)
+
+miscfiles_read_localization(obfsproxy_t)
+
+auth_use_nsswitch(obfsproxy_t)
+
+filetrans_pattern(obfsproxy_t, tor_var_lib_t, obfsproxy_var_lib_t, dir, "pt_state")
+create_dirs_pattern(obfsproxy_t, tor_var_lib_t, obfsproxy_var_lib_t)
+create_files_pattern(obfsproxy_t, obfsproxy_var_lib_t, obfsproxy_var_lib_t)
+rw_files_pattern(obfsproxy_t, obfsproxy_var_lib_t, obfsproxy_var_lib_t)
+
+# obfsproxy does not create a log file by default.
+#
+# Given that the only logging is specified by users in torrc, cater for
+# logging both with and without a private dir.
+#
+logging_log_filetrans(obfsproxy_t, obfsproxy_var_log_t, { dir file })
+create_dirs_pattern(obfsproxy_t, var_log_t, obfsproxy_var_log_t)
+create_files_pattern(obfsproxy_t, obfsproxy_var_log_t, obfsproxy_var_log_t)
+append_files_pattern(obfsproxy_t, obfsproxy_var_log_t, obfsproxy_var_log_t)
+
+dontaudit obfsproxy_t proc_t : file read;
+
+corenet_tcp_bind_generic_node(obfsproxy_t)
+allow obfsproxy_t self : tcp_socket { accept listen };
+corenet_tcp_connect_all_unreserved_ports(obfsproxy_t)
+
+
+# Tor execution and signaling
+#
+corecmd_read_bin_symlinks(tor_t)
+
+allow tor_t bin_t : file { read execute open };
+allow tor_t lib_t : file execute_no_trans;
+allow tor_t obfsproxy_t : process signal;

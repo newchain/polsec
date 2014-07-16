@@ -388,3 +388,49 @@ interface(`userdom_read_user_videos',`
 	search_dirs_pattern($1, home_root_t, user_home_dir_t)
 	read_files_pattern($1, xdg_videos_home_t, xdg_videos_home_t)
 ')
+
+
+###############################
+## <summary>
+##	Allow domain to create user videos.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to create.
+##	</summary
+## </param>
+
+interface(`userdom_create_user_videos',`
+	gen_require(`
+		type home_root_t;
+		type user_home_dir_t;
+		type xdg_videos_home_t;
+	')
+
+	search_dirs_pattern($1, home_root_t, user_home_dir_t)
+	create_files_pattern($1, xdg_videos_home_t, xdg_videos_home_t)
+	write_files_pattern($1, xdg_videos_home_t, xdg_videos_home_t)
+	setattr_files_pattern($1, xdg_videos_home_t, xdg_videos_home_t)
+')
+
+
+###############################
+## <summary>
+##	Allow domain to rename user videos.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to rename.
+##	</summary
+## </param>
+
+interface(`userdom_rename_user_videos',`
+	gen_require(`
+		type home_root_t;
+		type user_home_dir_t;
+		type xdg_videos_home_t;
+	')
+
+	search_dirs_pattern($1, home_root_t, user_home_dir_t)
+	rename_files_pattern($1, xdg_videos_home_t, xdg_videos_home_t)
+')

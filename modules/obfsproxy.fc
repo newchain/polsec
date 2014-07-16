@@ -1,0 +1,5 @@
+/usr/lib/python-exec/python2\.7/obfsproxy --	gen_context(system_u:object_r:obfsproxy_exec_t,s0)
+
+/var/lib/tor/data/pt_state(/.*)?		gen_context(system_u:object_r:obfsproxy_var_lib_t,s0)
+
+/var/log/obfsproxy(/.*)?			gen_context(system_u:object_r:obfsproxy_var_log_t,s0)

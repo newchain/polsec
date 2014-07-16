@@ -1,0 +1,46 @@
+## <summary>obfsproxy policy</summary>
+## <desc>
+##	<p>
+##		Policy for obfsproxy, specifically for being run
+##		under tor managed mode.
+##	</p>
+## </desc>
+
+
+###############################
+## <summary>
+##	Transition to obfsproxy.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary
+## </param>
+
+interface(`obfsproxy_domtrans',`
+	gen_require(`
+		type obfsproxy_t, obfsproxy_exec_t;
+	')
+
+	domtrans_pattern($1, obfsproxy_exec_t, obfsproxy_t)
+')
+
+
+###############################
+## <summary>
+##	Allow role to exec obfsproxy.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to exec obfsproxy.
+##	</summary
+## </param>
+
+interface(`obfsproxy_role',`
+	gen_require(`
+		type obfsproxy_t;
+	')
+
+	obfsproxy_domtrans($1)
+	role $2 types obfsproxy_t;
+')
