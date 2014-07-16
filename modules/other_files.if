@@ -1,0 +1,46 @@
+## <summary>other files</summary>
+## <desc>
+##	<p>
+##		An attempt at reducing need for files_read_etc_files.
+##	</p>
+## </desc>
+
+
+###############################
+## <summary>
+##	Allow domain to read user dri config.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read.
+##	</summary
+## </param>
+
+interface(`miscfiles_read_dri_etc',`
+	gen_require(`
+		type dri_etc_t;
+		type etc_t;
+	')
+
+	read_files_pattern($1, etc_t, dri_etc_t)
+')
+
+
+###############################
+## <summary>
+##	Allow role to read user dri config.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to read.
+##	</summary
+## </param>
+
+interface(`dri_etc_role',`
+	gen_require(`
+		type dri_etc_t;
+	')
+
+	miscfiles_read_dri_etc($1)
+	role $2 types dri_etc_t;
+')

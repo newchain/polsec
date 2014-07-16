@@ -8,7 +8,6 @@ gen_require(`
 	type sound_device_t;
 	type sysfs_t;
 	type user_devpts_t;
-	type user_home_t;
 ')
 
 
@@ -53,10 +52,6 @@ allow zad_t shell_exec_t : file read_file_perms;
 
 allow zad_t dri_device_t : chr_file rw_chr_file_perms;
 
-# for drirc (dri_etc_t?)
-#
-files_read_etc_files(zad_t)
-
 # pyrogenesis segfaults if unable to list zad_data_t
 #
 list_dirs_pattern(zad_t, zad_data_t, zad_data_t)
@@ -88,6 +83,7 @@ miscfiles_read_localization(zad_t)
 
 # audio stuff
 #
+auth_use_nsswitch(zad_t)
 
 alsa_domain(zad_t, zad_alsa_shm_t)
 
@@ -96,6 +92,8 @@ fs_tmpfs_filetrans(zad_t, zad_alsa_shm_t, file)
 
 
 optional_policy(`
+
+	miscfiles_read_dri_etc(zad_t)
 
 	userdom_read_dri_home(zad_t)
 	userdom_read_openal_home(zad_t)
