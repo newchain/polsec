@@ -12,7 +12,7 @@
 /etc/jabber/s2s\.pem		--	gen_context(system_u:object_r:jabberd2-s2s_key_t,s0)
 /etc/jabber/sm\.pem		--	gen_context(system_u:object_r:jabberd2-sm_key_t,s0)
 
-/etc/init\.d/jabberd		--	gen_context(system_u:object_r:jabberd2_initrc_exec_t,s0)
+/etc/rc\.d/init\.d/jabberd	--	gen_context(system_u:object_r:jabberd2_initrc_exec_t,s0)
 
 /var/run/jabber			-d	gen_context(system_u:object_r:jabberd2_run_t,s0)
 /var/run/jabber/jabberd2-c2s\.pid	--	gen_context(system_u:object_r:jabberd2-c2s_run_t,s0)
