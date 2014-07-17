@@ -1,0 +1,25 @@
+## <summary>znc policy</summary>
+## <desc>
+##	<p>
+##		Policy for znc.
+##	</p>
+## </desc>
+
+
+###############################
+## <summary>
+##	Connect to znc.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to connect.
+##	</summary
+## </param>
+
+interface(`znc_port_connect',`
+	gen_require(`
+		type znc_port_t;
+	')
+
+	allow $1 znc_port_t : tcp_socket name_connect;
+')

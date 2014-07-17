@@ -1,0 +1,7 @@
+/etc/rc\.d/init\.d/znc	--	gen_context(system_u:object_r:znc_initrc_exec_t,s0)
+
+/usr/bin/znc		--	gen_context(system_u:object_r:znc_exec_t,s0)
+
+/usr/share/znc(/.*)?		gen_context(system_u:object_r:znc_data_t,s0)
+
+/var/lib/znc(/.*)?		gen_context(system_u:object_r:znc_var_lib_t,s0)

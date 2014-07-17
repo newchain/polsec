@@ -1,0 +1,87 @@
+policy_module(znc, 1.0)
+
+
+gen_require(`
+	attribute defined_port_type;
+	attribute port_type;
+	attribute unreserved_port_type;
+
+	type locale_t;
+')
+
+
+########################################
+#
+# Declarations
+#
+
+## <desc>
+## <p>
+## Allow znc to read local timezone.
+## </p>
+## </desc>
+gen_tunable(znc_read_timezone, false)
+
+## <desc>
+## <p>
+## Allow use of webadmin module.
+## </p>
+## </desc>
+gen_tunable(znc_webadmin, false)
+
+type znc_t;
+type znc_exec_t;
+init_daemon_domain(znc_t, znc_exec_t)
+
+type znc_initrc_exec_t;
+init_script_file(znc_initrc_exec_t)
+
+type znc_data_t;
+files_type(znc_data_t)
+
+type znc_var_lib_t;
+files_type(znc_var_lib_t)
+
+type znc_port_t, port_type, defined_port_type;
+type znc_client_packet_t;
+corenet_client_packet(znc_client_packet_t)
+type znc_server_packet_t;
+corenet_server_packet(znc_server_packet_t)
+typeattribute znc_port_t unreserved_port_type;
+#portcon tcp 6697 gen_context(system_u:object_r:znc_port_t,s0)
+
+########################################
+#
+# Local policy
+#
+
+allow znc_t self : fifo_file { write read };
+
+dev_read_urand(znc_t)
+
+auth_use_nsswitch(znc_t)
+
+miscfiles_read_generic_certs(znc_t)
+
+files_search_var_lib(znc_t)
+allow znc_t znc_var_lib_t : dir list_dir_perms;
+create_dirs_pattern(znc_t, znc_var_lib_t, znc_var_lib_t)
+create_files_pattern(znc_t, znc_var_lib_t, znc_var_lib_t)
+rw_files_pattern(znc_t, znc_var_lib_t, znc_var_lib_t)
+
+sysnet_dns_name_resolve(znc_t)
+corenet_tcp_connect_ircd_port(znc_t)
+corenet_tcp_bind_generic_node(znc_t)
+allow znc_t znc_port_t : tcp_socket name_bind;
+allow znc_t self : tcp_socket { listen accept };
+
+
+tunable_policy(`znc_read_timezone',`
+
+	allow znc_t locale_t : file read_file_perms;
+')
+
+tunable_policy(`znc_webadmin',`
+
+	read_files_pattern(znc_t, znc_data_t, znc_data_t)
+')
