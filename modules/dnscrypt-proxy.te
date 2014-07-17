@@ -1,0 +1,94 @@
+policy_module(dnscrypt-proxy, 1.0)
+
+
+gen_require(`
+	attribute defined_port_type;
+	attribute port_type;
+	attribute unreserved_port_type;
+
+	type initrc_t;
+	type locale_t;
+	type var_run_t;
+')
+
+
+########################################
+#
+# Declarations
+#
+
+## <desc>
+## <p>
+## Allow dnscrypt-proxy to read /dev/random.
+## </p>
+## </desc>
+gen_tunable(dnscrypt_proxy_read_rand, false)
+
+## <desc>
+## <p>
+## Allow dnscrypt-proxy to read local timezone.
+## </p>
+## </desc>
+gen_tunable(dnscrypt_proxy_read_timezone, false)
+
+type dnscrypt-proxy_t;
+type dnscrypt-proxy_exec_t;
+init_daemon_domain(dnscrypt-proxy_t, dnscrypt-proxy_exec_t)
+
+type dnscrypt-proxy_initrc_exec_t;
+init_script_file(dnscrypt-proxy_initrc_exec_t)
+
+type dnscrypt-proxy_log_t;
+logging_log_file(dnscrypt-proxy_log_t)
+
+type dnscrypt-proxy_var_run_t;
+files_pid_file(dnscrypt-proxy_var_run_t)
+
+type dnscrypt_port_t, port_type, defined_port_type;
+type dnscrypt_client_packet_t;
+corenet_client_packet(dnscrypt_client_packet_t)
+type dnscrypt_server_packet_t;
+corenet_server_packet(dnscrypt_server_packet_t)
+typeattribute dnscrypt_port_t unreserved_port_type;
+#portcon tcp 2053 gen_context(system_u:object_r:dnscrypt_port_t,s0)
+#portcon udp 2053 gen_context(system_u:object_r:dnscrypt_port_t,s0)
+
+########################################
+#
+# Local policy
+#
+
+allow dnscrypt-proxy_t self : capability { net_admin sys_chroot setuid setgid };
+
+logging_send_syslog_msg(dnscrypt-proxy_t)
+
+dev_read_urand(dnscrypt-proxy_t)
+
+auth_use_nsswitch(dnscrypt-proxy_t)
+
+logging_log_filetrans(initrc_t, dnscrypt-proxy_log_t, file, "dnscrypt-proxy.log")
+allow initrc_t dnscrypt-proxy_log_t : file { create_file_perms setattr_file_perms write_file_perms };
+logging_search_logs(dnscrypt-proxy_t)
+allow dnscrypt-proxy_t dnscrypt-proxy_log_t : file append_file_perms;
+
+filetrans_pattern(initrc_t, var_run_t, dnscrypt-proxy_var_run_t, dir, "dnscrypt-proxy")
+create_files_pattern(dnscrypt-proxy_t, dnscrypt-proxy_var_run_t, dnscrypt-proxy_var_run_t)
+write_files_pattern(dnscrypt-proxy_t, dnscrypt-proxy_var_run_t, dnscrypt-proxy_var_run_t)
+delete_files_pattern(dnscrypt-proxy_t, dnscrypt-proxy_var_run_t, dnscrypt-proxy_var_run_t)
+
+allow dnscrypt-proxy_t dnscrypt_port_t : tcp_socket name_bind;
+allow dnscrypt-proxy_t dnscrypt_port_t : udp_socket name_bind;
+allow dnscrypt-proxy_t self : tcp_socket listen;
+corenet_tcp_bind_generic_node(dnscrypt-proxy_t)
+corenet_udp_bind_generic_node(dnscrypt-proxy_t)
+
+
+tunable_policy(`dnscrypt_proxy_read_rand',`
+
+	dev_read_rand(dnscrypt-proxy_t)
+')
+
+tunable_policy(`dnscrypt_proxy_read_timezone',`
+
+	allow dnscrypt-proxy_t locale_t : file read_file_perms;
+')

@@ -1,0 +1,7 @@
+/etc/rc\.d/init\.d/dnscrypt-proxy	--	gen_context(system_u:object_r:dnscrypt-proxy_initrc_exec_t,s0)
+
+/usr/sbin/dnscrypt-proxy		--	gen_context(system_u:object_r:dnscrypt-proxy_exec_t,s0)
+
+/var/log/dnscrypt-proxy\.log		--	gen_context(system_u:object_r:dnscrypt-proxy_log_t,s0)
+
+/var/run/dnscrypt-proxy(/.*)?			gen_context(system_u:object_r:dnscrypt-proxy_var_run_t,s0)
