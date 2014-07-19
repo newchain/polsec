@@ -3,11 +3,8 @@ policy_module(pidgin, 1.00)
 
 gen_require(`
 	type fs_t;
-	type sysctl_t;
 	type system_dbusd_var_lib_t;
-	type unreserved_port_t;
 	type user_devpts_t;
-	type var_lib_t;
 ')
 
 
@@ -101,7 +98,7 @@ userdom_home_filetrans_user_home_dir(purple_home_t, ".purple")
 
 dontaudit pidgin_t fs_t : filesystem getattr;
 
-dontaudit pidgin_t sysctl_t : dir search;
+kernel_dontaudit_search_sysctl(pidgin_t)
 
 #xserver_stream_connect(pidgin_t)
 
@@ -118,7 +115,7 @@ read_files_pattern(pidgin_t, purple_data_t, purple_data_t)
 
 sysnet_dns_name_resolve(pidgin_t)
 allow pidgin_t self : tcp_socket { create ioctl };
-allow pidgin_t unreserved_port_t : tcp_socket name_connect;
+corenet_tcp_connect_all_unreserved_ports(pidgin_t)
 corenet_tcp_connect_jabber_client_port(pidgin_t)
 
 
@@ -126,7 +123,7 @@ tunable_policy(`pidgin_dbus',`
 #
 # todo: grin and bear dbus for this purpose
 #
-	allow pidgin_t var_lib_t : dir search;
+	files_search_var_lib(pidgin_t)
 	read_lnk_files_pattern(pidgin_t, system_dbusd_var_lib_t, system_dbusd_var_lib_t)
 ')
 
@@ -167,9 +164,10 @@ optional_policy(`
 #
 	userdom_append_user_spelldict(pidgin_t)
 	userdom_read_gtk_config(pidgin_t)
+	userdom_read_icons_home(pidgin_t)
 	userdom_read_user_mime(pidgin_t)
 	userdom_read_user_spelldict(pidgin_t)
-	userdom_read_user_themes(pidgin_t)
+	userdom_read_themes_home(pidgin_t)
 
 	xephyr_connect(pidgin_t)
 ')

@@ -3,12 +3,8 @@ policy_module(xephyr, 1.00)
 
 gen_require(`
 	type bin_t;
-	type fonts_t;
 	type shell_exec_t;
-	type tmp_t;
 	type user_devpts_t;
-	type usr_t;
-	type var_lib_t;
 	type xdm_tmp_t;
 	type xserver_t;
 ')
@@ -54,12 +50,11 @@ allow xephyr_t user_devpts_t : chr_file rw_chr_file_perms;
 
 xserver_read_user_xauth(xephyr_t);
 
-filetrans_pattern(xephyr_t, tmp_t, xephyr_tmp_t, file)
-manage_files_pattern(xephyr_t, tmp_t, xephyr_tmp_t)
+files_tmp_filetrans(xephyr_t, xephyr_tmp_t, file)
+allow xephyr_t xephyr_t : file manage_file_perms;
 
 filetrans_pattern(xephyr_t, xdm_tmp_t, xephyr_tmp_t, sock_file)
-create_sock_files_pattern(xephyr_t, xdm_tmp_t, xephyr_tmp_t)
-delete_sock_files_pattern(xephyr_t, xdm_tmp_t, xephyr_tmp_t)
+allow xephyr_t xephyr_tmp_t : sock_file { create_sock_file_perms delete_sock_file_perms };
 
 xserver_stream_connect(xephyr_t);
 
@@ -67,7 +62,7 @@ miscfiles_read_fonts(xephyr_t);
 
 miscfiles_read_localization(xephyr_t);
 
-allow xephyr_t usr_t : file read_file_perms;
+files_read_usr_files(xephyr_t)
 
 tunable_policy(`xephyr_shm',`
 	allow xephyr_t self : shm create_shm_perms;
