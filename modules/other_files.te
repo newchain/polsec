@@ -2,6 +2,8 @@ policy_module(other_files, 1.0)
 
 
 gen_require(`
+	type xserver_t;
+
 	role staff_r;
 	type staff_t;
 	role user_r;
@@ -24,3 +26,6 @@ files_type(dri_etc_t)
 
 dri_etc_role(staff_t, staff_r)
 dri_etc_role(user_t, user_r)
+
+
+miscfiles_read_dri_etc(xserver_t)
