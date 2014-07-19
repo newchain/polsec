@@ -10,6 +10,48 @@
 
 ###############################
 ## <summary>
+##	Allow domain to read user dconf config.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read.
+##	</summary
+## </param>
+
+interface(`userdom_read_dconf_config_home',`
+	gen_require(`
+		type dconf_config_home_t;
+		type xdg_config_home_t;
+	')
+
+	userdom_search_user_home_dirs($1)
+	allow $1 xdg_config_home_t : dir search_dir_perms;
+	read_files_pattern($1, dconf_config_home_t, dconf_config_home_t)
+')
+
+
+###############################
+## <summary>
+##	Allow role to read user dconf config.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to read.
+##	</summary
+## </param>
+
+interface(`user_read_dconf_role',`
+	gen_require(`
+		type dconf_config_home_t;
+	')
+
+	userdom_read_dconf_config_home($1)
+	role $2 types dconf_config_home_t;
+')
+
+
+###############################
+## <summary>
 ##	Allow domain to read user dri config.
 ## </summary>
 ## <param name="domain">
@@ -129,6 +171,46 @@ interface(`user_read_documents_role',`
 	')
 
 	userdom_read_xdg_documents_home($1)
+	role $2 types xdg_documents_home_t;
+')
+
+
+###############################
+## <summary>
+##	Allow domain to create user documents.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to create.
+##	</summary
+## </param>
+
+interface(`xdg_create_documents_home',`
+	gen_require(`
+		type xdg_documents_home_t;
+	')
+
+	userdom_search_user_home_dirs($1)
+	create_files_pattern($1, xdg_documents_home_t, xdg_documents_home_t)
+')
+
+
+###############################
+## <summary>
+##	Allow role to create user documents.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to create.
+##	</summary
+## </param>
+
+interface(`xdg_create_documents_role',`
+	gen_require(`
+		type xdg_documents_home_t;
+	')
+
+	xdg_create_documents_home($1)
 	role $2 types xdg_documents_home_t;
 ')
 

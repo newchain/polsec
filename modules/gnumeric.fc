@@ -1,0 +1,3 @@
+/usr/bin/gnumeric-[\d.]+	--	gen_context(system_u:object_r:gnumeric_exec_t,s0)
+
+/usr/share/gnumeric(/.*)?		gen_context(system_u:object_r:gnumeric_data_t,s0)

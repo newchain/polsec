@@ -1,0 +1,130 @@
+policy_module(gnumeric, 1.0)
+
+
+gen_require(`
+	type fs_t;
+
+	role user_r;
+	type user_t;
+	role staff_r;
+	type staff_t;
+')
+
+
+########################################
+#
+# Declarations
+#
+
+## <desc>
+## <p>
+## Allow gnumeric to read app-agnostic user settings.
+## </p>
+## </desc>
+gen_tunable(gnumeric_read_generic_user_settings, false)
+
+## <desc>
+## <p>
+## Allow gnumeric to connect to xserver. Disable to isolate nested instances
+## from xserver.
+## </p>
+## </desc>
+gen_tunable(gnumeric_xserver_connect, true)
+
+type gnumeric_t;
+type gnumeric_exec_t;
+userdom_user_application_domain(gnumeric_t, gnumeric_exec_t)
+
+type gnumeric_pixbuf_t;
+userdom_user_tmp_file(gnumeric_pixbuf_t)
+
+type gnumeric_data_t;
+files_type(gnumeric_data_t)
+
+########################################
+#
+# Local policy
+#
+
+gnumeric_role(staff_t, staff_r)
+gnumeric_role(user_t, user_r)
+
+dontaudit gnumeric_t self : shm create;
+
+# for gtk settings and pango module list
+#
+files_read_etc_files(gnumeric_t)
+
+xserver_use_user_fonts(gnumeric_t)
+
+xserver_read_user_xauth(gnumeric_t)
+
+# For graphing.
+#
+userdom_user_tmp_filetrans(gnumeric_t, gnumeric_pixbuf_t, file)
+allow gnumeric_t gnumeric_pixbuf_t : file { create_file_perms rw_file_perms delete_file_perms };
+
+dontaudit gnumeric_t fs_t : filesystem getattr;
+
+kernel_dontaudit_read_system_state(gnumeric_t)
+
+# for cursors, icons, pixmaps, themes, goffice data
+#
+files_read_usr_files(gnumeric_t)
+
+miscfiles_read_fonts(gnumeric_t)
+
+list_dirs_pattern(gnumeric_t, gnumeric_data_t, gnumeric_data_t)
+read_files_pattern(gnumeric_t, gnumeric_data_t, gnumeric_data_t)
+read_lnk_files_pattern(gnumeric_t, gnumeric_data_t, gnumeric_data_t)
+
+miscfiles_read_localization(gnumeric_t)
+
+
+tunable_policy(`gnumeric_read_generic_user_settings',`
+
+	xdg_read_config_home_files(gnumeric_t)
+	xdg_read_data_home_files(gnumeric_t)
+')
+
+tunable_policy(`gnumeric_xserver_connect',`
+	
+	xserver_stream_connect(gnumeric_t)
+')
+
+
+optional_policy(`
+
+# Here be local variables defined in local modules.
+#
+	## <desc>
+	## <p>
+	## Allow gnumeric to read user documents.
+	## </p>
+	## </desc>
+	gen_tunable(gnumeric_read_user_documents, true)
+
+	## <desc>
+	## <p>
+	## Allow gnumeric to create and write user documents.
+	## </p>
+	## </desc>
+	gen_tunable(gnumeric_create_user_documents, true)
+
+	userdom_read_gtk_config(gnumeric_t)
+	userdom_read_icons_home(gnumeric_t)
+	userdom_read_user_mime(gnumeric_t)
+	userdom_read_themes_home(gnumeric_t)
+
+	xephyr_connect(gnumeric_t)
+
+	tunable_policy(`gnumeric_read_user_documents',`
+
+		userdom_read_user_documents(gnumeric_t)
+	')
+
+	tunable_policy(`gnumeric_create_user_documents',`
+
+		xdg_create_documents_home(gnumeric_t)
+	')
+')

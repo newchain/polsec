@@ -13,6 +13,9 @@ gen_require(`
 ')
 
 
+type dconf_config_home_t;
+xdg_config_home_content(dconf_config_home_t)
+
 type dri_home_t;
 userdom_user_home_content(dri_home_t)
 
@@ -40,6 +43,11 @@ userdom_user_home_content(themes_home_t)
 type user_thumbnails_t;
 userdom_user_home_content(user_thumbnails_t)
 
+user_read_dconf_role(staff_t, staff_r)
+user_read_dconf_role(user_t, user_r)
 
 user_dri_role(staff_t, staff_r)
 user_dri_role(user_t, user_r)
+
+user_icons_role(staff_t, staff_r)
+user_icons_role(user_t, user_r)
