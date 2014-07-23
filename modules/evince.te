@@ -193,7 +193,7 @@ optional_policy(`
 	userdom_read_user_mime({ evince_t evince_previewer_t evince_thumbnailer_t })
 	userdom_read_themes_home({ evince_t evince_previewer_t })
 
-	xephyr_connect(evince_t)
+	xephyr_stream_connect(evince_t)
 ')
 
 

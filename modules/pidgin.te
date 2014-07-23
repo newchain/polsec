@@ -169,5 +169,5 @@ optional_policy(`
 	userdom_read_user_spelldict(pidgin_t)
 	userdom_read_themes_home(pidgin_t)
 
-	xephyr_connect(pidgin_t)
+	xephyr_stream_connect(pidgin_t)
 ')

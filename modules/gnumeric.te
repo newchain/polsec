@@ -116,7 +116,7 @@ optional_policy(`
 	userdom_read_user_mime(gnumeric_t)
 	userdom_read_themes_home(gnumeric_t)
 
-	xephyr_connect(gnumeric_t)
+	xephyr_stream_connect(gnumeric_t)
 
 	tunable_policy(`gnumeric_read_user_documents',`
 

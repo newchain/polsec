@@ -55,7 +55,7 @@ interface(`xephyr_role',`
 ##	</summary
 ## </param>
 
-interface(`xephyr_connect',`
+interface(`xephyr_stream_connect',`
 	gen_require(`
 		type xephyr_t;
 	')
