@@ -20,7 +20,7 @@ gen_require(`
 ## Allow pcmanfm to read all config.
 ## </p>
 ## </desc>
-gen_tunable(pcmanfm_read_generic_config, true)
+gen_tunable(pcmanfm_read_generic_config, false)
 
 ## <desc>
 ## <p>
@@ -43,7 +43,7 @@ gen_tunable(pcmanfm_manage_home, false)
 ## pam_mktemp may be broken for such apps due to at_secure.
 ## </p>
 ## </desc>
-gen_tunable(pcmanfm_exec_generic, true)
+gen_tunable(pcmanfm_exec_generic, false)
 
 ## <desc>
 ## <p>
