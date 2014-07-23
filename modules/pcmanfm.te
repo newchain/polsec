@@ -137,6 +137,7 @@ tunable_policy(`pcmanfm_read_generic_config',`
 tunable_policy(`pcmanfm_read_generic_user_content',`
 
 	userdom_list_user_home_dirs(pcmanfm_t)
+	userdom_list_user_home_content(pcmanfm_t)
 	userdom_read_user_home_content_files(pcmanfm_t)
 	userdom_read_user_home_content_symlinks(pcmanfm_t)
 
