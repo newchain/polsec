@@ -16,6 +16,13 @@ gen_require(`
 # Declarations
 #
 
+## <desc>
+## <p>
+## Allow pyrogenesis to execute writable pages.
+## </p>
+## </desc>
+gen_tunable(zad_execmem, false)
+
 type zad_t;
 type zad_exec_t;
 userdom_user_application_domain(zad_t, zad_exec_t)
@@ -43,7 +50,7 @@ xdg_data_home_content(zad_data_home_t)
 # Local policy
 #
 
-allow zad_t self : process { execmem getsched setsched signal };
+allow zad_t self : process { getsched setsched signal };
 allow zad_t self : shm create_sem_perms;
 
 corecmd_search_bin(zad_t)
@@ -89,6 +96,12 @@ alsa_domain(zad_t, zad_alsa_shm_t)
 
 allow zad_t sound_device_t : chr_file rw_chr_file_perms;
 fs_tmpfs_filetrans(zad_t, zad_alsa_shm_t, file)
+
+
+tunable_policy(`zad_execmem',`
+	
+	allow zad_t self : process execmem;
+')
 
 
 optional_policy(`
