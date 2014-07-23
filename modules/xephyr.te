@@ -21,7 +21,7 @@ gen_require(`
 ## xshm is needed for e.g. qt4 raster engine.
 ## </p>
 ## </desc>
-gen_tunable(xephyr_shm, true)
+gen_tunable(xephyr_xshm, false)
 
 type xephyr_t;
 type xephyr_exec_t;
@@ -64,7 +64,7 @@ miscfiles_read_localization(xephyr_t);
 
 files_read_usr_files(xephyr_t)
 
-tunable_policy(`xephyr_shm',`
+tunable_policy(`xephyr_xshm',`
 	allow xephyr_t self : shm create_shm_perms;
 	fs_tmpfs_filetrans(xephyr_t, xephyr_tmpfs_t, file)
 	allow { xephyr_t xserver_t } xephyr_tmpfs_t : file { read write };
