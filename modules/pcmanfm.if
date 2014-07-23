@@ -27,29 +27,60 @@ interface(`pcmanfm_domtrans',`
 
 ###############################
 ## <summary>
-##	Allow role to exec pcmanfm.
+##	A role template for pcmanfm.
 ## </summary>
-## <param name="role">
+## <param name="role_prefix">
 ##	<summary>
-##	Role from which to exec pcmanfm.
-#	
+##	Prefix of the role from which to exec pcmanfm, e.g. user in user_r.
+##	</summary>
+## </param>
+## </param>
+## <param name="domain">
+##	<summary>
+##	Domain of the role from which pcmanfm is execed.
 ##	</summary>
 ## </param>
 
-interface(`pcmanfm_role',`
+template(`pcmanfm_role_template',`
+
 	gen_require(`
-		type bin_t;
-		type pcmanfm_t;
+
+		attribute pcmanfm_domain;
+		attribute_role pcmanfm_roles;
+		role $1_r;
+		type $2;
+		type pcmanfm_exec_t;
 	')
 
-	pcmanfm_domtrans($1);
-	domtrans_pattern(pcmanfm_t, bin_t, $1);
-	role $2 types { bin_t pcmanfm_t };
+	########################################
+	#
+	# Declarations
+	#
 
+	type $1_pcmanfm_t, pcmanfm_domain;
+	userdom_user_application_domain($1_pcmanfm_t, pcmanfm_exec_t)
+	#
+	# Required for pam_mktemp.
+	#
+	allow $1_pcmanfm_t $2 : process noatsecure;
 
-# neverallow violated =/
-#
-# (required for pam_mktemp)
-#
-#	allow pcmanfm_t bin_t : process noatsecure;
+	roleattribute $1_r pcmanfm_roles;
+	role pcmanfm_roles types $1_pcmanfm_t;
+
+	########################################
+	#
+	# Local policy
+	#
+
+	tunable_policy(`pcmanfm_exec_generic',`
+
+		domtrans_pattern($2, pcmanfm_exec_t, $1_pcmanfm_t)
+
+		corecmd_bin_domtrans($1_pcmanfm_t, $2)
+		corecmd_shell_domtrans($1_pcmanfm_t, $2)
+		#
+		# Required for pam_mktemp.
+		#
+		allow $1_pcmanfm_t $2 : process noatsecure;
+	')
 ')
