@@ -3,7 +3,6 @@ policy_module(pcmanfm, 1.0)
 
 gen_require(`
 	type bin_t;
-	type fs_t;
 	type unlabeled_t;
 	type user_devpts_t;
 	type user_tmp_t;
@@ -59,6 +58,13 @@ gen_tunable(pcmanfm_read_mounts, false)
 ## </desc>
 gen_tunable(pcmanfm_read_unlabeled, false)
 
+## <desc>
+## <p>
+## Allow pcmanfm to read xattrs
+## </p>
+## </desc>
+gen_tunable(pcmanfm_xattr, false)
+
 type pcmanfm_t;
 type pcmanfm_exec_t;
 userdom_user_application_domain(pcmanfm_t, pcmanfm_exec_t)
@@ -105,8 +111,6 @@ xserver_use_user_fonts(pcmanfm_t)
 xserver_read_user_xauth(pcmanfm_t)
 
 read_files_pattern(pcmanfm_t, pcmanfm_data_t, pcmanfm_data_t)
-
-dontaudit pcmanfm_t fs_t : filesystem getattr;
 
 xserver_stream_connect(pcmanfm_t)
 
@@ -173,6 +177,12 @@ tunable_policy(`pcmanfm_read_unlabeled',`
 	allow pcmanfm_t unlabeled_t : file read_file_perms;
 	allow pcmanfm_t unlabeled_t : lnk_file read_lnk_file_perms;
 ')
+
+tunable_policy(`pcmanfm_xattr',`
+
+	fs_getattr_xattr_fs(pcmanfm_t)
+')
+
 
 optional_policy(`
 
