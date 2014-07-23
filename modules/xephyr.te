@@ -51,7 +51,7 @@ allow xephyr_t user_devpts_t : chr_file rw_chr_file_perms;
 xserver_read_user_xauth(xephyr_t);
 
 files_tmp_filetrans(xephyr_t, xephyr_tmp_t, file)
-allow xephyr_t xephyr_t : file manage_file_perms;
+allow xephyr_t xephyr_tmp_t : file manage_file_perms;
 
 filetrans_pattern(xephyr_t, xdm_tmp_t, xephyr_tmp_t, sock_file)
 allow xephyr_t xephyr_tmp_t : sock_file { create_sock_file_perms delete_sock_file_perms };
