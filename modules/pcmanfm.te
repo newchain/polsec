@@ -4,7 +4,6 @@ policy_module(pcmanfm, 1.0)
 gen_require(`
 	type bin_t;
 	type fs_t;
-	type mnt_t;
 	type unlabeled_t;
 	type user_devpts_t;
 	type user_tmp_t;
@@ -65,7 +64,7 @@ type pcmanfm_exec_t;
 userdom_user_application_domain(pcmanfm_t, pcmanfm_exec_t)
 
 type pcmanfm_config_home_t;
-files_type(pcmanfm_config_home_t)
+xdg_config_home_content(pcmanfm_config_home_t)
 
 type pcmanfm_data_t;
 files_type(pcmanfm_data_t)
@@ -92,9 +91,11 @@ allow pcmanfm_t user_devpts_t : chr_file { read write };
 
 auth_use_nsswitch(pcmanfm_t)
 
+# For gtkrc and pango modules list.
+#
 files_read_etc_files(pcmanfm_t)
 
-dontaudit pcmanfm_t home_root_t : dir read;
+files_dontaudit_list_home(pcmanfm_t)
 
 xdg_config_home_filetrans(pcmanfm_t, pcmanfm_config_home_t, dir, "pcmanfm")
 read_files_pattern(pcmanfm_t, pcmanfm_config_home_t, pcmanfm_config_home_t)
@@ -112,6 +113,8 @@ xserver_stream_connect(pcmanfm_t)
 userdom_user_tmp_filetrans(pcmanfm_t, pcmanfm_socket_t, sock_file)
 allow pcmanfm_t pcmanfm_socket_t : sock_file { create_sock_file_perms write_sock_file_perms delete_sock_file_perms };
 
+# For various gui data without unique types.
+#
 files_read_usr_files(pcmanfm_t)
 
 miscfiles_read_fonts(pcmanfm_t)
@@ -158,8 +161,9 @@ tunable_policy(`pcmanfm_exec_generic',`
 
 tunable_policy(`pcmanfm_read_mounts',`
 
-	allow pcmanfm_t mnt_t : dir list_dir_perms;
-	allow pcmanfm_t mnt_t : file read_file_perms;
+	files_list_mnt(pcmanfm_t)
+	files_read_mnt_files(pcmanfm_t)
+	files_read_mnt_symlinks(pcmanfm_t)
 ')
 
 
