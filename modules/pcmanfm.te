@@ -4,7 +4,6 @@ policy_module(pcmanfm, 1.0)
 gen_require(`
 	type bin_t;
 	type unlabeled_t;
-	type user_devpts_t;
 	type user_tmp_t;
 ')
 
@@ -95,8 +94,6 @@ dontaudit pcmanfm_t self : fifo_file getattr;
 dontaudit pcmanfm_t self : shm create;
 fs_dontaudit_getattr_tmpfs(pcmanfm_t)
 allow pcmanfm_t self : unix_stream_socket connectto;
-
-allow pcmanfm_t user_devpts_t : chr_file { read write };
 
 auth_use_nsswitch(pcmanfm_t)
 
