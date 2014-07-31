@@ -100,10 +100,6 @@ dontaudit pcmanfm_domain self : shm create;
 fs_dontaudit_getattr_tmpfs(pcmanfm_domain)
 allow pcmanfm_domain self : unix_stream_socket connectto;
 
-# For gtkrc and pango modules list.
-#
-files_read_etc_files(pcmanfm_domain)
-
 files_dontaudit_list_home(pcmanfm_domain)
 
 optional_policy(`
@@ -115,6 +111,8 @@ xdg_config_home_filetrans(pcmanfm_domain, pcmanfm_config_home_t, dir, "pcmanfm")
 read_files_pattern(pcmanfm_domain, pcmanfm_config_home_t, pcmanfm_config_home_t)
 
 xserver_read_user_xauth(pcmanfm_domain)
+
+kernel_dontaudit_read_system_state(pcmanfm_domain)
 
 optional_policy(`
 
@@ -184,6 +182,11 @@ tunable_policy(`pcmanfm_read_unlabeled',`
 	allow pcmanfm_domain unlabeled_t : lnk_file read_lnk_file_perms;
 ')
 
+tunable_policy(`pcmanfm_write_settings',`
+
+	allow pcmanfm_domain pcmanfm_config_home_t : dir write;
+')
+
 tunable_policy(`pcmanfm_xattr',`
 
 	fs_getattr_xattr_fs(pcmanfm_domain)
@@ -204,8 +207,12 @@ optional_policy(`
 	ffmpegthumbnailer_domtrans(pcmanfm_domain)
 	gsf_office_thumbnailer_domtrans(pcmanfm_domain)
 
+	miscfiles_read_gtk_etc(pcmanfm_domain)
+	miscfiles_read_pango_etc(pcmanfm_domain)
+
 	userdom_create_user_thumbnails(pcmanfm_domain)
 	userdom_delete_user_thumbnails(pcmanfm_domain)
+	userdom_dontaudit_list_gtk_config(pcmanfm_domain)
 	userdom_list_user_documents(pcmanfm_domain)
 	userdom_read_gtk_config(pcmanfm_domain)
 	userdom_read_icons_home(pcmanfm_domain)

@@ -4,7 +4,7 @@ policy_module(pidgin, 1.00)
 gen_require(`
 	type fs_t;
 	type system_dbusd_var_lib_t;
-	type user_devpts_t;
+#	type user_devpts_t;
 ')
 
 
@@ -80,11 +80,9 @@ files_type(purple_data_t)
 allow pidgin_t self : fifo_file rw_fifo_file_perms;
 dontaudit pidgin_t self : shm create;
 
-allow pidgin_t user_devpts_t : chr_file rw_chr_file_perms;
+#allow pidgin_t user_devpts_t : chr_file rw_chr_file_perms;
 
 dev_read_urand(pidgin_t)
-
-files_read_etc_files(pidgin_t)
 
 auth_use_nsswitch(pidgin_t)
 
@@ -99,8 +97,6 @@ userdom_home_filetrans_user_home_dir(purple_home_t, ".purple")
 dontaudit pidgin_t fs_t : filesystem getattr;
 
 kernel_dontaudit_search_sysctl(pidgin_t)
-
-#xserver_stream_connect(pidgin_t)
 
 userdom_user_tmp_filetrans(pidgin_t, pidgin_tmp_t, dir)
 
@@ -159,15 +155,21 @@ tunable_policy(`pidgin_write_to_home',`
 
 
 optional_policy(`
+
+	xephyr_domain_constrain_template(pidgin)
+
 #
 # Here be local types defined in local modules
 #
+	miscfiles_read_gtk_etc(pidgin_t)
+	miscfiles_read_pango_etc(pidgin_t)
+
 	userdom_append_user_spelldict(pidgin_t)
 	userdom_read_gtk_config(pidgin_t)
 	userdom_read_icons_home(pidgin_t)
 	userdom_read_user_mime(pidgin_t)
 	userdom_read_user_spelldict(pidgin_t)
-	userdom_read_themes_home(pidgin_t)
+	userdom_read_user_themes(pidgin_t)
 
-	xephyr_stream_connect(pidgin_t)
+	znc_port_connect(pidgin_t)
 ')

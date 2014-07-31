@@ -23,14 +23,6 @@ gen_require(`
 ## </desc>
 gen_tunable(gnumeric_read_generic_user_settings, false)
 
-## <desc>
-## <p>
-## Allow gnumeric to connect to xserver. Disable to isolate nested instances
-## from xserver.
-## </p>
-## </desc>
-gen_tunable(gnumeric_xserver_connect, true)
-
 type gnumeric_t;
 type gnumeric_exec_t;
 userdom_user_application_domain(gnumeric_t, gnumeric_exec_t)
@@ -87,16 +79,13 @@ tunable_policy(`gnumeric_read_generic_user_settings',`
 	xdg_read_data_home_files(gnumeric_t)
 ')
 
-tunable_policy(`gnumeric_xserver_connect',`
-	
-	xserver_stream_connect(gnumeric_t)
-')
-
 
 optional_policy(`
 
 # Here be local variables defined in local modules.
 #
+	xephyr_domain_constrain_template(gnumeric)
+
 	## <desc>
 	## <p>
 	## Allow gnumeric to read user documents.
@@ -115,8 +104,6 @@ optional_policy(`
 	userdom_read_icons_home(gnumeric_t)
 	userdom_read_user_mime(gnumeric_t)
 	userdom_read_themes_home(gnumeric_t)
-
-	xephyr_stream_connect(gnumeric_t)
 
 	tunable_policy(`gnumeric_read_user_documents',`
 
