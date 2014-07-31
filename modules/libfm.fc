@@ -1,0 +1,5 @@
+/etc/xdg/libfm(/.*)?		gen_context(system_u:object_r:libfm_data_t,s0)
+
+HOME_DIR/\.config/libfm(/.*)?	gen_context(system_u:object_r:libfm_config_home_t,s0)
+
+/usr/share/libfm(/.*)?		gen_context(system_u:object_r:libfm_data_t,s0)

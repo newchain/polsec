@@ -106,10 +106,20 @@ files_read_etc_files(pcmanfm_domain)
 
 files_dontaudit_list_home(pcmanfm_domain)
 
+optional_policy(`
+
+	libfm_read_libfm_config_home(pcmanfm_domain)
+')
+
 xdg_config_home_filetrans(pcmanfm_domain, pcmanfm_config_home_t, dir, "pcmanfm")
 read_files_pattern(pcmanfm_domain, pcmanfm_config_home_t, pcmanfm_config_home_t)
 
 xserver_read_user_xauth(pcmanfm_domain)
+
+optional_policy(`
+
+	miscfiles_read_libfm_data(pcmanfm_domain)
+')
 
 read_files_pattern(pcmanfm_domain, pcmanfm_data_t, pcmanfm_data_t)
 

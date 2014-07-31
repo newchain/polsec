@@ -1,0 +1,8 @@
+policy_module(libfm, 1.0)
+
+
+type libfm_config_home_t;
+xdg_config_home_content(libfm_config_home_t)
+
+type libfm_data_t;
+files_type(libfm_data_t)

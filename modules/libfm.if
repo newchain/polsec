@@ -1,0 +1,50 @@
+## <summary>libfm policy</summary>
+## <desc>
+##	<p>
+##		Policy for libfm.
+##	</p>
+## </desc>
+
+
+###############################
+## <summary>
+##	Allow domain to read libfm user config.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read.
+##	</summary
+## </param>
+
+interface(`libfm_read_libfm_config_home',`
+	gen_require(`
+		type libfm_config_home_t;
+	')
+
+	xdg_search_config_home_dirs($1)
+
+	read_files_pattern($1, libfm_config_home_t, libfm_config_home_t)
+')
+
+
+###############################
+## <summary>
+##	Allow domain to read libfm data.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read.
+##	</summary
+## </param>
+
+interface(`miscfiles_read_libfm_data',`
+	gen_require(`
+		type libfm_data_t;
+	')
+
+	files_search_etc($1)
+	files_search_usr($1)
+
+	allow $1 libfm_data_t : dir list_dir_perms;
+	read_files_pattern($1, libfm_data_t, libfm_data_t)
+')
