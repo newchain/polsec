@@ -44,3 +44,83 @@ interface(`dri_etc_role',`
 	miscfiles_read_dri_etc($1)
 	role $2 types dri_etc_t;
 ')
+
+
+###############################
+## <summary>
+##	Allow domain to read gtk config.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read.
+##	</summary
+## </param>
+
+interface(`miscfiles_read_gtk_etc',`
+	gen_require(`
+		type gtk_etc_t;
+	')
+
+	files_search_etc($1)
+	read_files_pattern($1, gtk_etc_t, gtk_etc_t)
+')
+
+
+###############################
+## <summary>
+##	Allow role to read user gtk config.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to read.
+##	</summary
+## </param>
+
+interface(`gtk_etc_role',`
+	gen_require(`
+		type gtk_etc_t;
+	')
+
+	miscfiles_read_gtk_etc($1)
+	role $2 types gtk_etc_t;
+')
+
+
+###############################
+## <summary>
+##	Allow domain to read pango config.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read.
+##	</summary
+## </param>
+
+interface(`miscfiles_read_pango_etc',`
+	gen_require(`
+		type pango_etc_t;
+	')
+
+	files_search_etc($1)
+	read_files_pattern($1, pango_etc_t, pango_etc_t)
+')
+
+
+###############################
+## <summary>
+##	Allow role to read user pango config.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to read.
+##	</summary
+## </param>
+
+interface(`pango_etc_role',`
+	gen_require(`
+		type pango_etc_t;
+	')
+
+	miscfiles_read_pango_etc($1)
+	role $2 types pango_etc_t;
+')

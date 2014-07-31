@@ -19,6 +19,13 @@ gen_require(`
 type dri_etc_t;
 files_type(dri_etc_t)
 
+type gtk_etc_t;
+files_type(gtk_etc_t)
+
+type pango_etc_t;
+files_type(pango_etc_t)
+
+
 ########################################
 #
 # Local policy
@@ -26,6 +33,24 @@ files_type(dri_etc_t)
 
 dri_etc_role(staff_t, staff_r)
 dri_etc_role(user_t, user_r)
+
+gtk_etc_role(staff_t, staff_r)
+gtk_etc_role(user_t, user_r)
+
+pango_etc_role(staff_t, staff_r)
+pango_etc_role(user_t, user_r)
+
+
+optional_policy(`
+
+	gen_require(`
+
+		type mozilla_t;
+	')
+
+	miscfiles_read_gtk_etc(mozilla_t)
+	miscfiles_read_pango_etc(mozilla_t)
+')
 
 
 miscfiles_read_dri_etc(xserver_t)

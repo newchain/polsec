@@ -1,1 +1,5 @@
 /etc/drirc		--	gen_context(system_u:object_r:dri_etc_t,s0)
+
+/etc/gtk-[23].0(/.*)?		gen_context(system_u:object_r:gtk_etc_t,s0)
+
+/etc/pango(/.*)?		gen_context(system_u:object_r:pango_etc_t,s0)
