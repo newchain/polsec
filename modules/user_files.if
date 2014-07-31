@@ -52,6 +52,26 @@ interface(`user_read_dconf_role',`
 
 ###############################
 ## <summary>
+##	Read desktop files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read.
+## </param>
+
+interface(`xdg_read_desktop_home',`
+	gen_require(`
+		type xdg_desktop_home_t;
+	')
+
+	userdom_search_user_home_dirs($1)
+	allow $1 xdg_desktop_home_t : dir list_dir_perms;
+	allow $1 xdg_desktop_home_t : file read_file_perms:
+')
+
+
+###############################
+## <summary>
 ##	Allow domain to read user dri config.
 ## </summary>
 ## <param name="domain">
@@ -286,6 +306,28 @@ interface(`userdom_read_gtk_config',`
 
 ###############################
 ## <summary>
+##	Suppress logs of denied gtk config listings.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to suppress.
+##	</summary
+## </param>
+
+interface(`userdom_dontaudit_list_gtk_config',`
+	gen_require(`
+		type gtk_config_home_t;
+		type home_root_t;
+		type user_home_dir_t;
+		type xdg_config_home_t;
+	')
+
+	dontaudit $1 gtk_config_home_t : dir list_dir_perms;
+')
+
+
+###############################
+## <summary>
 ##	Allow domain to read user icons
 ## </summary>
 ## <param name="domain">
@@ -305,6 +347,25 @@ interface(`userdom_read_icons_home',`
 	list_dirs_pattern($1, user_home_dir_t, icons_home_t)
 	read_files_pattern($1, icons_home_t, icons_home_t)
 	read_lnk_files_pattern($1, icons_home_t, icons_home_t)
+')
+
+
+###############################
+## <summary>
+##	Suppress logs of denied user icon dir searches.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to suppress
+##	</summary
+## </param>
+
+interface(`userdom_dontaudit_search_icons_home',`
+	gen_require(`
+		type icons_home_t;
+	')
+
+	dontaudit $1 icons_home_t : dir search_dir_perms;
 ')
 
 
@@ -466,6 +527,25 @@ interface(`userdom_read_user_themes',`
 
 ###############################
 ## <summary>
+##	Suppress logs of denied user theme dir searches.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to suppress.
+##	</summary
+## </param>
+
+interface(`userdom_dontaudit_search_user_themes',`
+	gen_require(`
+		type themes_home_t;
+	')
+
+	dontaudit $1 themes_home_t : dir search_dir_perms;
+')
+
+
+###############################
+## <summary>
 ##	Allow role to read user themes.
 ## </summary>
 ## <param name="role">
@@ -479,7 +559,7 @@ interface(`user_themes_role',`
 		type themes_home_t;
 	')
 
-	userdom_read_themes_home($1)
+	userdom_read_user_themes($1)
 	role $2 types themes_home_t;
 ')
 

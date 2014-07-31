@@ -43,6 +43,9 @@ userdom_user_home_content(themes_home_t)
 type user_thumbnails_t;
 userdom_user_home_content(user_thumbnails_t)
 
+type xdg_desktop_home_t;
+userdom_user_home_content(xdg_desktop_home_t)
+
 user_read_dconf_role(staff_t, staff_r)
 user_read_dconf_role(user_t, user_r)
 
