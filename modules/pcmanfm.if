@@ -62,7 +62,7 @@ template(`pcmanfm_role_template',`
 	#
 	# Required for pam_mktemp.
 	#
-	allow $1_pcmanfm_t $2 : process noatsecure;
+	allow $2 $1_pcmanfm_t : process noatsecure;
 
 	roleattribute $1_r pcmanfm_roles;
 	role pcmanfm_roles types $1_pcmanfm_t;
@@ -72,9 +72,11 @@ template(`pcmanfm_role_template',`
 	# Local policy
 	#
 
-	tunable_policy(`pcmanfm_exec_generic',`
+	domtrans_pattern($2, pcmanfm_exec_t, $1_pcmanfm_t)
 
-		domtrans_pattern($2, pcmanfm_exec_t, $1_pcmanfm_t)
+	auth_use_nsswitch($1_pcmanfm_t)
+
+	tunable_policy(`pcmanfm_exec_generic',`
 
 		corecmd_bin_domtrans($1_pcmanfm_t, $2)
 		corecmd_shell_domtrans($1_pcmanfm_t, $2)

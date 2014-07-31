@@ -68,6 +68,7 @@ attribute pcmanfm_domain;
 attribute_role pcmanfm_roles;
 
 type pcmanfm_exec_t;
+application_executable_file(pcmanfm_exec_t)
 
 type pcmanfm_config_home_t;
 xdg_config_home_content(pcmanfm_config_home_t)
@@ -98,8 +99,6 @@ dontaudit pcmanfm_domain self : fifo_file getattr;
 dontaudit pcmanfm_domain self : shm create;
 fs_dontaudit_getattr_tmpfs(pcmanfm_domain)
 allow pcmanfm_domain self : unix_stream_socket connectto;
-
-auth_use_nsswitch(pcmanfm_domain)
 
 # For gtkrc and pango modules list.
 #
