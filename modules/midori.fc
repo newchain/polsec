@@ -1,0 +1,9 @@
+/etc/xdg/midori(/.*)?			gen_context(system_u:object_r:midori_data_t,s0)
+
+HOME_DIR/\.cache/midori(/.*)?		gen_context(system_u:object_r:midori_cache_home_t,s0)
+HOME_DIR/\.config/midori(/.*)?		gen_context(system_u:object_r:midori_config_home_t,s0)
+HOME_DIR/\.local/share/midori(/.*)?	gen_context(system_u:object_r:midori_data_home_t,s0)
+
+/usr/bin/midori			--	gen_context(system_u:object_r:midori_exec_t,s0)
+
+/usr/share/midori(/.*)?			gen_context(system_u:object_r:midori_data_t,s0)

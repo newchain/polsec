@@ -1,0 +1,45 @@
+## <summary>midori policy</summary>
+## <desc>
+##	<p>
+##		Policy for midori.
+##	</p>
+## </desc>
+
+
+###############################
+## <summary>
+##	Transition to midori.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary
+## </param>
+
+interface(`midori_domtrans',`
+	gen_require(`
+		type midori_t, midori_exec_t;
+	')
+
+	domtrans_pattern($1, midori_exec_t, midori_t)
+')
+
+
+###############################
+## <summary>
+##	Allow role to exec midori.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to exec midori.
+##	</summary
+## </param>
+
+interface(`midori_role',`
+	gen_require(`
+		type midori_t;
+	')
+
+	midori_domtrans($1)
+	role $2 types midori_t;
+')

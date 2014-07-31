@@ -1,0 +1,143 @@
+policy_module(midori, 1.00)
+
+
+gen_require(`
+	role staff_r;
+	type staff_t;
+	role user_r;
+	type user_t;
+')
+
+
+########################################
+#
+# Declarations
+#
+
+
+## <desc>
+##	<p>
+##	Allow midori to write to home.
+##	</p>
+## </desc>
+gen_tunable(midori_write_to_home, true)
+
+## <desc>
+##	<p>
+##	Allow midori to use dbus.
+##	</p>
+## </desc>
+gen_tunable(midori_dbus, false)
+
+type midori_t;
+type midori_exec_t;
+userdom_user_application_domain(midori_t, midori_exec_t)
+
+type midori_data_t;
+files_type(midori_data_t)
+
+type midori_cache_home_t;
+xdg_cache_home_content(midori_cache_home_t)
+
+type midori_config_home_t;
+xdg_config_home_content(midori_config_home_t)
+
+type midori_data_home_t;
+xdg_data_home_content(midori_data_home_t)
+
+
+########################################
+#
+# Local policy
+#
+
+webkit_gtk_client_template(midori)
+
+midori_role(staff_t, staff_r)
+midori_role(user_t, user_r)
+
+dontaudit midori_t self : fifo_file { write read };
+dontaudit midori_t self : process getsched;
+allow midori_t self : process signal;
+dontaudit midori_t self : shm create;
+
+fs_dontaudit_getattr_xattr_fs(midori_t)
+
+corecmd_search_bin(midori_t)
+
+files_dontaudit_read_etc_files(midori_t)
+
+optional_policy(`
+
+	miscfiles_read_gtk_etc(midori_t)
+	miscfiles_read_pango_etc(midori_t)
+')
+
+miscfiles_read_fonts(midori_t)
+
+filetrans_add_pattern(midori_t, xdg_cache_home_t, midori_cache_home_t, dir, "midori")
+webkit_gtk_cache_filetrans(midori_t, midori_cache_home_t, lnk_file)
+xdg_config_home_filetrans(midori_t, midori_config_home_t, dir, "midori")
+read_files_pattern(midori_t, midori_config_home_t, midori_config_home_t)
+filetrans_add_pattern(midori_t, xdg_data_home_t, midori_data_home_t, dir, "midori")
+webkit_gtk_data_filetrans(midori_t, midori_data_home_t, dir)
+allow midori_t midori_data_home_t : dir list_dir_perms;
+read_files_pattern(midori_t, midori_data_home_t, midori_data_home_t)
+
+optional_policy(`
+
+	userdom_dontaudit_list_gtk_config(midori_t)
+	userdom_read_icons_home(midori_t)
+	userdom_read_user_mime(midori_t)
+	userdom_read_user_themes(midori_t)
+')
+
+xserver_read_user_xauth(midori_t)
+
+xserver_stream_connect(midori_t)
+
+# For gui data without unique types
+#
+files_read_usr_files(midori_t)
+
+miscfiles_read_localization(midori_t)
+
+read_files_pattern(midori_t, midori_data_t, midori_data_t)
+
+
+tunable_policy(`midori_write_to_home',`
+
+	allow midori_t midori_cache_home_t : dir { search_dir_perms write };
+
+	allow midori_t midori_config_home_t : dir list_dir_perms;
+	create_files_pattern(midori_t, midori_config_home_t, midori_config_home_t)
+	rw_files_pattern(midori_t, midori_config_home_t, midori_config_home_t)
+	rename_files_pattern(midori_t, midori_config_home_t, midori_config_home_t)
+	delete_files_pattern(midori_t, midori_config_home_t, midori_config_home_t)
+
+	create_files_pattern(midori_t, midori_data_home_t, midori_data_home_t)
+	rw_files_pattern(midori_t, midori_data_home_t, midori_data_home_t)
+	delete_files_pattern(midori_t, midori_data_home_t, midori_data_home_t)
+')
+
+tunable_policy(`midori_dbus',`
+
+	gen_require(`
+
+		type system_dbusd_var_lib_t;
+	')
+
+	files_search_var_lib(midori_t)
+	read_lnk_files_pattern(midori_t, system_dbusd_var_lib_t, system_dbusd_var_lib_t)
+')
+
+
+gen_require(`
+
+	type midori_WebKitNetworkProcess_t;
+	type midori_WebKitWebProcess_t;
+')
+
+allow { midori_WebKitNetworkProcess_t midori_WebKitWebProcess_t } midori_cache_home_t : dir list_dir_perms;
+
+rw_files_pattern(midori_WebKitNetworkProcess_t, midori_config_home_t, midori_config_home_t)

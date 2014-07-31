@@ -1,0 +1,215 @@
+## <summary>webkit-gtk policy</summary>
+## <desc>
+##	<p>
+##		Policy for webkit-gtk.
+##	</p>
+##	<p>
+##		Given that clients write data private to themselves
+##		with the webkit processes, the webkit processes are
+##		assigned domains unique to each client, which write
+##		data with the clients' private file types.
+##	</p>
+## </desc>
+
+
+###############################
+## <summary>
+##	Allow role to use webkit-gtk.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to use.
+##	</summary
+## </param>
+
+interface(`webkit_gtk_role',`
+
+	gen_require(`
+
+		attribute WebKitNetworkProcess_domain;
+		attribute WebKitWebProcess_domain;
+	')
+
+	role $1 types { WebKitNetworkProcess_domain WebKitWebProcess_domain };
+')
+
+
+###############################
+## <summary>
+##	Allow domain to create webkit-gtk cache dir.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Domain from which to create.
+##	</summary
+## </param>
+
+interface(`webkit_gtk_cache_create',`
+
+	gen_require(`
+
+		type webkit-gtk_cache_home_t;
+		type xdg_cache_home_t;
+	')
+
+	userdom_search_user_home_dirs($1)
+	allow $1 xdg_cache_home_t : dir search_dir_perms;
+
+	xdg_cache_home_filetrans($1, webkit-gtk_cache_home_t, dir, "wk2ext")
+')
+
+
+###############################
+## <summary>
+##	Create files in user webkit-gtk cache with
+##	a transition to the specified private type.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to create.
+##	</summary
+## </param>
+## <param name="type">
+##	<summary>
+##	The private type to create.
+##	</summary
+## </param>
+## <param name="class">
+##	<summary>
+##	The class of file.
+##	</summary
+## </param>
+
+interface(`webkit_gtk_cache_filetrans',`
+
+	gen_require(`
+
+		type webkit-gtk_cache_home_t;
+	')
+
+	webkit_gtk_cache_create($1)
+	filetrans_pattern($1, webkit-gtk_cache_home_t, $2, $3)
+')
+
+
+###############################
+## <summary>
+##	Allow domain to create webkit-gtk user data dir.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Domain from which to create.
+##	</summary
+## </param>
+
+interface(`webkit_gtk_data_create',`
+
+	gen_require(`
+
+		type webkit-gtk_data_home_t;
+		type xdg_data_home_t;
+	')
+
+	userdom_search_user_home_dirs($1)
+	allow $1 xdg_data_home_t : dir search_dir_perms;
+
+	xdg_data_home_filetrans($1, webkit-gtk_cache_home_t, dir, "webkitgtk")
+')
+
+
+###############################
+## <summary>
+##	Create files in user webkit-gtk data dir with
+##	a transition to the specified private type.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to create.
+##	</summary
+## </param>
+## <param name="type">
+##	<summary>
+##	The private type to create.
+##	</summary
+## </param>
+## <param name="class">
+##	<summary>
+##	The class of file.
+##	</summary
+## </param>
+
+interface(`webkit_gtk_data_filetrans',`
+	gen_require(`
+		type webkit-gtk_data_home_t;
+	')
+
+	webkit_gtk_data_create($1)
+
+	filetrans_pattern($1, webkit-gtk_data_home_t, $2, $3)
+')
+
+
+## <summary>
+##	Client template for WebKitWebProcess.
+## </summary>
+## <param name="domain_prefix">
+##	<summary>
+##	Prefix of the domain from which to exec WebKitWebProcess, e.g. midori in midori_t.
+##	</summary>
+## </param>
+
+template(`webkit_gtk_client_template',`
+
+	gen_require(`
+
+		attribute WebKitNetworkProcess_domain;
+		attribute WebKitWebProcess_domain;
+		type $1_t;
+		type WebKitNetworkProcess_exec_t;
+		type WebKitWebProcess_exec_t;
+	')
+
+	########################################
+	#
+	# Declarations
+	#
+
+	type $1_WebKitNetworkProcess_t, WebKitNetworkProcess_domain;
+	userdom_user_application_domain($1_WebKitNetworkProcess_t, WebKitNetworkProcess_exec_t)
+
+	type $1_WebKitWebProcess_t, WebKitWebProcess_domain;
+	userdom_user_application_domain($1_WebKitWebProcess_t, WebKitWebProcess_exec_t)
+
+	type $1_webkit_devshm_t;
+	files_tmpfs_file($1_webkit_devshm_t)
+
+	########################################
+	#
+	# Local policy
+	#
+
+	allow $1_WebKitNetworkProcess_t $1_t : unix_stream_socket { read write getopt getattr };
+	allow $1_WebKitWebProcess_t $1_t : unix_stream_socket { read write getopt getattr };
+	allow $1_WebKitWebProcess_t $1_WebKitNetworkProcess_t : unix_stream_socket { read write getopt getattr };
+	allow $1_t $1_WebKitNetworkProcess_t:unix_stream_socket { read write };
+
+	domtrans_pattern($1_t, WebKitNetworkProcess_exec_t, $1_WebKitNetworkProcess_t)
+	domtrans_pattern($1_t, WebKitWebProcess_exec_t, $1_WebKitWebProcess_t)
+
+	allow $1_t { $1_WebKitNetworkProcess_t $1_WebKitWebProcess_t } : fd use;
+	allow $1_WebKitWebProcess_t $1_WebKitNetworkProcess_t : fd use;
+
+	#
+	# We could be more strict - and complicated - here, giving client and WebKit
+	# processes seperate shm types, and only giving inherited rw permissions for
+	# other processes shm (without open). Would that be at all beneficial?
+	#
+
+	fs_getattr_tmpfs($1_t)
+	fs_tmpfs_filetrans({ $1_t $1_WebKitNetworkProcess_t $1_WebKitWebProcess_t }, $1_webkit_devshm_t, file)
+	allow { $1_t $1_WebKitNetworkProcess_t $1_WebKitWebProcess_t } $1_webkit_devshm_t : file { create_file_perms rw_file_perms delete_file_perms };
+
+	auth_use_nsswitch($1_WebKitNetworkProcess_t)
+	auth_use_nsswitch($1_WebKitWebProcess_t)
+	miscfiles_read_generic_certs($1_WebKitNetworkProcess_t)
+')
