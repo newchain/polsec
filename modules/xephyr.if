@@ -81,3 +81,42 @@ interface(`xephyr_xshm_client',`
 
 	allow xephyr_t $1 : shm rw_sem_perms;
 ')
+
+
+###############################
+## <summary>
+##	Constrain access of X apps to root X, Xephyr,
+##	or neither.
+## </summary>
+## <param name="domain_root">
+##	<summary>
+##	Root of the application's domain, e.g. app in app_t.
+##	</summary
+## </param>
+
+template(`xephyr_domain_constrain_template',`
+
+	## <desc>
+	##	<p>
+	##	Allow $1 to connect to xserver.
+	##	</p>
+	## </desc>
+	gen_tunable($1_xserver_stream_connect, true)
+
+	tunable_policy(`$1_xserver_stream_connect',`
+
+		xserver_stream_connect($1_t)
+	')
+
+	## <desc>
+	##	<p>
+	##	Allow $1 to connect to Xephyr.
+	##	</p>
+	## </desc>
+	gen_tunable($1_xephyr_stream_connect, true)
+
+	tunable_policy(`$1_xephyr_stream_connect',`
+
+		xephyr_stream_connect($1_t)
+	')
+')
