@@ -21,10 +21,10 @@ gen_tunable(pcmanfm_read_generic_config, false)
 
 ## <desc>
 ## <p>
-## Allow pcmanfm to read generic data in HOME.
+## Allow pcmanfm to list and read user home files.
 ## </p>
 ## </desc>
-gen_tunable(pcmanfm_read_generic_user_content, true)
+gen_tunable(pcmanfm_read_user_home_files, true)
 
 ## <desc>
 ## <p>
@@ -142,7 +142,7 @@ tunable_policy(`pcmanfm_read_generic_config',`
 	xdg_read_data_home_files(pcmanfm_domain)
 ')
 
-tunable_policy(`pcmanfm_read_generic_user_content',`
+tunable_policy(`pcmanfm_read_user_home_files',`
 
 	userdom_list_user_home_dirs(pcmanfm_domain)
 	userdom_list_user_home_content(pcmanfm_domain)
