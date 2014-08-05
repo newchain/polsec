@@ -2,7 +2,7 @@ policy_module(evince, 1.0)
 
 
 gen_require(`
-	type bin_t;
+	type locale_t;
 	type system_dbusd_var_lib_t;
 	type user_tmp_t;
 	type unlabeled_t;
@@ -62,6 +62,10 @@ type evince_t;
 type evince_exec_t;
 userdom_user_application_domain(evince_t, evince_exec_t)
 
+type evince_decompress_t;
+userdom_user_application_type(evince_decompress_t)
+corecmd_bin_entry_type(evince_decompress_t)
+
 type evince_previewer_t;
 type evince_previewer_exec_t;
 userdom_user_application_domain(evince_previewer_t, evince_previewer_exec_t)
@@ -87,14 +91,11 @@ userdom_user_tmp_file(evince_thumbnailer_tmp_t)
 # Local policy
 #
 
+allow evince_decompress_t { evince_t evince_thumbnailer_t } : fd use;
 allow evince_t self : fifo_file rw_fifo_file_perms;
 allow evince_thumbnailer_t self : fifo_file rw_fifo_file_perms;
+allow evince_decompress_t { evince_t evince_thumbnailer_t } : fifo_file write;
 dontaudit { evince_t evince_previewer_t } self : shm create;
-
-# For bzip, gzip, and xz.
-#
-corecmd_search_bin({ evince_t evince_thumbnailer_t })
-can_exec({ evince_t evince_thumbnailer_t }, bin_t)
 
 files_read_etc_files({ evince_t evince_previewer_t })
 
@@ -110,7 +111,7 @@ dontaudit evince_t xdg_documents_home_t : dir read;
 
 fs_dontaudit_getattr_xattr_fs({ evince_t evince_previewer_t evince_thumbnailer_t })
 
-kernel_dontaudit_read_system_state({ evince_t evince_previewer_t evince_thumbnailer_t })
+kernel_dontaudit_read_system_state({ evince_t evince_decompress_t evince_previewer_t evince_thumbnailer_t })
 
 kernel_dontaudit_search_sysctl(evince_t)
 
@@ -137,9 +138,13 @@ allow evince_t evince_exec_t : file execute_no_trans;
 allow evince_t evince_previewer_exec_t : file { execute read open };
 domtrans_pattern(evince_t, evince_previewer_exec_t, evince_previewer_t)
 
+corecmd_bin_domtrans({ evince_t evince_thumbnailer_t }, evince_decompress_t)
+
 miscfiles_read_fonts({ evince_t evince_previewer_t evince_thumbnailer_t })
 
 miscfiles_read_localization({ evince_t evince_previewer_t evince_thumbnailer_t })
+
+dontaudit evince_decompress_t locale_t : dir search;
 
 xserver_stream_connect({ evince_t evince_previewer_t })
 
@@ -152,7 +157,7 @@ tunable_policy(`evince_dbus',`
 
 tunable_policy(`evince_read_user_home_content',`
 
-	userdom_read_user_home_content_files({ evince_t evince_thumbnailer_t })
+	userdom_read_user_home_content_files({ evince_t evince_decompress_t evince_thumbnailer_t })
 ')
 
 tunable_policy(`evince_read_generic_config',`
@@ -169,12 +174,12 @@ tunable_policy(`evince_write_to_home',`
 
 tunable_policy(`evince_read_mounts',`
 
-	files_read_mnt_files({ evince_t evince_thumbnailer_t })
+	files_read_mnt_files({ evince_t evince_decompress_t evince_thumbnailer_t })
 ')
 
 tunable_policy(`evince_read_unlabeled',`
 
-	read_files_pattern({ evince_t evince_thumbnailer_t }, unlabeled_t, unlabeled_t)
+	read_files_pattern({ evince_t evince_decompress_t evince_thumbnailer_t }, unlabeled_t, unlabeled_t)
 ')
 
 
