@@ -4,7 +4,6 @@ policy_module(evince, 1.0)
 gen_require(`
 	type bin_t;
 	type system_dbusd_var_lib_t;
-	type tmpfs_t;
 	type user_tmp_t;
 	type unlabeled_t;
 	type xdg_documents_home_t;
@@ -67,8 +66,6 @@ type evince_previewer_t;
 type evince_previewer_exec_t;
 userdom_user_application_domain(evince_previewer_t, evince_previewer_exec_t)
 
-domtrans_pattern(evince_t, evince_previewer_exec_t, evince_previewer_t)
-
 type evince_thumbnailer_t;
 type evince_thumbnailer_exec_t;
 userdom_user_application_domain(evince_thumbnailer_t, evince_thumbnailer_exec_t)
@@ -91,6 +88,7 @@ userdom_user_tmp_file(evince_thumbnailer_tmp_t)
 #
 
 allow evince_t self : fifo_file rw_fifo_file_perms;
+allow evince_thumbnailer_t self : fifo_file rw_fifo_file_perms;
 dontaudit { evince_t evince_previewer_t } self : shm create;
 
 # For bzip, gzip, and xz.
@@ -137,6 +135,7 @@ allow evince_t evince_exec_t : file execute_no_trans;
 # disallow exec into evince_t
 #
 allow evince_t evince_previewer_exec_t : file { execute read open };
+domtrans_pattern(evince_t, evince_previewer_exec_t, evince_previewer_t)
 
 miscfiles_read_fonts({ evince_t evince_previewer_t evince_thumbnailer_t })
 
@@ -195,9 +194,3 @@ optional_policy(`
 	userdom_read_user_mime({ evince_t evince_previewer_t evince_thumbnailer_t })
 	userdom_read_user_themes({ evince_t evince_previewer_t })
 ')
-
-#allow evince_thumbnailer_t tmpfs_t : filesystem getattr;
-
-# testing:
-
-allow evince_thumbnailer_t self : fifo_file { write read getattr };

@@ -43,11 +43,10 @@ interface(`evince_role',`
 	gen_require(`
 		type evince_t;
 		type evince_previewer_t;
-		type evince_previewer_exec_t;
 	')
 
 	evince_domtrans($1)
-	role $2 types { evince_t evince_previewer_t evince_previewer_exec_t };
+	role $2 types { evince_t evince_previewer_t };
 	allow evince_previewer_t $1 : fd use;
 ')
 
@@ -89,10 +88,10 @@ interface(`evince_thumbnailer_domtrans',`
 interface(`evince_thumbnailer_role',`
 	gen_require(`
 		type bin_t;
-		type evince_thumbnailer_t, evince_thumbnailer_exec_t;
+		type evince_thumbnailer_t;
 	')
 
 	evince_thumbnailer_domtrans($1)
 	domtrans_pattern(evince_thumbnailer_t, bin_t, $1);
-	role $2 types { bin_t evince_thumbnailer_t };
+	role $2 types evince_thumbnailer_t;
 ')
