@@ -55,13 +55,6 @@ gen_tunable(pcmanfm_read_mounts, false)
 ## </desc>
 gen_tunable(pcmanfm_read_unlabeled, false)
 
-## <desc>
-## <p>
-## Allow pcmanfm to read xattrs
-## </p>
-## </desc>
-gen_tunable(pcmanfm_xattr, false)
-
 
 attribute pcmanfm_domain;
 
@@ -99,6 +92,8 @@ dontaudit pcmanfm_domain self : fifo_file getattr;
 dontaudit pcmanfm_domain self : shm create;
 fs_dontaudit_getattr_tmpfs(pcmanfm_domain)
 allow pcmanfm_domain self : unix_stream_socket connectto;
+
+fs_dontaudit_getattr_xattr_fs(pcmanfm_domain)
 
 files_dontaudit_list_home(pcmanfm_domain)
 
@@ -185,11 +180,6 @@ tunable_policy(`pcmanfm_read_unlabeled',`
 tunable_policy(`pcmanfm_write_settings',`
 
 	allow pcmanfm_domain pcmanfm_config_home_t : dir write;
-')
-
-tunable_policy(`pcmanfm_xattr',`
-
-	fs_getattr_xattr_fs(pcmanfm_domain)
 ')
 
 
