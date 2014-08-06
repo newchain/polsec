@@ -120,3 +120,35 @@ template(`xephyr_domain_constrain_template',`
 		xephyr_stream_connect($1_t)
 	')
 ')
+
+
+###############################
+## <summary>
+##	Isolate X apps from root xserver.
+##	or neither.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain to isolate.
+##	</summary>
+## </param>
+## <param name="domain_prefix">
+##	<summary>
+##	Root of the application's domain, e.g. app in app_t.
+##	</summary>
+## </param>
+
+template(`xephyr_isolate_from_root',`
+
+	## <desc>
+	##	<p>
+	##	Isolate $1 from xserver.
+	##	</p>
+	## </desc>
+	gen_tunable($2_isolate_from_xserver, false)
+
+	tunable_policy(! `$2_isolate_from_xserver',`
+
+		xserver_stream_connect($1)
+	')
+')
