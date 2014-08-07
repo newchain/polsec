@@ -10,6 +10,68 @@
 
 ###############################
 ## <summary>
+##	Allow domain to list user applications.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to list.
+##	</summary
+## </param>
+
+interface(`userdom_list_applications_data_home',`
+	gen_require(`
+		type applications_data_home_t;
+		type xdg_data_home_t;
+	')
+
+	userdom_search_user_home_dirs($1)
+	allow $1 xdg_data_home_t : dir search_dir_perms;
+	allow $1 applications_data_home_t : dir list_dir_perms;
+')
+
+
+###############################
+## <summary>
+##	Allow domain to read user applications.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read.
+##	</summary
+## </param>
+
+interface(`userdom_read_applications_data_home',`
+	gen_require(`
+		type applications_data_home_t;
+	')
+
+	userdom_list_applications_data_home($1)
+	allow $1 applications_data_home_t : file read_file_perms;
+')
+
+
+###############################
+## <summary>
+##	Allow role to read user applications.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role from which to read.
+##	</summary
+## </param>
+
+interface(`user_read_applications_role',`
+	gen_require(`
+		type applications_data_home_t;
+	')
+
+	userdom_read_applications_data_home($1)
+	role $2 types applications_data_home_t;
+')
+
+
+###############################
+## <summary>
 ##	Allow domain to read user dconf config.
 ## </summary>
 ## <param name="domain">
@@ -256,6 +318,27 @@ interface(`userdom_read_user_mime',`
 	search_dirs_pattern($1, home_root_t, user_home_dir_t)
 	search_dirs_pattern($1, user_home_dir_t, xdg_data_home_t)
 	read_files_pattern($1, user_mime_t, user_mime_t)
+')
+
+
+###############################
+## <summary>
+##	Allow domain to list user downloads.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to list.
+##	</summary>
+## </param>
+
+interface(`xdg_list_downloads_home',`
+
+	gen_require(`
+		type xdg_downloads_home_t;
+	')
+
+	userdom_search_user_home_dirs($1)
+	allow $1 xdg_downloads_home_t : dir list_dir_perms;
 ')
 
 
@@ -520,6 +603,7 @@ interface(`userdom_read_user_themes',`
 	')
 
 	search_dirs_pattern($1, home_root_t, user_home_dir_t)
+	allow $1 themes_home_t : dir list_dir_perms;
 	read_files_pattern($1, themes_home_t, themes_home_t)
 	read_lnk_files_pattern($1, themes_home_t, themes_home_t)
 ')

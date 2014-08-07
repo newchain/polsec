@@ -13,6 +13,9 @@ gen_require(`
 ')
 
 
+type applications_data_home_t;
+xdg_data_home_content(applications_data_home_t)
+
 type dconf_config_home_t;
 xdg_config_home_content(dconf_config_home_t)
 
