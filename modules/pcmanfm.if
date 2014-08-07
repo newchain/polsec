@@ -13,15 +13,21 @@
 ## <param name="domain">
 ##	<summary>
 ##	Domain from which to transition.
-##	</summary
+##	</summary>
+## </param>
+## <param name="role_prefix">
+##	<summary>
+##	Prefix of the role to use as a domain prefix, e.g. user in user_r.
+##	</summary>
 ## </param>
 
 interface(`pcmanfm_domtrans',`
 	gen_require(`
-		type pcmanfm_t, pcmanfm_exec_t;
+		type pcmanfm_exec_t;
+		type $2_pcmanfm_t;
 	')
 
-	domtrans_pattern($1, pcmanfm_exec_t, pcmanfm_t);
+	domtrans_pattern($1, pcmanfm_exec_t, $2_pcmanfm_t);
 ')
 
 
