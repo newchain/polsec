@@ -1,0 +1,11 @@
+/etc/xdg/menus(/.*)?				gen_context(system_u:object_r:menu-cache-gen_etc_t,s0)
+
+/usr/libexec/menu-cache/menu-cached	--	gen_context(system_u:object_r:menu-cached_exec_t,s0)
+/usr/libexec/menu-cache/menu-cache-gen	--	gen_context(system_u:object_r:menu-cache-gen_exec_t,s0)
+
+HOME_DIR/\.cache/menus(/.*)?			gen_context(system_u:object_r:menu-cached_cache_home_t,s0)
+HOME_DIR/\.config/menus(/.*)?			gen_context(system_u:object_r:menu-cached_config_home_t,s0)
+
+/tmp/\.private/\w+/\.menu-cached-:\d-\w+-s	gen_context(system_u:object_r:menu-cached_socket_t,s0)
+
+/usr/share/desktop-directories(/.*)?		gen_context(system_u:object_r:menu-cache-gen_data_t,s0)

@@ -3,7 +3,6 @@ policy_module(pcmanfm, 1.0)
 
 gen_require(`
 	type unlabeled_t;
-	type user_tmp_t;
 ')
 
 
@@ -81,12 +80,6 @@ userdom_user_tmp_file(pcmanfm_socket_t)
 pcmanfm_role_template(staff, staff_t)
 pcmanfm_role_template(user, user_t)
 
-# Begin stuff for menu-cached
-#
-allow pcmanfm_domain user_tmp_t : sock_file write;
-#
-# End stuff for menu-cached
-
 allow pcmanfm_domain self : fifo_file { read write };
 dontaudit pcmanfm_domain self : fifo_file getattr;
 dontaudit pcmanfm_domain self : shm create;
@@ -118,12 +111,22 @@ read_files_pattern(pcmanfm_domain, pcmanfm_data_t, pcmanfm_data_t)
 
 xserver_stream_connect(pcmanfm_domain)
 
+optional_policy(`
+
+	menu_cached_stream_connect(pcmanfm_domain)
+')
+
 userdom_user_tmp_filetrans(pcmanfm_domain, pcmanfm_socket_t, sock_file)
 allow pcmanfm_domain pcmanfm_socket_t : sock_file { create_sock_file_perms write_sock_file_perms delete_sock_file_perms };
 
 # For various gui data without unique types.
 #
 files_read_usr_files(pcmanfm_domain)
+
+optional_policy(`
+
+	menu_cached_domtrans(pcmanfm_domain)
+')
 
 miscfiles_read_fonts(pcmanfm_domain)
 

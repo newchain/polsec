@@ -1,0 +1,111 @@
+## <summary>menu-cache policy</summary>
+## <desc>
+##	<p>
+##		Policy for menu-cache.
+##	</p>
+## </desc>
+
+
+###############################
+## <summary>
+##	Communicate with menu-cached.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to communicate.
+##	</summary
+## </param>
+
+interface(`menu_cached_stream_connect',`
+
+	gen_require(`
+		type menu-cached_t;
+		type menu-cached_socket_t;
+		type user_tmp_t;
+	')
+
+	files_search_tmp($1)
+	allow $1 user_tmp_t : dir search;
+
+	allow $1 menu-cached_socket_t : sock_file write;
+	allow $1 menu-cached_t : unix_stream_socket connectto;
+')
+
+
+###############################
+## <summary>
+##	Read menu-cached menus.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read.
+##	</summary
+## </param>
+
+interface(`menu_cached_read_user_cache',`
+
+	gen_require(`
+		type menu-cached_cache_home_t;
+		type xdg_cache_home_t;
+	')
+
+	userdom_search_user_home_dirs($1)
+	allow $1 xdg_cache_home_t : dir search;
+
+	allow $1 menu-cached_cache_home_t : dir search;
+	allow $1 menu-cached_cache_home_t : file read_file_perms;
+')
+
+
+###############################
+## <summary>
+##	Transition to menu-cached.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary
+## </param>
+
+interface(`menu_cached_domtrans',`
+
+	gen_require(`
+		type menu-cached_t, menu-cached_exec_t;
+	')
+
+	domtrans_pattern($1, menu-cached_exec_t, menu-cached_t)
+	#
+	# Required for pam_mktemp.
+	#
+	allow $1 menu-cached_t : process noatsecure;
+')
+
+
+###############################
+## <summary>
+##	Allow role to use menu-cached.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	The domain associated with the role.
+##	</summary>
+## </param>
+## <param name="role">
+##	<summary>
+##	Role from which to exec menu-cached.
+##	</summary
+## </param>
+
+interface(`menu_cache_role',`
+
+	gen_require(`
+		type menu-cached_t;
+		type menu-cache-gen_t;
+	')
+
+	menu_cached_domtrans($1)
+	role $2 types { menu-cached_t menu-cache-gen_t };
+
+	allow menu-cached_t $1 : unix_stream_socket { read write };
+
+')
