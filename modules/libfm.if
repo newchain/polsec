@@ -8,6 +8,46 @@
 
 ###############################
 ## <summary>
+##	Allow domain to list libfm user config.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to list.
+##	</summary>
+## </param>
+
+interface(`libfm_list_libfm_config_home',`
+	gen_require(`
+		type libfm_config_home_t;
+	')
+
+	xdg_search_config_home_dirs($1)
+
+	allow $1 libfm_config_home_t : dir read;
+')
+
+
+###############################
+## <summary>
+##	Suppress logs from attempts to list libfm user config.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to suppress.
+##	</summary>
+## </param>
+
+interface(`libfm_dontaudit_list_libfm_config_home',`
+	gen_require(`
+		type libfm_config_home_t;
+	')
+
+	dontaudit $1 libfm_config_home_t : dir read;
+')
+
+
+###############################
+## <summary>
 ##	Allow domain to read libfm user config.
 ## </summary>
 ## <param name="domain">
@@ -24,6 +64,27 @@ interface(`libfm_read_libfm_config_home',`
 	xdg_search_config_home_dirs($1)
 
 	read_files_pattern($1, libfm_config_home_t, libfm_config_home_t)
+')
+
+
+###############################
+## <summary>
+##	Allow domain to write libfm user config.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to write.
+##	</summary>
+## </param>
+
+interface(`libfm_write_libfm_config_home',`
+	gen_require(`
+		type libfm_config_home_t;
+	')
+
+	xdg_search_config_home_dirs($1)
+
+	write_files_pattern($1, libfm_config_home_t, libfm_config_home_t)
 ')
 
 
