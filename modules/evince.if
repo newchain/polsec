@@ -13,7 +13,7 @@
 ## <param name="domain">
 ##	<summary>
 ##	Domain from which to transition.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`evince_domtrans',`
@@ -36,7 +36,7 @@ interface(`evince_domtrans',`
 ## <param name="role">
 ##	<summary>
 ##	Role from which to exec evince.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`evince_role',`
@@ -59,7 +59,7 @@ interface(`evince_role',`
 ## <param name="domain">
 ##	<summary>
 ##	Domain from which to transition.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`evince_thumbnailer_domtrans',`
@@ -84,7 +84,7 @@ interface(`evince_thumbnailer_domtrans',`
 ## <param name="role">
 ##	<summary>
 ##	Role from which to exec evince-thumbnailer.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`evince_thumbnailer_role',`

@@ -13,7 +13,7 @@
 ## <param name="domain">
 ##	<summary>
 ##	Domain from which to transition.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`xephyr_domtrans',`
@@ -32,7 +32,7 @@ interface(`xephyr_domtrans',`
 ## <param name="role">
 ##	<summary>
 ##	Role from which to exec Xephyr.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`xephyr_role',`
@@ -52,7 +52,7 @@ interface(`xephyr_role',`
 ## <param name="domain">
 ##	<summary>
 ##	Domain from which to connect.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`xephyr_stream_connect',`
@@ -71,7 +71,7 @@ interface(`xephyr_stream_connect',`
 ## <param name="domain">
 ##	<summary>
 ##	Domain from which to share.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`xephyr_xshm_client',`
@@ -88,10 +88,10 @@ interface(`xephyr_xshm_client',`
 ##	Constrain access of X apps to root X, Xephyr,
 ##	or neither.
 ## </summary>
-## <param name="domain_root">
+## <param name="domain_prefix">
 ##	<summary>
 ##	Root of the application's domain, e.g. app in app_t.
-##	</summary
+##	</summary>
 ## </param>
 
 template(`xephyr_domain_constrain_template',`

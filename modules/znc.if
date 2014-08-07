@@ -13,7 +13,7 @@
 ## <param name="domain">
 ##	<summary>
 ##	Domain from which to connect.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`znc_port_connect',`

@@ -18,16 +18,16 @@ gen_require(`
 #
 
 ## <desc>
-## <p>
-## Allow dnscrypt-proxy to read /dev/random.
-## </p>
+##	<p>
+##	Allow dnscrypt-proxy to read /dev/random.
+##	</p>
 ## </desc>
 gen_tunable(dnscrypt_proxy_read_rand, false)
 
 ## <desc>
-## <p>
-## Allow dnscrypt-proxy to read local timezone.
-## </p>
+##	<p>
+##	Allow dnscrypt-proxy to read local timezone.
+##	</p>
 ## </desc>
 gen_tunable(dnscrypt_proxy_read_timezone, false)
 

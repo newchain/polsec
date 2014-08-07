@@ -2,7 +2,6 @@ policy_module(pidgin, 1.00)
 
 
 gen_require(`
-	type fs_t;
 	type system_dbusd_var_lib_t;
 #	type user_devpts_t;
 ')
@@ -14,45 +13,45 @@ gen_require(`
 #
 
 ## <desc>
-## <p>
-## Allow pidgin to communicate via dbus IPC.
-## </p>
+##	<p>
+##	Allow pidgin to communicate via dbus IPC.
+##	</p>
 ## </desc>
 gen_tunable(pidgin_dbus, false)
 
 ## <desc>
-## <p>
-## Allow pidgin to read generic data in HOME.
-## </p>
+##	<p>
+##	Allow pidgin to read generic data in HOME.
+##	</p>
 ## </desc>
 gen_tunable(pidgin_read_generic_user_content, false)
 
 ## <desc>
-## <p>
-## Allow pidgin to read all config in HOME
-## </p>
+##	<p>
+##	Allow pidgin to read all config in HOME
+##	</p>
 ## </desc>
 gen_tunable(pidgin_read_generic_config, false)
 
 ## <desc>
-## <p>
-## Allow pidgin to read /dev/random. Doing so is required for OTR.
-## </p>
+##	<p>
+##	Allow pidgin to read /dev/random. Doing so is required for OTR.
+##	</p>
 ## </desc>
 gen_tunable(pidgin_rand, false)
 
 ## <desc>
-## <p>
-## Allow pidgin to connect via tor.
-## </p>
+##	<p>
+##	Allow pidgin to connect via tor.
+##	</p>
 ## </desc>
 gen_tunable(pidgin_tor, false)
 
 ## <desc>
-## <p>
-## Allow pidgin to save settings. Disable to prevent pidgin from writing
-## to HOME.
-## </p>
+##	<p>
+##	Allow pidgin to save settings. Disable to prevent pidgin from writing
+##	to HOME.
+##	</p>
 ## </desc>
 gen_tunable(pidgin_write_to_home, true)
 
@@ -80,6 +79,8 @@ files_type(purple_data_t)
 allow pidgin_t self : fifo_file rw_fifo_file_perms;
 dontaudit pidgin_t self : shm create;
 
+fs_dontaudit_getattr_xattr_fs(pidgin_t)
+
 #allow pidgin_t user_devpts_t : chr_file rw_chr_file_perms;
 
 dev_read_urand(pidgin_t)
@@ -93,8 +94,6 @@ xserver_read_user_xauth(pidgin_t)
 # pidgin has yet to convert to XDG
 #
 userdom_home_filetrans_user_home_dir(purple_home_t, ".purple")
-
-dontaudit pidgin_t fs_t : filesystem getattr;
 
 kernel_dontaudit_search_sysctl(pidgin_t)
 

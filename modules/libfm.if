@@ -53,7 +53,7 @@ interface(`libfm_dontaudit_list_libfm_config_home',`
 ## <param name="domain">
 ##	<summary>
 ##	Domain from which to read.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`libfm_read_libfm_config_home',`
@@ -95,7 +95,7 @@ interface(`libfm_write_libfm_config_home',`
 ## <param name="domain">
 ##	<summary>
 ##	Domain from which to read.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`miscfiles_read_libfm_data',`

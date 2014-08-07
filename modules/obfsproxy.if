@@ -14,7 +14,7 @@
 ## <param name="domain">
 ##	<summary>
 ##	Domain from which to transition.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`obfsproxy_domtrans',`
@@ -33,7 +33,7 @@ interface(`obfsproxy_domtrans',`
 ## <param name="role">
 ##	<summary>
 ##	Role from which to exec obfsproxy.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`obfsproxy_role',`

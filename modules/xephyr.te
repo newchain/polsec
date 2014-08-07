@@ -16,10 +16,10 @@ gen_require(`
 #
 
 ## <desc>
-## <p>
-## Allow xephyr to create and use shared memory.
-## xshm is needed for e.g. qt4 raster engine.
-## </p>
+##	<p>
+##	Allow xephyr to create and use shared memory.
+##	xshm is needed for e.g. qt4 raster engine.
+##	</p>
 ## </desc>
 gen_tunable(xephyr_xshm, false)
 

@@ -5,7 +5,6 @@ gen_require(`
 	type dri_device_t;
 	type proc_t;
 	type shell_exec_t;
-	type sound_device_t;
 	type sysfs_t;
 	type user_devpts_t;
 ')
@@ -17,9 +16,9 @@ gen_require(`
 #
 
 ## <desc>
-## <p>
-## Allow pyrogenesis to execute writable pages.
-## </p>
+##	<p>
+##	Allow pyrogenesis to execute writable pages.
+##	</p>
 ## </desc>
 gen_tunable(zad_execmem, false)
 
@@ -90,11 +89,13 @@ miscfiles_read_localization(zad_t)
 
 # audio stuff
 #
+dev_read_sound(zad_t)
+dev_write_sound(zad_t)
+
 auth_use_nsswitch(zad_t)
 
 alsa_domain(zad_t, zad_alsa_shm_t)
 
-allow zad_t sound_device_t : chr_file rw_chr_file_perms;
 fs_tmpfs_filetrans(zad_t, zad_alsa_shm_t, file)
 
 
@@ -111,4 +112,3 @@ optional_policy(`
 	userdom_read_dri_home(zad_t)
 	userdom_read_openal_home(zad_t)
 ')
-

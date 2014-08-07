@@ -13,7 +13,7 @@
 ## <param name="domain">
 ##	<summary>
 ##	Domain from which to communicate.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`menu_cached_stream_connect',`
@@ -39,7 +39,7 @@ interface(`menu_cached_stream_connect',`
 ## <param name="domain">
 ##	<summary>
 ##	Domain from which to read.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`menu_cached_read_user_cache',`
@@ -64,7 +64,7 @@ interface(`menu_cached_read_user_cache',`
 ## <param name="domain">
 ##	<summary>
 ##	Domain from which to transition.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`menu_cached_domtrans',`
@@ -93,7 +93,7 @@ interface(`menu_cached_domtrans',`
 ## <param name="role">
 ##	<summary>
 ##	Role from which to exec menu-cached.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`menu_cache_role',`

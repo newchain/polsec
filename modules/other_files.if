@@ -13,7 +13,7 @@
 ## <param name="domain">
 ##	<summary>
 ##	Domain from which to read.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`miscfiles_read_dri_etc',`
@@ -33,7 +33,7 @@ interface(`miscfiles_read_dri_etc',`
 ## <param name="role">
 ##	<summary>
 ##	Role from which to read.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`dri_etc_role',`
@@ -53,7 +53,7 @@ interface(`dri_etc_role',`
 ## <param name="domain">
 ##	<summary>
 ##	Domain from which to read.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`miscfiles_read_gtk_etc',`
@@ -73,7 +73,7 @@ interface(`miscfiles_read_gtk_etc',`
 ## <param name="role">
 ##	<summary>
 ##	Role from which to read.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`gtk_etc_role',`
@@ -93,7 +93,7 @@ interface(`gtk_etc_role',`
 ## <param name="domain">
 ##	<summary>
 ##	Domain from which to read.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`miscfiles_read_pango_etc',`
@@ -113,7 +113,7 @@ interface(`miscfiles_read_pango_etc',`
 ## <param name="role">
 ##	<summary>
 ##	Role from which to read.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`pango_etc_role',`

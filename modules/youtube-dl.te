@@ -3,7 +3,6 @@ policy_module(youtube-dl, 1.0)
 
 gen_require(`
 	type bin_t;
-	type proc_t;
 	type shell_exec_t;
 	type user_devpts_t;
 	type xdg_cache_home_t;
@@ -59,7 +58,7 @@ dontaudit youtube-dl_t xdg_videos_home_t : file read;
 
 miscfiles_read_localization(youtube-dl_t)
 
-dontaudit youtube-dl_t proc_t : file read;
+kernel_dontaudit_read_system_state(youtube-dl_t)
 
 allow youtube-dl_t self : tcp_socket { write getattr connect read getopt create };
 corenet_tcp_connect_http_port(youtube-dl_t)

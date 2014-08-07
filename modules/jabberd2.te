@@ -302,9 +302,9 @@ manage_files_pattern({ jabberd2-c2s_t jabberd2-s2s_t jabberd2-sm_t }, jabberd2_s
 
 
 ## <desc>
-## <p>
-## Allow jabberd2 to read local timezone.
-## </p>
+##	<p>
+##	Allow jabberd2 to read local timezone.
+##	</p>
 ## </desc>
 gen_tunable(jabberd2_read_timezone, false)
 

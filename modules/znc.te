@@ -16,16 +16,16 @@ gen_require(`
 #
 
 ## <desc>
-## <p>
-## Allow znc to read local timezone.
-## </p>
+##	<p>
+##	Allow znc to read local timezone.
+##	</p>
 ## </desc>
 gen_tunable(znc_read_timezone, false)
 
 ## <desc>
-## <p>
-## Allow use of webadmin module.
-## </p>
+##	<p>
+##	Allow use of webadmin module.
+##	</p>
 ## </desc>
 gen_tunable(znc_webadmin, false)
 

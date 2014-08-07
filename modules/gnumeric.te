@@ -17,9 +17,9 @@ gen_require(`
 #
 
 ## <desc>
-## <p>
-## Allow gnumeric to read app-agnostic user settings.
-## </p>
+##	<p>
+##	Allow gnumeric to read app-agnostic user settings.
+##	</p>
 ## </desc>
 gen_tunable(gnumeric_read_generic_user_settings, false)
 
@@ -43,6 +43,8 @@ gnumeric_role(user_t, user_r)
 
 dontaudit gnumeric_t self : shm create;
 
+fs_dontaudit_getattr_xattr_fs(gnumeric_t)
+
 # for gtk settings and pango module list
 #
 files_read_etc_files(gnumeric_t)
@@ -55,8 +57,6 @@ xserver_read_user_xauth(gnumeric_t)
 #
 userdom_user_tmp_filetrans(gnumeric_t, gnumeric_pixbuf_t, file)
 allow gnumeric_t gnumeric_pixbuf_t : file { create_file_perms rw_file_perms delete_file_perms };
-
-dontaudit gnumeric_t fs_t : filesystem getattr;
 
 kernel_dontaudit_read_system_state(gnumeric_t)
 
@@ -87,16 +87,16 @@ optional_policy(`
 	xephyr_domain_constrain_template(gnumeric)
 
 	## <desc>
-	## <p>
-	## Allow gnumeric to read user documents.
-	## </p>
+	##	<p>
+	##	Allow gnumeric to read user documents.
+	##	</p>
 	## </desc>
 	gen_tunable(gnumeric_read_user_documents, true)
 
 	## <desc>
-	## <p>
-	## Allow gnumeric to create and write user documents.
-	## </p>
+	##	<p>
+	##	Allow gnumeric to create and write user documents.
+	##	</p>
 	## </desc>
 	gen_tunable(gnumeric_create_user_documents, true)
 

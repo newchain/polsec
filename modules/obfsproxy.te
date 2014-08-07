@@ -6,7 +6,6 @@ gen_require(`
 
 	type bin_t;
 	type lib_t;
-	type proc_t;
 	type tor_t;
 	type tor_var_lib_t;
 ')
@@ -60,7 +59,7 @@ create_dirs_pattern(obfsproxy_t, var_log_t, obfsproxy_var_log_t)
 create_files_pattern(obfsproxy_t, obfsproxy_var_log_t, obfsproxy_var_log_t)
 append_files_pattern(obfsproxy_t, obfsproxy_var_log_t, obfsproxy_var_log_t)
 
-dontaudit obfsproxy_t proc_t : file read;
+kernel_dontaudit_read_system_state(obfsproxy_t)
 
 corenet_tcp_bind_generic_node(obfsproxy_t)
 allow obfsproxy_t self : tcp_socket { accept listen };

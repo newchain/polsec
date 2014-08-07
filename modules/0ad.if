@@ -13,7 +13,7 @@
 ## <param name="domain">
 ##	<summary>
 ##	Domain from which to transition.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`zad_domain_transition_pattern',`
@@ -33,7 +33,7 @@ interface(`zad_domain_transition_pattern',`
 ## <param name="role">
 ##	<summary>
 ##	Role to exec 0ad.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`zad_role',`

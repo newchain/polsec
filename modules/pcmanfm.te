@@ -12,45 +12,45 @@ gen_require(`
 #
 
 ## <desc>
-## <p>
-## Allow pcmanfm to read all config.
-## </p>
+##	<p>
+##	Allow pcmanfm to read generic config.
+##	</p>
 ## </desc>
 gen_tunable(pcmanfm_read_generic_config, false)
 
 ## <desc>
-## <p>
-## Allow pcmanfm to list and read user home files.
-## </p>
+##	<p>
+##	Allow pcmanfm to list and read user home files.
+##	</p>
 ## </desc>
 gen_tunable(pcmanfm_read_user_home_files, true)
 
 ## <desc>
-## <p>
-## Allow pcmanfm to manage user data and settings.
-## Disable to prevent pcmanfm from writing to HOME.
-## </p>
+##	<p>
+##	Allow pcmanfm to manage user data and settings.
+##	Disable to prevent pcmanfm from writing to HOME.
+##	</p>
 ## </desc>
 gen_tunable(pcmanfm_manage_home, false)
 
 ## <desc>
-## <p>
-## Allow pcmanfm to exec apps without dedicated domains.
-## </p>
+##	<p>
+##	Allow pcmanfm to exec apps without dedicated domains.
+##	</p>
 ## </desc>
 gen_tunable(pcmanfm_exec_generic, false)
 
 ## <desc>
-## <p>
-## Allow pcmanfm to read mounts.
-## </p>
+##	<p>
+##	Allow pcmanfm to read mounts.
+##	</p>
 ## </desc>
 gen_tunable(pcmanfm_read_mounts, false)
 
 ## <desc>
-## <p>
-## Allow pcmanfm to read unlabeled files and directories.
-## </p>
+##	<p>
+##	Allow pcmanfm to read unlabeled files and directories.
+##	</p>
 ## </desc>
 gen_tunable(pcmanfm_read_unlabeled, false)
 
@@ -84,7 +84,6 @@ allow pcmanfm_domain self : fifo_file { read write };
 dontaudit pcmanfm_domain self : fifo_file getattr;
 dontaudit pcmanfm_domain self : shm create;
 fs_dontaudit_getattr_tmpfs(pcmanfm_domain)
-allow pcmanfm_domain self : unix_stream_socket connectto;
 
 fs_dontaudit_getattr_xattr_fs(pcmanfm_domain)
 
@@ -119,6 +118,7 @@ optional_policy(`
 
 userdom_user_tmp_filetrans(pcmanfm_domain, pcmanfm_socket_t, sock_file)
 allow pcmanfm_domain pcmanfm_socket_t : sock_file { create_sock_file_perms write_sock_file_perms delete_sock_file_perms };
+allow pcmanfm_domain self : unix_stream_socket connectto;
 
 # For various gui data without unique types.
 #

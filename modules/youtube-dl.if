@@ -13,7 +13,7 @@
 ## <param name="domain">
 ##	<summary>
 ##	Domain from which to transition.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`youtube_dl_domtrans',`
@@ -32,7 +32,7 @@ interface(`youtube_dl_domtrans',`
 ## <param name="role">
 ##	<summary>
 ##	Role from which to exec youtube-dl.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`youtube_dl_role',`

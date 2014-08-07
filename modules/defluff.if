@@ -13,7 +13,7 @@
 ## <param name="domain">
 ##	<summary>
 ##	Domain from which to transition.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`defluff_domain_transition_pattern',`
@@ -32,7 +32,7 @@ interface(`defluff_domain_transition_pattern',`
 ## <param name="role">
 ##	<summary>
 ##	Role from which to exec defluff.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`defluff_role',`

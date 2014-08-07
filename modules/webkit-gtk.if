@@ -19,7 +19,7 @@
 ## <param name="role">
 ##	<summary>
 ##	Role from which to use.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`webkit_gtk_role',`
@@ -41,7 +41,7 @@ interface(`webkit_gtk_role',`
 ## <param name="role">
 ##	<summary>
 ##	Domain from which to create.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`webkit_gtk_cache_create',`
@@ -67,17 +67,17 @@ interface(`webkit_gtk_cache_create',`
 ## <param name="domain">
 ##	<summary>
 ##	Domain from which to create.
-##	</summary
+##	</summary>
 ## </param>
 ## <param name="type">
 ##	<summary>
 ##	The private type to create.
-##	</summary
+##	</summary>
 ## </param>
 ## <param name="class">
 ##	<summary>
 ##	The class of file.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`webkit_gtk_cache_filetrans',`
@@ -99,7 +99,7 @@ interface(`webkit_gtk_cache_filetrans',`
 ## <param name="role">
 ##	<summary>
 ##	Domain from which to create.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`webkit_gtk_data_create',`
@@ -125,17 +125,17 @@ interface(`webkit_gtk_data_create',`
 ## <param name="domain">
 ##	<summary>
 ##	Domain from which to create.
-##	</summary
+##	</summary>
 ## </param>
 ## <param name="type">
 ##	<summary>
 ##	The private type to create.
-##	</summary
+##	</summary>
 ## </param>
 ## <param name="class">
 ##	<summary>
 ##	The class of file.
-##	</summary
+##	</summary>
 ## </param>
 
 interface(`webkit_gtk_data_filetrans',`

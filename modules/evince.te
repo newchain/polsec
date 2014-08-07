@@ -16,45 +16,45 @@ gen_require(`
 #
 
 ## <desc>
-## <p>
-## Allow evince to communicate via dbus IPC.
-## </p>
+##	<p>
+##	Allow evince to communicate via dbus IPC.
+##	</p>
 ## </desc>
 gen_tunable(evince_dbus, false)
 
 ## <desc>
-## <p>
-## Allow evince to read user home files.
-## </p>
+##	<p>
+##	Allow evince to read user home files.
+##	</p>
 ## </desc>
 gen_tunable(evince_read_user_home_content, false)
 
 ## <desc>
-## <p>
-## Allow evince to save settings. Disable 
-## to prevent evince from writing to HOME.
-## </p>
+##	<p>
+##	Allow evince to save settings. Disable 
+##	to prevent evince from writing to HOME.
+##	</p>
 ## </desc>
 gen_tunable(evince_write_to_home, true)
 
 ## <desc>
-## <p>
-## Allow evince to read all config
-## </p>
+##	<p>
+##	Allow evince to read all config
+##	</p>
 ## </desc>
 gen_tunable(evince_read_generic_config, false)
 
 ## <desc>
-## <p>
-## Allow evince to read /media and /mnt.
-## </p>
+##	<p>
+##	Allow evince to read /media and /mnt.
+##	</p>
 ## </desc>
 gen_tunable(evince_read_mounts, false)
 
 ## <desc>
-## <p>
-## Allow evince to read unlabeled files.
-## </p>
+##	<p>
+##	Allow evince to read unlabeled files.
+##	</p>
 ## </desc>
 gen_tunable(evince_read_unlabeled, false)
 
