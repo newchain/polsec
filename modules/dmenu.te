@@ -1,0 +1,100 @@
+policy_module(dmenu, 1.0)
+
+
+gen_require(`
+	attribute exec_type;
+
+	type bin_t;
+	type locale_t;
+	type user_tmp_t;
+')
+
+
+########################################
+#
+# Declarations
+#
+
+attribute dmenu_domain;
+
+type dmenu_exec_t;
+
+attribute dmenu_run_domain;
+
+type dmenu_run_exec_t;
+
+attribute dmenu_run_helper_domain;
+
+type dmenu_run_helper_t;
+
+attribute dmenu_run_shell_domain;
+
+attribute stest_domain;
+
+type stest_exec_t;
+
+attribute_role dmenu_roles;
+
+########################################
+#
+# dmenu local policy
+#
+
+files_dontaudit_search_home(dmenu_domain)
+
+# Without this, dmenu fails to show.
+#
+miscfiles_read_localization(dmenu_domain)
+
+########################################
+#
+# dmenu_helper local policy
+#
+
+dontaudit dmenu_run_helper_domain self : process getsched;
+
+files_dontaudit_search_home(dmenu_run_helper_domain)
+
+kernel_dontaudit_read_system_state(dmenu_run_helper_domain)
+
+dontaudit dmenu_run_helper_domain locale_t : dir search;
+
+########################################
+#
+# dmenu_run_t local policy
+#
+
+corecmd_search_bin(dmenu_run_domain)
+corecmd_read_bin_symlinks(dmenu_run_domain)
+
+files_dontaudit_search_home(dmenu_run_domain)
+userdom_dontaudit_search_user_home_dirs(dmenu_run_domain)
+dontaudit dmenu_run_domain user_tmp_t : dir search;
+
+dontaudit dmenu_run_domain locale_t : dir search;
+
+########################################
+#
+# dmenu_run_shell_t local policy
+#
+
+files_dontaudit_search_home(dmenu_run_shell_domain)
+
+dontaudit dmenu_run_shell_domain locale_t : dir search;
+
+kernel_dontaudit_read_system_state(dmenu_run_shell_domain)
+
+userdom_dontaudit_search_user_home_dirs(dmenu_run_shell_domain)
+
+corecmd_search_bin(dmenu_run_shell_domain)
+
+########################################
+#
+# stest_t local policy
+#
+
+files_dontaudit_search_home(stest_domain)
+
+corecmd_list_bin(stest_domain)
+corecmd_read_bin_symlinks(stest_domain)
+allow stest_domain exec_type : file { getattr execute };

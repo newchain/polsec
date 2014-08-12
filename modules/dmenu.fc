@@ -1,0 +1,3 @@
+/usr/bin/dmenu		--	gen_context(system_u:object_r:dmenu_exec_t,s0)
+/usr/bin/dmenu_run	--	gen_context(system_u:object_r:dmenu_run_exec_t,s0)
+/usr/bin/stest		--	gen_context(system_u:object_r:stest_exec_t,s0)

@@ -1,0 +1,126 @@
+## <summary>dmenu policy</summary>
+## <desc>
+##	<p>
+##		Policy for dmenu.
+##	</p>
+## </desc>
+
+
+###############################
+## <summary>
+##	A domain template for dmenu.
+## </summary>
+## <param name="role">
+##	<summary>
+##	The role(s) used for the dmenu domain.
+##	</summary>
+## </param>
+## <param name="role_domain">
+##	<summary>
+##	The domain associated with the role.
+##	</summary>
+## </param>
+## <param name="preentry_domain">
+##	<summary>
+##	The domain from which to exec dmenu.
+##	</summary>
+## </param>
+## <param name="domain_prefix">
+##	<summary>
+##	The prefix of the dmenu domain.
+##	</summary>
+## </param>
+## <param name="x_domain">
+##	<summary>
+##	Domain of the X server with which to permit connection.
+##	</summary>
+## </param>
+
+template(`dmenu_domain_template',`
+
+	gen_require(`
+		attribute dmenu_domain;
+		attribute dmenu_run_domain;
+		attribute dmenu_run_helper_domain;
+		attribute dmenu_run_shell_domain;
+		attribute stest_domain;
+		attribute_role dmenu_roles;
+		role $1;
+		type $2;
+		type $3;
+		type $5;
+		type bin_t;
+		type dmenu_exec_t;
+		type dmenu_run_exec_t;
+		type shell_exec_t;
+		type stest_exec_t;
+	')
+
+	########################################
+	#
+	# Declarations
+	#
+
+	type $4_dmenu_t, dmenu_domain;
+	userdom_user_application_domain($4_dmenu_t, dmenu_exec_t)
+
+	type $4_dmenu_run_t, dmenu_run_domain;
+	userdom_user_application_domain($4_dmenu_run_t, dmenu_run_exec_t)
+
+	type $4_dmenu_run_helper_t, dmenu_run_helper_domain;
+	userdom_user_application_domain($4_dmenu_run_helper_t, bin_t)
+
+	type $4_dmenu_run_shell_t, dmenu_run_shell_domain;
+	userdom_user_application_domain($4_dmenu_run_shell_t, shell_exec_t)
+
+	type $4_stest_t, stest_domain;
+	userdom_user_application_domain($4_stest_t, stest_exec_t)
+
+	roleattribute $1 dmenu_roles;
+	role dmenu_roles types { $4_dmenu_t $4_dmenu_run_t $4_dmenu_run_helper_t $4_dmenu_run_shell_t $4_stest_t };
+
+	########################################
+	#
+	# Local policy
+	#
+
+	domtrans_pattern($3, dmenu_run_exec_t, $4_dmenu_run_t)
+
+	########################################
+	#
+	# dmenu_t local policy
+	#
+
+	dontaudit $4_dmenu_t $3 : fd use;
+
+	allow $4_dmenu_t $5 : unix_stream_socket connectto;
+
+	########################################
+	#
+	# dmenu_run_t local policy
+	#
+
+	dontaudit $4_dmenu_run_t $2 : fd use;
+
+	domtrans_pattern($4_dmenu_run_t, bin_t, $4_dmenu_run_helper_t)
+	domtrans_pattern($4_dmenu_run_t, shell_exec_t, $4_dmenu_run_shell_t)
+	domtrans_pattern($4_dmenu_run_t, dmenu_exec_t, $4_dmenu_t)
+	domtrans_pattern($4_dmenu_run_t, stest_exec_t, $4_stest_t)
+
+	allow $4_dmenu_run_t $5 : unix_stream_socket connectto;
+
+	########################################
+	#
+	# dmenu_run_helper_t local policy
+	#
+
+	dontaudit $4_dmenu_run_helper_t $2 : fd use;
+	dontaudit $4_dmenu_run_helper_t $3 : fd use;
+
+	########################################
+	#
+	# dmenu_run_shell_t local policy
+	#
+
+	dontaudit $4_dmenu_run_shell_t $3 : fd use;
+')

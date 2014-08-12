@@ -1,0 +1,51 @@
+policy_module(dwm, 1.0)
+
+
+gen_require(`
+
+	role staff_r;
+	type staff_t;
+	role user_r;
+	type user_t;
+
+	type locale_t;
+	type shell_exec_t;
+')
+
+########################################
+#
+# Declarations
+#
+
+attribute dwm_domain;
+
+type dwm_exec_t;
+
+attribute dwm_shell_domain;
+type dwm_shell_t;
+userdom_user_application_domain(dwm_shell_t, shell_exec_t)
+
+attribute_role dwm_roles;
+
+########################################
+#
+# Local policy
+#
+
+dwm_domain_template(user_r, user_t, user_t, user, xserver_t)
+dwm_domain_template(staff_r, staff_t, staff_t, staff, xserver_t)
+
+optional_policy(`
+
+	userdom_dontaudit_search_icons_home(dwm_domain)
+')
+
+xserver_read_user_xauth(dwm_domain)
+
+# For /usr/share/cursors
+#
+files_read_usr_files(dwm_domain)
+
+# Omitting this replaces titles with "broken"
+#
+miscfiles_read_localization(dwm_domain)

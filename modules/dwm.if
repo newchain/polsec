@@ -1,0 +1,124 @@
+## <summary>dwm policy</summary>
+## <desc>
+##	<p>
+##		Policy for dwm.
+##	</p>
+## </desc>
+
+
+###############################
+## <summary>
+##	A domain template for dwm.
+## </summary>
+## <param name="role">
+##	<summary>
+##	The role used for the dwm domain.
+##	</summary>
+## </param>
+## <param name="role_domain">
+##	<summary>
+##	The domain associated with the role.
+##	</summary>
+## </param>
+## <param name="preentry_domain">
+##	<summary>
+##	The domain from which to exec dwm.
+##	</summary>
+## </param>
+## <param name="domain_prefix">
+##	<summary>
+##	The prefix of the dwm domain.
+##	</summary>
+## </param>
+## <param name="x_domain">
+##	<summary>
+##	Domain of the X server with which to permit connection.
+##	</summary>
+## </param>
+
+template(`dwm_domain_template',`
+
+	gen_require(`
+		attribute dwm_domain;
+		attribute_role dwm_roles;
+		role $1;
+		type $2;
+		type $3;
+		type $5;
+		type dwm_exec_t;
+	')
+
+	########################################
+	#
+	# Declarations
+	#
+
+	## <desc>
+	##	<p>
+	##	Allow $4_dwm to exec apps through dmenu.
+	##	</p>
+	## </desc>
+	gen_tunable($4_dwm_exec_dmenu, false)
+
+	type $4_dwm_t, dwm_domain;
+	userdom_user_application_domain($4_dwm_t, dwm_exec_t)
+
+	roleattribute $1 dwm_roles;
+	role dwm_roles types $4_dwm_t;
+
+	########################################
+	#
+	# Local policy
+	#
+
+	domtrans_pattern($3, dwm_exec_t, $4_dwm_t)
+
+	auth_use_nsswitch($4_dwm_t)
+
+	allow $4_dwm_t $5 : unix_stream_socket connectto;
+')
+
+
+###############################
+## <summary>
+##	A domain template for dwm with permission to exec via dmenu.
+## </summary>
+## <param name="role">
+##	<summary>
+##	The role used for the dwm domain.
+##	</summary>
+## </param>
+## <param name="role_domain">
+##	<summary>
+##	The domain associated with the role.
+##	</summary>
+## </param>
+## <param name="preentry_domain">
+##	<summary>
+##	The domain from which to exec dwm.
+##	</summary>
+## </param>
+## <param name="domain_prefix">
+##	<summary>
+##	The prefix of the dwm domain.
+##	</summary>
+## </param>
+## <param name="x_domain">
+##	<summary>
+##	Domain of the X server with which to permit connection.
+##	</summary>
+## </param>
+
+template(`dwm_domain_template_with_dmenu',`
+
+	dwm_domain_template($1, $2, $3, $4, $5)
+
+	dmenu_domain_template($1, $2, $4_dwm_t, $4_dwm, $5)
+
+	corecmd_search_bin($4_dwm_t)
+	#
+	# To find sh.
+	#
+	corecmd_read_bin_symlinks($4_dwm_t)
+	domtrans_pattern($4_dwm_t, shell_exec_t, dwm_shell_t)
+')
