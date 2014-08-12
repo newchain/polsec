@@ -383,7 +383,14 @@ interface(`userdom_read_gtk_config',`
 
 ###############################
 ## <summary>
+##	<p>
 ##	Suppress logs of denied gtk config listings.
+##	</p>
+##	<p>
+##	Apps list gtk_config_home_t before attempting to
+##	add to recently used documents list. This interface
+##	is useful in suppressing related logs.
+##	</p>
 ## </summary>
 ## <param name="domain">
 ##	<summary>
