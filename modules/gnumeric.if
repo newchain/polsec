@@ -22,6 +22,10 @@ interface(`gnumeric_domtrans',`
 	')
 
 	domtrans_pattern($1, gnumeric_exec_t, gnumeric_t);
+
+# Preserve pam_mktemp.
+#
+	allow $1 gnumeric_t : process noatsecure;
 ')
 
 
@@ -42,8 +46,4 @@ interface(`gnumeric_role',`
 
 	gnumeric_domtrans($1);
 	role $2 types gnumeric_t;
-
-# Preserve pam_mktemp.
-#
-	allow $1 gnumeric_t : process noatsecure;
 ')
