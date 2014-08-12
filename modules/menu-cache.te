@@ -98,7 +98,7 @@ allow menu-cache-gen_t usr_t : file read_file_perms;
 corecmd_search_bin(menu-cached_t)
 
 allow menu-cached_t menu-cache-gen_data_t : dir list_dir_perms;
-allow menu-cache-gen_t menu-cache-gen_data_t : dir list_dir_perms;
+allow menu-cache-gen_t menu-cache-gen_data_t : dir read;
 allow menu-cache-gen_t menu-cache-gen_data_t : file read_file_perms;
 
 
