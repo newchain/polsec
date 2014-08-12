@@ -104,15 +104,6 @@ allow menu-cache-gen_t menu-cache-gen_data_t : dir read;
 allow menu-cache-gen_t menu-cache-gen_data_t : file read_file_perms;
 
 
-tunable_policy(`menu_cached_read_app_agnostic_user_config',`
-
-	gen_require(`
-		type xdg_data_home_t;
-	')
-
-	allow menu-cached_t xdg_data_home_t : dir list_dir_perms;
-')
-
 optional_policy(`
 
 	tunable_policy(`menu_cached_read_app_agnostic_user_config',`
