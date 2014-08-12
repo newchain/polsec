@@ -22,10 +22,10 @@ gen_require(`
 
 ## <desc>
 ##	<p>
-##	Allow menu-cached to read generic user config
+##	Allow menu-cached to read app-agnostic user config
 ##	</p>
 ## </desc>
-gen_tunable(menu_cached_read_generic_user_config, false)
+gen_tunable(menu_cached_read_app_agnostic_user_config, false)
 
 type menu-cached_t;
 type menu-cached_exec_t;
@@ -109,7 +109,7 @@ allow menu-cache-gen_t menu-cache-gen_data_t : dir read;
 allow menu-cache-gen_t menu-cache-gen_data_t : file read_file_perms;
 
 
-tunable_policy(`menu_cached_read_generic_user_config',`
+tunable_policy(`menu_cached_read_app_agnostic_user_config',`
 
 	gen_require(`
 		type xdg_data_home_t;
