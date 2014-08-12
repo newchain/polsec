@@ -1,11 +1,6 @@
 policy_module(pidgin, 1.00)
 
 
-gen_require(`
-	type system_dbusd_var_lib_t;
-')
-
-
 ########################################
 #
 # Declarations
@@ -140,6 +135,10 @@ tunable_policy(`pidgin_dbus',`
 #
 # todo: grin and bear dbus for this purpose
 #
+	gen_require(`
+		type system_dbusd_var_lib_t;
+	')
+
 	files_search_var_lib(pidgin_t)
 	read_lnk_files_pattern(pidgin_t, system_dbusd_var_lib_t, system_dbusd_var_lib_t)
 ')
