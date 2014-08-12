@@ -45,9 +45,11 @@ dontaudit gnumeric_t self : shm create;
 
 fs_dontaudit_getattr_xattr_fs(gnumeric_t)
 
-# for gtk settings and pango module list
-#
-files_read_etc_files(gnumeric_t)
+optional_policy(`
+
+	miscfiles_read_gtk_etc(gnumeric_t)
+	miscfiles_read_pango_etc(gnumeric_t)
+')
 
 xserver_use_user_fonts(gnumeric_t)
 
