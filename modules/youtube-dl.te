@@ -6,6 +6,8 @@ gen_require(`
 	type shell_exec_t;
 	type user_tty_device_t;
 	type user_devpts_t;
+	type user_tmp_t;
+	type xdg_data_home_t;
 	type xdg_videos_home_t;
 
 	role staff_r;
@@ -59,6 +61,8 @@ create_files_pattern(youtube-dl_t, youtube-dl_cache_home_t, youtube-dl_cache_hom
 xdg_search_config_home_dirs(youtube-dl_t)
 allow youtube-dl_t youtube-dl_config_home_t : file read_file_perms;
 
+dontaudit youtube-dl_t xdg_data_home_t : dir search;
+
 optional_policy(`
 #
 # Here be local types defined in local modules.
@@ -72,6 +76,10 @@ optional_policy(`
 dontaudit youtube-dl_t xdg_videos_home_t : file read;
 
 kernel_dontaudit_read_system_state(youtube-dl_t)
+
+# More junk from sqlite.
+#
+dontaudit youtube-dl_t user_tmp_t : dir write;
 
 miscfiles_read_localization(youtube-dl_t)
 
