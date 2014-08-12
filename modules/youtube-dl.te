@@ -4,6 +4,7 @@ policy_module(youtube-dl, 1.0)
 gen_require(`
 	type bin_t;
 	type shell_exec_t;
+	type user_tty_device_t;
 	type user_devpts_t;
 	type xdg_videos_home_t;
 
@@ -43,7 +44,8 @@ corecmd_read_bin_symlinks(youtube-dl_t)
 can_exec(youtube-dl_t, bin_t)
 can_exec(youtube-dl_t, shell_exec_t)
 
-allow youtube-dl_t user_devpts_t : chr_file { read write ioctl getattr };
+allow youtube-dl_t { user_devpts_t user_tty_device_t } : chr_file { read write };
+dontaudit youtube-dl_t { user_devpts_t user_tty_device_t } : chr_file { ioctl getattr };
 
 auth_use_nsswitch(youtube-dl_t)
 
