@@ -2,8 +2,6 @@ policy_module(gnumeric, 1.0)
 
 
 gen_require(`
-	type fs_t;
-
 	role user_r;
 	type user_t;
 	role staff_r;
@@ -21,7 +19,7 @@ gen_require(`
 ##	Allow gnumeric to read app-agnostic user settings.
 ##	</p>
 ## </desc>
-gen_tunable(gnumeric_read_generic_user_settings, false)
+gen_tunable(gnumeric_read_app_agnostic_user_settings, false)
 
 type gnumeric_t;
 type gnumeric_exec_t;
@@ -75,7 +73,7 @@ read_lnk_files_pattern(gnumeric_t, gnumeric_data_t, gnumeric_data_t)
 miscfiles_read_localization(gnumeric_t)
 
 
-tunable_policy(`gnumeric_read_generic_user_settings',`
+tunable_policy(`gnumeric_read_app_agnostic_user_settings',`
 
 	xdg_read_config_home_files(gnumeric_t)
 	xdg_read_data_home_files(gnumeric_t)
