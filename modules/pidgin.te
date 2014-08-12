@@ -14,6 +14,13 @@ gen_require(`
 
 ## <desc>
 ##	<p>
+##	Allow pidgin to communicate via clearnet.
+##	<p>
+## <desc>
+gen_tunable(pidgin_connect_clearnet, true)
+
+## <desc>
+##	<p>
 ##	Allow pidgin to communicate via dbus IPC.
 ##	</p>
 ## </desc>
@@ -108,11 +115,21 @@ miscfiles_read_localization(pidgin_t)
 list_dirs_pattern(pidgin_t, purple_data_t, purple_data_t)
 read_files_pattern(pidgin_t, purple_data_t, purple_data_t)
 
-sysnet_dns_name_resolve(pidgin_t)
 allow pidgin_t self : tcp_socket { create ioctl };
-corenet_tcp_connect_all_unreserved_ports(pidgin_t)
-corenet_tcp_connect_jabber_client_port(pidgin_t)
 
+
+# Throws a syntax error as a boolean...
+#
+#tunable_policy(`pidgin_connect_clearnet',`
+
+	sysnet_dns_name_resolve(pidgin_t)
+#')
+
+tunable_policy(`pidgin_connect_clearnet',`
+
+	corenet_tcp_connect_all_unreserved_ports(pidgin_t)
+	corenet_tcp_connect_jabber_client_port(pidgin_t)
+')
 
 tunable_policy(`pidgin_dbus',`
 #
