@@ -21,10 +21,10 @@ gen_tunable(pidgin_dbus, false)
 
 ## <desc>
 ##	<p>
-##	Allow pidgin to read generic data in HOME.
+##	Allow pidgin to read user content files.
 ##	</p>
 ## </desc>
-gen_tunable(pidgin_read_generic_user_content, false)
+gen_tunable(pidgin_read_user_content_files, false)
 
 ## <desc>
 ##	<p>
@@ -122,7 +122,7 @@ tunable_policy(`pidgin_dbus',`
 	read_lnk_files_pattern(pidgin_t, system_dbusd_var_lib_t, system_dbusd_var_lib_t)
 ')
 
-tunable_policy(`pidgin_read_generic_user_content',`
+tunable_policy(`pidgin_read_user_content_files',`
 
 	userdom_list_user_home_dirs(pidgin_t)
 	userdom_list_user_home_content(pidgin_t)
