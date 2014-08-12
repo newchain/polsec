@@ -109,6 +109,8 @@ xserver_read_user_xauth(pidgin_t)
 #
 userdom_home_filetrans_user_home_dir(purple_home_t, ".purple")
 
+kernel_dontaudit_read_system_state(pidgin_t)
+
 kernel_dontaudit_search_sysctl(pidgin_t)
 
 userdom_user_tmp_filetrans(pidgin_t, pidgin_tmp_t, dir)
