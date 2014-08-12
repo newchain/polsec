@@ -56,6 +56,13 @@ gen_tunable(pidgin_tor, false)
 
 ## <desc>
 ##	<p>
+##	Allow pidgin to connect to all unreserved ports.
+##	<p>
+## <desc>
+gen_tunable(pidgin_connect_all_unreserved, false)
+
+## <desc>
+##	<p>
 ##	Allow pidgin to save settings. Disable to prevent pidgin from writing
 ##	to HOME.
 ##	</p>
@@ -127,7 +134,6 @@ allow pidgin_t self : tcp_socket { create ioctl };
 
 tunable_policy(`pidgin_connect_clearnet',`
 
-	corenet_tcp_connect_all_unreserved_ports(pidgin_t)
 	corenet_tcp_connect_jabber_client_port(pidgin_t)
 ')
 
@@ -161,6 +167,11 @@ tunable_policy(`pidgin_rand',`
 tunable_policy(`pidgin_tor',`
 
 	corenet_tcp_connect_tor_port(pidgin_t)
+')
+
+tunable_policy(`pidgin_connect_all_unreserved',`
+
+	corenet_tcp_connect_all_unreserved_ports(pidgin_t)
 ')
 
 tunable_policy(`pidgin_write_to_home',`
