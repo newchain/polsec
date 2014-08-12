@@ -151,6 +151,17 @@ tunable_policy(`pcmanfm_read_generic_config',`
 	xdg_read_data_home_files(pcmanfm_domain)
 ')
 
+optional_policy(`
+
+	tunable_policy(`pcmanfm_read_generic_config',`
+
+		userdom_list_applications_data_home(pcmanfm_domain)
+		userdom_read_gtk_config(pcmanfm_domain)
+		userdom_dontaudit_list_gtk_config(pcmanfm_domain)
+		userdom_read_user_mime(pcmanfm_domain)
+	')
+')
+
 tunable_policy(`pcmanfm_read_user_home_files',`
 
 	userdom_list_user_home_dirs(pcmanfm_domain)
@@ -164,6 +175,14 @@ tunable_policy(`pcmanfm_read_user_home_files',`
 	xdg_read_videos_home(pcmanfm_domain)
 
 	xserver_use_user_fonts(pcmanfm_domain)
+')
+
+optional_policy(`
+
+	tunable_policy(`pcmanfm_read_user_home_files',`
+
+		xdg_list_downloads_home(pcmanfm_domain)
+	')
 ')
 
 tunable_policy(`pcmanfm_manage_home',`
@@ -226,12 +245,9 @@ optional_policy(`
 
 	userdom_create_user_thumbnails(pcmanfm_domain)
 	userdom_delete_user_thumbnails(pcmanfm_domain)
-	userdom_dontaudit_list_gtk_config(pcmanfm_domain)
 	userdom_list_user_documents(pcmanfm_domain)
-	userdom_read_gtk_config(pcmanfm_domain)
 	userdom_read_icons_home(pcmanfm_domain)
 	userdom_read_user_documents(pcmanfm_domain)
-	userdom_read_user_mime(pcmanfm_domain)
 	userdom_read_user_thumbnails(pcmanfm_domain)
 	userdom_read_user_themes(pcmanfm_domain)
 ')
