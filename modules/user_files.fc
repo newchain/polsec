@@ -12,6 +12,8 @@ HOME_DIR/\.drirc		--	gen_context(system_u:object_r:dri_home_t,s0)
 
 HOME_DIR/\.icons(/.*)?			gen_context(system_u:object_r:icons_home_t,s0)
 
+HOME_DIR/\.local/share/applications(/.*)?	gen_context(system_u:object_r:applications_data_home_t,s0)
+
 HOME_DIR/\.local/share/mime(/.*)?	gen_context(system_u:object_r:user_mime_t,s0)
 
 HOME_DIR/\.themes(/.*)?			gen_context(system_u:object_r:themes_home_t,s0)
