@@ -110,6 +110,8 @@ xserver_read_user_xauth(pcmanfm_domain)
 
 kernel_dontaudit_read_system_state(pcmanfm_domain)
 
+kernel_dontaudit_search_sysctl(pcmanfm_domain)
+
 optional_policy(`
 
 	miscfiles_read_libfm_data(pcmanfm_domain)
