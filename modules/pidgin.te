@@ -3,7 +3,6 @@ policy_module(pidgin, 1.00)
 
 gen_require(`
 	type system_dbusd_var_lib_t;
-#	type user_devpts_t;
 ')
 
 
@@ -94,8 +93,6 @@ allow pidgin_t self : fifo_file rw_fifo_file_perms;
 dontaudit pidgin_t self : shm create;
 
 fs_dontaudit_getattr_xattr_fs(pidgin_t)
-
-#allow pidgin_t user_devpts_t : chr_file rw_chr_file_perms;
 
 dev_read_urand(pidgin_t)
 
