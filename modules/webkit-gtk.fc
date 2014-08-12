@@ -1,5 +1,6 @@
 HOME_DIR/\.cache/wk2ext		-d		gen_context(system_u:object_r:webkit-gtk_cache_home_t,s0)
 HOME_DIR/\.local/share/webkit	-d		gen_context(system_u:object_r:webkit-gtk_data_home_t,s0)
+HOME_DIR/\.local/share/webkitgtk	-d	gen_context(system_u:object_r:webkit-gtk_data_home_t,s0)
 
 /usr/libexec/WebKitNetworkProcess	--	gen_context(system_u:object_r:WebKitNetworkProcess_exec_t,s0)
 /usr/libexec/WebKitWebProcess		--	gen_context(system_u:object_r:WebKitWebProcess_exec_t,s0)
