@@ -38,8 +38,9 @@ interface(`youtube_dl_domtrans',`
 interface(`youtube_dl_role',`
 	gen_require(`
 		type youtube-dl_t;
+		type youtube-dl_shell_t;
 	')
 
 	youtube_dl_domtrans($1)
-	role $2 types youtube-dl_t;
+	role $2 types { youtube-dl_t youtube-dl_shell_t };
 ')

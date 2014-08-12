@@ -26,6 +26,9 @@ type youtube-dl_t;
 type youtube-dl_exec_t;
 userdom_user_application_domain(youtube-dl_t, youtube-dl_exec_t)
 
+type youtube-dl_shell_t;
+userdom_user_application_domain(youtube-dl_shell_t, shell_exec_t)
+
 type youtube-dl_cache_home_t;
 xdg_cache_home_content(youtube-dl_cache_home_t)
 
@@ -34,7 +37,7 @@ xdg_config_home_content(youtube-dl_config_home_t)
 
 ########################################
 #
-# Local policy
+# youtube-dl_t local policy
 #
 
 youtube_dl_role(staff_t, staff_r)
@@ -48,6 +51,7 @@ corecmd_search_bin(youtube-dl_t)
 corecmd_read_bin_symlinks(youtube-dl_t)
 can_exec(youtube-dl_t, bin_t)
 can_exec(youtube-dl_t, shell_exec_t)
+domtrans_pattern(youtube-dl_t, shell_exec_t, youtube-dl_shell_t)
 
 allow youtube-dl_t { user_devpts_t user_tty_device_t } : chr_file { read write };
 dontaudit youtube-dl_t { user_devpts_t user_tty_device_t } : chr_file { ioctl getattr };
@@ -86,3 +90,16 @@ miscfiles_read_localization(youtube-dl_t)
 allow youtube-dl_t self : tcp_socket { write getattr connect read getopt create };
 corenet_tcp_connect_http_port(youtube-dl_t)
 allow youtube-dl_t self : udp_socket { write read create connect getattr };
+
+########################################
+#
+# youtube-dl_shell_t local policy
+#
+
+corecmd_read_bin_symlinks(youtube-dl_shell_t)
+
+allow youtube-dl_shell_t { user_devpts_t user_tty_device_t } : chr_file { read write };
+
+kernel_dontaudit_read_system_state(youtube-dl_shell_t)
+
+miscfiles_read_localization(youtube-dl_shell_t)
