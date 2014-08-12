@@ -52,7 +52,7 @@ gen_tunable(pidgin_rand, false)
 ##	Allow pidgin to connect via tor.
 ##	</p>
 ## </desc>
-gen_tunable(pidgin_tor, false)
+gen_tunable(pidgin_connect_tor, false)
 
 ## <desc>
 ##	<p>
@@ -164,7 +164,7 @@ tunable_policy(`pidgin_rand',`
 	dev_read_rand(pidgin_t)
 ')
 
-tunable_policy(`pidgin_tor',`
+tunable_policy(`pidgin_connect_tor',`
 
 	corenet_tcp_connect_tor_port(pidgin_t)
 ')
