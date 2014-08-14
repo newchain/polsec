@@ -8,7 +8,7 @@
 
 ###############################
 ## <summary>
-##	A domain template for dwm.
+##	A domain template for dwm without permission to exec via dmenu.
 ## </summary>
 ## <param name="role">
 ##	<summary>
@@ -52,13 +52,6 @@ template(`dwm_domain_template',`
 	#
 	# Declarations
 	#
-
-	## <desc>
-	##	<p>
-	##	Allow $4_dwm to exec apps through dmenu.
-	##	</p>
-	## </desc>
-	gen_tunable($4_dwm_exec_dmenu, false)
 
 	type $4_dwm_t, dwm_domain;
 	userdom_user_application_domain($4_dwm_t, dwm_exec_t)
