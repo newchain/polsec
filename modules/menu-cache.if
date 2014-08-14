@@ -107,5 +107,4 @@ interface(`menu_cache_role',`
 	role $2 types { menu-cached_t menu-cache-gen_t };
 
 	allow menu-cached_t $1 : unix_stream_socket { read write };
-
 ')

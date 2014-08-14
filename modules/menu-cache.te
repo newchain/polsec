@@ -21,7 +21,7 @@ gen_require(`
 
 ## <desc>
 ##	<p>
-##	Allow menu-cached to read app-agnostic user config
+##	Allow menu-cached to read app-agnostic user config.
 ##	</p>
 ## </desc>
 gen_tunable(menu_cached_read_app_agnostic_user_config, false)
@@ -57,29 +57,22 @@ files_type(menu-cache-gen_data_t);
 menu_cache_role(staff_t, staff_r)
 menu_cache_role(user_t, user_r)
 
+########################################
+#
+# menu-cached_t local policy
+#
+
 allow menu-cached_t self : fifo_file { read write };
 
-fs_dontaudit_getattr_xattr_fs({ menu-cached_t menu-cache-gen_t })
-
-corecmd_search_bin(menu-cache-gen_t)
-allow menu-cache-gen_t exec_type : file { execute getattr };
+fs_dontaudit_getattr_xattr_fs(menu-cached_t)
 
 allow menu-cached_t menu-cache-gen_etc_t : dir list_dir_perms;
-allow menu-cache-gen_t menu-cache-gen_etc_t : dir { read getattr search };
-allow menu-cache-gen_t menu-cache-gen_etc_t : file read_file_perms;
 
 auth_use_nsswitch(menu-cached_t)
 
 userdom_search_user_home_dirs(menu-cached_t)
 
 allow menu-cached_t xdg_cache_home_t : dir search;
-
-xdg_cache_home_filetrans(menu-cache-gen_t, menu-cached_cache_home_t, dir, "menus")
-allow menu-cache-gen_t menu-cached_cache_home_t : dir create;
-create_files_pattern(menu-cache-gen_t, menu-cached_cache_home_t, menu-cached_cache_home_t)
-rw_files_pattern(menu-cache-gen_t, menu-cached_cache_home_t, menu-cached_cache_home_t)
-rename_files_pattern(menu-cache-gen_t, menu-cached_cache_home_t, menu-cached_cache_home_t)
-delete_files_pattern(menu-cache-gen_t, menu-cached_cache_home_t, menu-cached_cache_home_t)
 read_files_pattern(menu-cached_t, menu-cached_cache_home_t, menu-cached_cache_home_t)
 
 xdg_search_config_home_dirs(menu-cached_t)
@@ -87,18 +80,43 @@ xdg_search_config_home_dirs(menu-cached_t)
 userdom_user_tmp_filetrans(menu-cached_t, menu-cached_socket_t, sock_file)
 allow menu-cached_t menu-cached_socket_t : sock_file { create unlink };
 
-domtrans_pattern(menu-cached_t, menu-cache-gen_exec_t, menu-cache-gen_t)
-
 # For /usr/share/applications and /usr/share/icons
 #
 allow menu-cached_t usr_t : dir list_dir_perms;
 allow menu-cached_t usr_t : file read;
+
+allow menu-cached_t menu-cache-gen_data_t : dir list_dir_perms;
+
+corecmd_search_bin(menu-cached_t)
+domtrans_pattern(menu-cached_t, menu-cache-gen_exec_t, menu-cache-gen_t)
+
+########################################
+#
+# menu-cache-gen_t local policy
+#
+
+fs_dontaudit_getattr_xattr_fs(menu-cache-gen_t)
+
+corecmd_search_bin(menu-cache-gen_t)
+allow menu-cache-gen_t exec_type : file { execute getattr };
+
+allow menu-cache-gen_t menu-cache-gen_etc_t : dir { read getattr search };
+allow menu-cache-gen_t menu-cache-gen_etc_t : file read_file_perms;
+
+xdg_cache_home_filetrans(menu-cache-gen_t, menu-cached_cache_home_t, dir, "menus")
+allow menu-cache-gen_t menu-cached_cache_home_t : dir create;
+create_files_pattern(menu-cache-gen_t, menu-cached_cache_home_t, menu-cached_cache_home_t)
+rw_files_pattern(menu-cache-gen_t, menu-cached_cache_home_t, menu-cached_cache_home_t)
+rename_files_pattern(menu-cache-gen_t, menu-cached_cache_home_t, menu-cached_cache_home_t)
+delete_files_pattern(menu-cache-gen_t, menu-cached_cache_home_t, menu-cached_cache_home_t)
+
+# For /usr/share/applications and /usr/share/icons
+#
 allow menu-cache-gen_t usr_t : dir read;
 allow menu-cache-gen_t usr_t : file read_file_perms;
 
-corecmd_search_bin(menu-cached_t)
+miscfiles_read_localization(menu-cache-gen_t)
 
-allow menu-cached_t menu-cache-gen_data_t : dir list_dir_perms;
 allow menu-cache-gen_t menu-cache-gen_data_t : dir read;
 allow menu-cache-gen_t menu-cache-gen_data_t : file read_file_perms;
 
