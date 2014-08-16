@@ -32,6 +32,25 @@ interface(`userdom_list_applications_data_home',`
 
 ###############################
 ## <summary>
+##	Supress logs of attempts to list or search user applications.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to supress.
+##	</summary>
+## </param>
+
+interface(`xdg_dontaudit_list_applications_data_home',`
+	gen_require(`
+		type applications_data_home_t;
+	')
+
+	dontaudit $1 applications_data_home_t : dir { read search };
+')
+
+
+###############################
+## <summary>
 ##	Allow domain to read user applications.
 ## </summary>
 ## <param name="domain">

@@ -103,6 +103,11 @@ xdg_config_home_filetrans(evince_t, evince_config_home_t, dir, "evince")
 
 xserver_use_user_fonts(evince_t)
 
+optional_policy(`
+
+	xdg_dontaudit_list_applications_data_home(evince_t)
+')
+
 xserver_read_user_xauth(evince_t)
 
 dontaudit evince_t xdg_documents_home_t : dir read;
