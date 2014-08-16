@@ -147,6 +147,7 @@ miscfiles_read_localization(evince_t)
 
 allow evince_decompress_t { evince_t evince_thumbnailer_t } : fd use;
 allow evince_decompress_t { evince_t evince_thumbnailer_t } : fifo_file write;
+dontaudit evince_decompress_t { evince_t evince_thumbnailer_t } : fifo_file getattr;
 
 kernel_dontaudit_read_system_state(evince_decompress_t)
 
@@ -219,6 +220,11 @@ tunable_policy(`evince_dbus',`
 tunable_policy(`evince_read_user_home_content',`
 
 	userdom_read_user_home_content_files({ evince_t evince_decompress_t evince_thumbnailer_t })
+')
+
+tunable_policy(! `evince_read_user_home_content',`
+
+	files_dontaudit_search_home(evince_decompress_t)
 ')
 
 tunable_policy(`evince_read_generic_config',`
