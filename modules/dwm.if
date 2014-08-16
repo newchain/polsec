@@ -66,6 +66,8 @@ template(`dwm_domain_template',`
 
 	domtrans_pattern($3, dwm_exec_t, $4_dwm_t)
 
+	dontaudit $4_dwm_t $2 : fd use;
+
 	auth_use_nsswitch($4_dwm_t)
 
 	allow $4_dwm_t $5 : unix_stream_socket connectto;
