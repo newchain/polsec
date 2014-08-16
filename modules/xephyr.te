@@ -9,7 +9,6 @@ gen_require(`
 	type xserver_t;
 ')
 
-
 ########################################
 #
 # Declarations
@@ -23,7 +22,9 @@ gen_require(`
 ## </desc>
 gen_tunable(xephyr_xshm, false)
 
-type xephyr_t;
+attribute xephyr_domain;
+
+type xephyr_t, xephyr_domain;
 type xephyr_exec_t;
 userdom_user_application_domain(xephyr_t, xephyr_exec_t)
 
@@ -33,22 +34,32 @@ userdom_user_tmp_file(xephyr_tmp_t)
 type xephyr_tmpfs_t;
 userdom_user_tmpfs_file(xephyr_tmpfs_t)
 
+########################################
+#
+# xephyr_domain local policy
+#
+
+allow xephyr_domain self : fifo_file rw_fifo_file_perms;
+
+corecmd_search_bin(xephyr_domain)
+corecmd_read_bin_symlinks(xephyr_domain)
+can_exec(xephyr_domain, bin_t)
+can_exec(xephyr_domain, shell_exec_t)
+
+xserver_read_user_xauth(xephyr_domain);
+
+xserver_stream_connect(xephyr_domain);
+
+miscfiles_read_fonts(xephyr_domain);
+
+miscfiles_read_localization(xephyr_domain);
+
+files_read_usr_files(xephyr_domain)
 
 ########################################
 #
-# Local policy
+# xephyr_t local policy
 #
-
-allow xephyr_t self : fifo_file rw_fifo_file_perms;
-
-corecmd_search_bin(xephyr_t)
-corecmd_read_bin_symlinks(xephyr_t)
-can_exec(xephyr_t, bin_t)
-can_exec(xephyr_t, shell_exec_t)
-
-allow xephyr_t user_devpts_t : chr_file rw_chr_file_perms;
-
-xserver_read_user_xauth(xephyr_t);
 
 files_tmp_filetrans(xephyr_t, xephyr_tmp_t, file)
 allow xephyr_t xephyr_tmp_t : file manage_file_perms;
@@ -56,16 +67,9 @@ allow xephyr_t xephyr_tmp_t : file manage_file_perms;
 filetrans_pattern(xephyr_t, xdm_tmp_t, xephyr_tmp_t, sock_file)
 allow xephyr_t xephyr_tmp_t : sock_file { create_sock_file_perms delete_sock_file_perms };
 
-xserver_stream_connect(xephyr_t);
-
-miscfiles_read_fonts(xephyr_t);
-
-miscfiles_read_localization(xephyr_t);
-
-files_read_usr_files(xephyr_t)
 
 tunable_policy(`xephyr_xshm',`
-	allow xephyr_t self : shm create_shm_perms;
+	allow xephyr_domain self : shm create_shm_perms;
 	fs_tmpfs_filetrans(xephyr_t, xephyr_tmpfs_t, file)
 	allow { xephyr_t xserver_t } xephyr_tmpfs_t : file { read write };
 	allow xserver_t xephyr_t : shm { unix_read read getattr associate unix_write write };

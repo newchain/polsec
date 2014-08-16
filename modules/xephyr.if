@@ -152,3 +152,91 @@ template(`xephyr_isolate_from_root',`
 		xserver_stream_connect($1)
 	')
 ')
+
+
+###############################
+## <summary>
+##	Create a private xephyr domain.
+## </summary>
+## <param name="domain_origin">
+##	<summary>
+##	<p>
+##	The domain from which which to enter the private entry domain.
+##	</p>
+##	<p>
+##	Note that pre-entrypoints must be created and labeled manually.
+##	</p>
+##	</summary>
+## </param>
+## <param name="domain_prefix">
+##	<summary>
+##	String to prepend the xephyr domain with.
+##	</summary>
+## </param>
+## <param> name="role">
+##	<summary>
+##	Role to use the xephyr domain.
+##	</summary>
+## </summary>
+
+template(`xephyr_domain_template',`
+
+	gen_require(`
+		attribute xephyr_domain;
+		role $3;
+		type $1;
+		type xdm_tmp_t;
+		type xephyr_exec_t;
+		type $2_xephyr_preentry_t;
+		type $2_xephyr_preentry_exec_t;
+		type $2_xephyr_tmp_t;
+		type xserver_t;
+	')
+
+	########################################
+	#
+	# Declarations
+	#
+
+	type $2_xephyr_preentry_t;
+	type $2_xephyr_preentry_exec_t;
+	userdom_user_application_domain($2_xephyr_preentry_t, $2_xephyr_preentry_exec_t)
+
+	type $2_xephyr_t, xephyr_domain;
+	userdom_user_application_domain($2_xephyr_t, xephyr_exec_t)
+
+	type $2_xephyr_tmpfs_t;
+	userdom_user_tmpfs_file($2_xephyr_tmpfs_t)
+
+	type $2_xephyr_tmp_t;
+	userdom_user_tmp_file($2_xephyr_tmp_t)
+
+	attribute $2_xephyr_application;
+
+	role $3 types { $2_xephyr_preentry_t $2_xephyr_t };
+
+	########################################
+	#
+	# Local policy
+	#
+
+	domtrans_pattern($1, $2_xephyr_preentry_exec_t, $2_xephyr_preentry_t)
+	domtrans_pattern($2_xephyr_preentry_t, xephyr_exec_t, $2_xephyr_t)
+
+	files_tmp_filetrans($2_xephyr_t, $2_xephyr_tmp_t, file)
+	allow $2_xephyr_t $2_xephyr_tmp_t : file manage_file_perms;
+
+	filetrans_pattern($2_xephyr_t, xdm_tmp_t, $2_xephyr_tmp_t, sock_file)
+	allow $2_xephyr_t $2_xephyr_tmp_t : sock_file { create_sock_file_perms delete_sock_file_perms };
+
+	fs_tmpfs_filetrans($2_xephyr_t, $2_xephyr_tmpfs_t, file)
+	allow { $2_xephyr_t xserver_t } $2_xephyr_tmpfs_t : file { read write };
+	allow xserver_t $2_xephyr_t : shm { unix_read read getattr associate unix_write write };
+
+	########################################
+	#
+	# xephyr_application local policy
+	#
+
+	allow $2_xephyr_application $2_xephyr_t : unix_stream_socket connectto;
+')
