@@ -29,6 +29,7 @@ interface(`menu_cached_stream_connect',`
 
 	allow $1 menu-cached_socket_t : sock_file write;
 	allow $1 menu-cached_t : unix_stream_socket connectto;
+	allow menu-cached_t $1 : unix_stream_socket { read write };
 ')
 
 
