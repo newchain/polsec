@@ -81,6 +81,11 @@ tunable_policy(`znc_read_timezone',`
 	allow znc_t locale_t : file read_file_perms;
 ')
 
+tunable_policy(! `znc_read_timezone',`
+
+	dontaudit znc_t locale_t : file read;
+')
+
 tunable_policy(`znc_webadmin',`
 
 	read_files_pattern(znc_t, znc_data_t, znc_data_t)
