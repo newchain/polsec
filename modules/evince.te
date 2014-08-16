@@ -118,8 +118,6 @@ kernel_dontaudit_search_sysctl(evince_t)
 
 files_search_tmp(evince_t)
 
-xserver_stream_connect(evince_t)
-
 userdom_user_tmp_filetrans(evince_t, evince_tmp_t, { dir file })
 allow evince_t evince_tmp_t : dir create_dir_perms;
 manage_files_pattern(evince_t, evince_tmp_t, evince_tmp_t)
@@ -170,8 +168,6 @@ xserver_use_user_fonts(evince_previewer_t)
 xserver_read_user_xauth(evince_previewer_t)
 
 kernel_dontaudit_read_system_state(evince_previewer_t)
-
-xserver_stream_connect(evince_previewer_t)
 
 files_search_tmp(evince_previewer_t)
 
