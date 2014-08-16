@@ -128,4 +128,13 @@ optional_policy(`
 		userdom_list_applications_data_home(menu-cached_t)
 		userdom_read_applications_data_home(menu-cache-gen_t)
 	')
+
+	tunable_policy(! `menu_cached_read_app_agnostic_user_config',`
+
+		gen_require(`
+			type xdg_data_home_t;
+		')
+
+		dontaudit menu-cached_t xdg_data_home_t : dir search;
+	')
 ')
