@@ -110,8 +110,6 @@ getattr_files_pattern(gradm_load_domain, sysctl_kernel_t, sysctl_kernel_t)
 kernel_search_vm_sysctl(gradm_load_domain)
 allow gradm_load_domain sysctl_vm_t : file getattr;
 
-permissive sysadm_gradm_t;
-
 ########################################
 #
 # grsec_policy_edit_domain policy
