@@ -1,0 +1,5 @@
+HOME_DIR/\.local/share/gtksourceview-\d\.\d(/.*)?	gen_context(system_u:object_r:gtksourceview_data_home_t,s0)
+
+/usr/lib/libgtksourceview-\d\.\d\.so(\..*)?		gen_context(system_u:object_r:gtksourceview_usr_lib_t,s0)
+
+/usr/share/gtksourceview-\d\.\d(/.*)?			gen_context(system_u:object_r:gtksourceview_usr_share_t,s0)

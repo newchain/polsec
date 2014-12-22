@@ -1,0 +1,159 @@
+## <summary>gtksourceview</summary>
+## <desc>
+##	<p>
+##		gtksourceview policy.
+##	</p>
+## </desc>
+
+
+###############################
+## <summary>
+##	Allow domain to read gtksourceview config.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read.
+##	</summary>
+## </param>
+
+interface(`gtksourceview_read_data_home',`
+
+	gen_require(`
+		type gtksourceview_data_home_t;
+	')
+
+	xdg_search_data_home($1)
+	allow $1 gtksourceview_data_home_t : dir list_dir_perms;
+	allow $1 gtksourceview_data_home_t : file read_file_perms;
+')
+
+
+###############################
+## <summary>
+##	Allow domain to create gtksourceview config.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to create.
+##	</summary>
+## </param>
+
+interface(`gtksourceview_create_data_home',`
+
+	gen_require(`
+		type gtksourceview_data_home_t;
+	')
+
+	xdg_data_home_filetrans( $1, gtksourceview_data_home_t, dir, "gtksourceview-2.0" )
+#	xdg_data_home_filetrans( $1, gtksourceview_data_home_t, dir, "gtksourceview-3.0" )
+	create_dirs_pattern( $1, gtksourceview_data_home_t, gtksourceview_data_home_t )
+	create_files_pattern( $1, gtksourceview_data_home_t, gtksourceview_data_home_t )
+')
+
+
+###############################
+## <summary>
+##	Allow domain to write gtksourceview config.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to write.
+##	</summary>
+## </param>
+
+interface(`gtksourceview_write_data_home',`
+
+	gen_require(`
+		type gtksourceview_data_home_t;
+	')
+
+	xdg_search_data_home($1)
+	allow $1 gtksourceview_data_home_t : dir list_dir_perms;
+	allow $1 gtksourceview_data_home_t : file write_file_perms;
+')
+
+
+###############################
+## <summary>
+##	Allow domain to manage gtksourceview config.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to manage.
+##	</summary>
+## </param>
+
+interface(`gtksourceview_manage_data_home',`
+
+	gen_require(`
+		type gtksourceview_data_home_t;
+	')
+
+	xdg_search_data_home($1)
+	manage_dirs_pattern( $1, gtksourceview_data_home_t, gtksourceview_data_home_t )
+	manage_files_pattern( $1, gtksourceview_data_home_t, gtksourceview_data_home_t )
+')
+
+
+###############################
+## <summary>
+##	Allow domain to mmap gtksourceview.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to mmap.
+##	</summary>
+## </param>
+
+interface(`gtksourceview_mmap',`
+
+	gen_require(`
+		type gtksourceview_usr_lib_t;
+	')
+
+	allow $1 gtksourceview_usr_lib_t : file mmap_file_perms;
+	allow $1 gtksourceview_usr_lib_t : lnk_file read_lnk_file_perms;
+')
+
+
+###############################
+## <summary>
+##	Allow domain to read gtksourceview data.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read.
+##	</summary>
+## </param>
+
+interface(`gtksourceview_read_usr_share',`
+
+	gen_require(`
+		type gtksourceview_usr_share_t;
+	')
+
+	read_files_pattern( $1, gtksourceview_usr_share_t, gtksourceview_usr_share_t )
+	allow $1 gtksourceview_usr_share_t : dir list_dir_perms;
+')
+
+
+###############################
+## <summary>
+##	<p>
+##	Grant gtksourceview permissions to the given domain.
+##	</p>
+##	<p>
+##	Note that this does not grant any access to user files, so that this interface
+##	can be used for sandboxed domains.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain for which to permit.
+##	</summary>
+## </param>
+
+interface(`gtksourceview_domain',`
+
+	gtksourceview_mmap($1)
+	gtksourceview_read_usr_share($1)
+')

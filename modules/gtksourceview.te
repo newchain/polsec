@@ -1,0 +1,16 @@
+policy_module(gtksourceview, 1.00)
+
+
+########################################
+#
+# Declarations
+#
+
+type gtksourceview_data_home_t;
+xdg_data_home_content(gtksourceview_data_home_t)
+
+type gtksourceview_usr_lib_t;
+files_type(gtksourceview_usr_lib_t)
+
+type gtksourceview_usr_share_t;
+files_type(gtksourceview_usr_share_t)
