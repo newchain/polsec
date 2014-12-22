@@ -1,0 +1,7 @@
+HOME_DIR/\.config/pluma(/.*)?	gen_context(system_u:object_r:pluma_config_home_t,s0)
+
+/usr/bin/pluma		--	gen_context(system_u:object_r:pluma_exec_t,s0)
+
+/usr/lib/pluma(/.*)?		gen_context(system_u:object_r:pluma_usr_lib_t,s0)
+
+/usr/share/pluma(/.*)?		gen_context(system_u:object_r:pluma_usr_share_t,s0)

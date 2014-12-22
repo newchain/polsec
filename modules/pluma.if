@@ -1,0 +1,392 @@
+## <summary>pluma policy</summary>
+## <desc>
+##	<p>
+##		Policy for pluma.
+##	</p>
+## </desc>
+
+
+###############################
+## <summary>
+##	Make the given type available to create, read and write for pluma.
+## </summary>
+## <param name="prefix">
+##	<summary>
+##	Prefix of the pluma domain.
+##	</summary>
+## </param>
+## <param name="container">
+##	<summary>
+##	Type of the directory in which the type belongs.
+##	</summary>
+## </param>
+## <param name="type">
+##	<summary>
+##	Type of the content to be made available to pluma.
+##	</summary>
+## </param>
+
+interface(`pluma_content',`
+
+	gen_require(`
+		type $1_pluma_t;
+	')
+
+	filetrans_pattern( $1_pluma_t, $2, $3, file )
+	create_files_pattern( $1_pluma_t, $2, $3 )
+	allow $1_pluma_t $3 : file rw_file_perms;
+')
+
+
+###############################
+## <summary>
+##	Make the given type available to create, read and write for all pluma domains.
+## </summary>
+## <param name="container">
+##	<summary>
+##	Type of the directory in which the type belongs.
+##	</summary>
+## </param>
+## <param name="type">
+##	<summary>
+##	Type of the content to be made available to pluma.
+##	</summary>
+## </param>
+
+interface(`pluma_content_universal',`
+
+	gen_require(`
+		attribute pluma_domain;
+	')
+
+	filetrans_pattern( pluma_domain, $1, $2, file )
+	create_files_pattern( pluma_domain, $1, $2 )
+	allow pluma_domain $2 : file rw_file_perms;
+')
+
+
+###############################
+## <summary>
+##	Enforce transition to pluma_config_home_t when creating pluma config.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain for which to enforce.
+##	</summary>
+## </param>
+
+interface(`pluma_config_home_filetrans',`
+
+	gen_require(`
+		type pluma_config_home_t;
+	')
+
+	xdg_config_home_filetrans( $1, pluma_config_home_t, dir, "pluma" )
+')
+
+
+###############################
+## <summary>
+##	Allow domain to read pluma home config.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain for which to read.
+##	</summary>
+## </param>
+
+interface(`pluma_read_config_home',`
+
+	gen_require(`
+		type pluma_config_home_t;
+	')
+
+	xdg_search_config_home_dirs($1)
+	read_files_pattern( $1, pluma_config_home_t, pluma_config_home_t )
+')
+
+
+###############################
+## <summary>
+##	Allow domain to read pluma home config.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain for which to read.
+##	</summary>
+## </param>
+
+interface(`pluma_manage_config_home',`
+
+	gen_require(`
+		type pluma_config_home_t;
+	')
+
+	xdg_search_config_home_dirs($1)
+	pluma_config_home_filetrans($1)
+	allow $1 pluma_config_home_t : dir create_dir_perms;
+	manage_files_pattern( $1, pluma_config_home_t, pluma_config_home_t )
+')
+
+
+###############################
+## <summary>
+##	Allow domain to mmap pluma libs.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain for which to mmap.
+##	</summary>
+## </param>
+
+interface(`pluma_mmap',`
+
+	gen_require(`
+		type pluma_usr_lib_t;
+	')
+
+	mmap_files_pattern( $1, pluma_usr_lib_t, pluma_usr_lib_t )
+')
+
+
+###############################
+## <summary>
+##	Allow domain to list and read pluma_usr_share_t.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain for which to read.
+##	</summary>
+## </param>
+
+interface(`pluma_read_usr_share',`
+
+	gen_require(`
+		type pluma_usr_share_t;
+	')
+
+	read_files_pattern( $1, pluma_usr_share_t, pluma_usr_share_t )
+	allow $1 pluma_usr_share_t : dir list_dir_perms;
+')
+
+
+###############################
+## <summary>
+##	Transition to pluma.
+## </summary>
+## <param name="prefix">
+##	<summary>
+##	Prefix of the pluma domain.
+##	</summary>
+## </param>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary>
+## </param>
+
+interface(`pluma_domtrans',`
+
+	gen_require(`
+		type $1_pluma_t;
+		type pluma_exec_t;
+	')
+
+	domtrans_pattern( $2, pluma_exec_t, $1_pluma_t );
+')
+
+
+###############################
+## <summary>
+##	Allow role to use pluma.
+## </summary>
+## <param name="prefix">
+##	<summary>
+##	Prefix of the pluma domain.
+##	</summary>
+## </param>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary>
+## </param>
+## <param name="role">
+##	<summary>
+##	Role for which to assign types.
+##	</summary>
+## </param>
+
+interface(`pluma_role',`
+
+	gen_require(`
+		role $3;
+	')
+
+	pluma_domtrans( $1, $2 )
+
+	role $3 types $1_pluma_t;
+')
+
+
+
+###############################
+## <summary>
+##	<p>
+##		Base template for pluma.
+##	</p>
+##	<p>
+##		The pluma domain will be able to read pluma config, but unable to write pluma
+##		config, unable to read app-agnostic config and unable to connect to the root
+##		X server.
+##	</p>
+##	<p>
+##		This template can be considered to be sandboxed.
+##	</p>
+## </summary>
+## <param name="prefix">
+##	<summary>
+##	Prefix of the pluma domain.
+##	</summary>
+## </param>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary>
+## </param>
+## <param name="x_domain">
+##	<summary>
+##	Domain of the X server with which to connect.
+##	</summary>
+## </param>
+## <param name="role">
+##	<summary>
+##	Role for which to assign types.
+##	</summary>
+## </param>
+
+template(`pluma_base_template',`
+
+	gen_require(`
+		attribute pluma_domain;
+	')
+
+	pluma_role( $1, $2, $4 )
+
+	########################################
+	#
+	# Declarations
+	#
+
+	type $1_pluma_t, pluma_domain;
+	application_domain( $1_pluma_t, pluma_exec_t )
+
+	########################################
+	#
+	# $1_pluma_t policy
+	#
+
+	dontaudit $3 $1_pluma_t : shm { unix_read unix_write };
+
+	allow $1_pluma_t $3 : unix_stream_socket connectto;
+')
+
+
+###############################
+## <summary>
+##	<p>
+##		Template for unsandboxed pluma.
+##	</p>
+##	<p>
+##		The pluma domain will be able to write pluma config, read app-agnostic
+##		config, but will not be able to connect to the root X server.
+##	</p>
+## </summary>
+## <param name="prefix">
+##	<summary>
+##	Prefix of the pluma domain.
+##	</summary>
+## </param>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary>
+## </param>
+## <param name="x_domain">
+##	<summary>
+##	Domain of the X server with which to connect.
+##	</summary>
+## </param>
+## <param name="role">
+##	<summary>
+##	Role for which to assign types.
+##	</summary>
+## </param>
+
+template(`pluma_unsandboxed_template',`
+
+	gen_require(`
+		attribute pluma_unsandboxed_domain;
+	')
+
+	pluma_base_template( $1, $2, $3, $4 )
+
+	########################################
+	#
+	# Declarations
+	#
+
+	typeattribute $1_pluma_t pluma_unsandboxed_domain;
+')
+
+
+###############################
+## <summary>
+##	<p>
+##		Role template for pluma.
+##	</p>
+##	<p>
+##		The pluma domain will be able to connect to the root X server and
+##		create/read/write xdg_documents_home_t.
+##	</p>
+## </summary>
+## <param name="prefix">
+##	<summary>
+##	Prefix of the pluma domain.
+##	</summary>
+## </param>
+## <param name="domain">
+##	<summary>
+##	Domain associated with the role.
+##	</summary>
+## </param>
+## <param name="role">
+##	<summary>
+##	Role for which to assign types.
+##	</summary>
+## </param>
+
+template(`pluma_role_template',`
+
+	gen_require(`
+		attribute pluma_role_domain;
+
+		type xserver_t;
+	')
+
+	pluma_unsandboxed_template( $1, $2, xserver_t, $3 )
+
+	########################################
+	#
+	# Declarations
+	#
+
+	typeattribute $1_pluma_t pluma_role_domain;
+
+	########################################
+	#
+	# $1_pluma_t policy
+	#
+
+	xserver_object_types_template($1_pluma)
+	xserver_common_x_domain_template( $1_pluma, $1_pluma_t )
+')
