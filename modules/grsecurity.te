@@ -17,7 +17,6 @@ gen_require(`
 
 attribute gradm_domain;
 attribute gradm_load_domain;
-#attribute gradm_manage_roles_domain;
 
 attribute grsec_policy_edit_domain;
 
@@ -53,6 +52,7 @@ application_executable_file(gradm_exec_t)
 gradm_base_template(staff, staff_t, staff_r)
 gradm_load_template(sysadm, sysadm_t, sysadm_r)
 gradm_auth(sysadm)
+gradm_manage(sysadm)
 #
 # gradm can be used to transition to safer,
 # less privileged "special" roles.
@@ -78,7 +78,7 @@ allow gradm_load_domain self : capability { dac_read_search dac_override };
 
 domain_use_interactive_fds(gradm_load_domain)
 
-read_files_pattern(gradm_load_domain, { grsec_policy_root_t grsec_policy_t }, grsec_policy_t)
+grsec_read_policy(gradm_load_domain)
 files_read_etc_files(gradm_load_domain)
 
 kernel_read_system_state(gradm_load_domain)
@@ -115,12 +115,7 @@ allow gradm_load_domain sysctl_vm_t : file getattr;
 # grsec_policy_edit_domain policy
 #
 
-filetrans_pattern(grsec_policy_edit_domain, grsec_policy_root_t, grsec_policy_t, { dir file })
-
-create_files_pattern(grsec_policy_edit_domain, { grsec_policy_root_t grsec_policy_t }, grsec_policy_t)
-allow grsec_policy_edit_domain grsec_policy_t : dir { create_dir_perms delete_dir_perms };
-allow grsec_policy_edit_domain grsec_policy_t : file { rw_file_perms rename_file_perms };
-delete_files_pattern(grsec_policy_edit_domain, { grsec_policy_root_t grsec_policy_t }, grsec_policy_t)
+grsec_manage_policy(grsec_policy_edit_domain)
 
 ########################################
 #

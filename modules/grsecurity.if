@@ -24,6 +24,30 @@ interface(`grsec_read_policy',`
 
 ###############################
 ## <summary>
+##	Manage grsec policy.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to manage.
+##	</summary>
+## </param>
+
+interface(`grsec_manage_policy',`
+
+	gen_require(`
+		type grsec_policy_root_t;
+		type grsec_policy_t;
+	')
+
+	files_search_etc($1)
+	filetrans_pattern( $1, grsec_policy_root_t, grsec_policy_t, { dir file } )
+	manage_dirs_pattern( $1, { grsec_policy_root_t grsec_policy_t }, grsec_policy_t )
+	manage_files_pattern( $1, { grsec_policy_root_t grsec_policy_t }, grsec_policy_t )
+')
+
+
+###############################
+## <summary>
 ##	<p>
 ##	Authenticate to grsec roles.
 ##	</p>
@@ -44,6 +68,30 @@ interface(`gradm_auth',`
 	')
 
 	allow $1_gradm_t grsec_auth_t : file { read open };
+')
+
+
+###############################
+## <summary>
+##	Manage grsec roles.
+## </summary>
+## <param name="prefix">
+##	<summary>
+##	Prefix of the gradm domain.
+##	</summary>
+## </param>
+
+interface(`gradm_manage',`
+
+	gen_require(`
+		type $1_gradm_t;
+		type grsec_auth_t;
+		type grsec_policy_root_t;
+	')
+
+	filetrans_pattern( $1_gradm_t, grsec_policy_root_t, grsec_auth_t, file, "pw" )
+	create_files_pattern( $1_gradm_t, grsec_policy_root_t, grsec_auth_t )
+	allow $1_gradm_t grsec_auth_t : file rw_file_perms;
 ')
 
 
