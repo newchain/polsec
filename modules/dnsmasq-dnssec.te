@@ -1,0 +1,22 @@
+policy_module(dnsmasq-dnssec, 1.00)
+
+
+gen_require(`
+	type dnsmasq_t;
+')
+
+
+########################################
+#
+# Declarations
+#
+
+type dnsmasq_usr_share_t;
+files_type(dnsmasq_usr_share_t);
+
+########################################
+#
+# Local policy
+#
+
+dnsmasq_read_usr_share_files(dnsmasq_t)

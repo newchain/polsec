@@ -1,0 +1,26 @@
+## <summary>dnsmasq-dnssec policy</summary>
+## <desc>
+##	<p>
+##		Policy for dnsmasq using dnssec.
+##	</p>
+## </desc>
+
+
+###############################
+## <summary>
+##	Read dnsmasq dnssec trust anchor.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read.
+##	</summary>
+## </param>
+
+interface(`dnsmasq_read_usr_share_files',`
+
+	gen_require(`
+		type dnsmasq_usr_share_t;
+	')
+
+	read_files_pattern( $1, dnsmasq_usr_share_t, dnsmasq_usr_share_t )
+')
