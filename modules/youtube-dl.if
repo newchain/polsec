@@ -10,6 +10,11 @@
 ## <summary>
 ##	Transition to youtube-dl.
 ## </summary>
+## <param name="prefix">
+##	<summary>
+##	Prefix of the youtube-dl domain.
+##	</summary>
+## </param>
 ## <param name="domain">
 ##	<summary>
 ##	Domain from which to transition.
@@ -17,30 +22,122 @@
 ## </param>
 
 interface(`youtube_dl_domtrans',`
+
 	gen_require(`
-		type youtube-dl_t, youtube-dl_exec_t;
+		type youtube-dl_t;
+		type youtube-dl_exec_t;
 	')
 
-	domtrans_pattern($1, youtube-dl_exec_t, youtube-dl_t)
+	domtrans_pattern( $2, youtube-dl_exec_t, $1_youtube-dl_t )
 ')
 
 
 ###############################
 ## <summary>
-##	Run youtube-dl in youtube-dl domain.
+##	Base template for youtube-dl.
 ## </summary>
-## <param name="role">
+## <param name="prefix">
 ##	<summary>
-##	Role from which to exec youtube-dl.
+##	Prefix for the youtube-dl domain.
+##	</summary>
+## </param>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary>
+## </param>
+## <param name="role" optional="yes">
+##	<summary>
+##	Role with which to assign types.
 ##	</summary>
 ## </param>
 
-interface(`youtube_dl_role',`
+template(`youtube_dl_base_template',`
+
 	gen_require(`
-		type youtube-dl_t;
-		type youtube-dl_shell_t;
+		attribute youtube-dl_domain;
+		attribute youtube-dl_shell_domain;
+
+		type shell_exec_t;
+		type youtube-dl_exec_t;
 	')
 
-	youtube_dl_domtrans($1)
-	role $2 types { youtube-dl_t youtube-dl_shell_t };
+	########################################
+	#
+	# Declarations
+
+	type $1_youtube-dl_t, youtube-dl_domain;
+	userdom_user_application_domain( $1_youtube-dl_t, youtube-dl_exec_t )
+
+	type $1_youtube-dl_shell_t, youtube-dl_shell_domain;
+	userdom_user_application_domain( $1_youtube-dl_shell_t, shell_exec_t )
+
+	########################################
+	#
+	# Local policy
+	#
+
+	domtrans_pattern( $2, youtube-dl_exec_t, $1_youtube-dl_t )
+
+	########################################
+	#
+	# $1_youtube-dl_t policy
+	#
+
+	auth_use_nsswitch($1_youtube-dl_t)
+
+	domtrans_pattern( $1_youtube-dl_t, shell_exec_t, $1_youtube-dl_shell_t )
+
+	########################################
+	#
+	# Optional policy
+	#
+
+	optional_policy(`
+
+		gen_require(`
+			role $3;
+		')
+
+		role $3 types { $1_youtube-dl_t $1_youtube-dl_shell_t };
+	')
+')
+
+
+###############################
+## <summary>
+##	Unsandboxed template for youtube-dl.
+## </summary>
+## <param name="prefix">
+##	<summary>
+##	Prefix for the youtube-dl domain.
+##	</summary>
+## </param>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary>
+## </param>
+## <param name="role">
+##	<summary>
+##	Role with which to assign types.
+##	</summary>
+## </param>
+
+template(`youtube_dl_unsandboxed_template',`
+
+	gen_require(`
+		attribute youtube-dl_unsandboxed_domain;
+	')
+
+	youtube_dl_base_template( $1, $2, $3 )
+
+	########################################
+	#
+	# Declarations
+	#
+
+	typeattribute $1_youtube-dl_t youtube-dl_unsandboxed_domain;
+
+	ffmpeg_base_template( $1_youtube-dl, $1_youtube-dl_t, $3 )
 ')
