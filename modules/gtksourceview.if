@@ -145,6 +145,7 @@ interface(`gtksourceview_read_usr_share',`
 ##	<p>
 ##	Note that this does not grant any access to user files, so that this interface
 ##	can be used for sandboxed domains.
+##	</p>
 ## </summary>
 ## <param name="domain">
 ##	<summary>
