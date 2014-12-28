@@ -17,8 +17,10 @@
 ## </param>
 
 interface(`xephyr_domtrans',`
+
 	gen_require(`
-		type xephyr_t, xephyr_exec_t;
+		type xephyr_t;
+		type xephyr_exec_t;
 	')
 
 	domtrans_pattern($1, xephyr_exec_t, xephyr_t)
@@ -29,18 +31,27 @@ interface(`xephyr_domtrans',`
 ## <summary>
 ##	Run Xephyr in xephyr domain.
 ## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary>
+## </param>
 ## <param name="role">
 ##	<summary>
-##	Role from which to exec Xephyr.
+##	Role with which to assign types.
 ##	</summary>
 ## </param>
 
 interface(`xephyr_role',`
+
 	gen_require(`
+		role $2;
+
 		type xephyr_t;
 	')
 
 	xephyr_domtrans($1)
+
 	role $2 types xephyr_t;
 ')
 
@@ -56,6 +67,7 @@ interface(`xephyr_role',`
 ## </param>
 
 interface(`xephyr_stream_connect',`
+
 	gen_require(`
 		type xephyr_t;
 	')
@@ -75,6 +87,7 @@ interface(`xephyr_stream_connect',`
 ## </param>
 
 interface(`xephyr_xshm_client',`
+
 	gen_require(`
 		type xephyr_t;
 	')
@@ -101,19 +114,22 @@ template(`xephyr_domain_constrain_template',`
 	##	Allow $1 to connect to xserver.
 	##	</p>
 	## </desc>
+
 	gen_tunable($1_xserver_stream_connect, true)
-
-	tunable_policy(`$1_xserver_stream_connect',`
-
-		xserver_stream_connect($1_t)
-	')
 
 	## <desc>
 	##	<p>
 	##	Allow $1 to connect to Xephyr.
 	##	</p>
 	## </desc>
+
 	gen_tunable($1_xephyr_stream_connect, true)
+
+
+	tunable_policy(`$1_xserver_stream_connect',`
+
+		xserver_stream_connect($1_t)
+	')
 
 	tunable_policy(`$1_xephyr_stream_connect',`
 
@@ -125,7 +141,6 @@ template(`xephyr_domain_constrain_template',`
 ###############################
 ## <summary>
 ##	Isolate X apps from root xserver.
-##	or neither.
 ## </summary>
 ## <param name="domain">
 ##	<summary>
@@ -145,6 +160,7 @@ template(`xephyr_isolate_from_root',`
 	##	Isolate $1 from xserver.
 	##	</p>
 	## </desc>
+
 	gen_tunable($2_isolate_from_xserver, false)
 
 	tunable_policy(! `$2_isolate_from_xserver',`
@@ -175,7 +191,7 @@ template(`xephyr_isolate_from_root',`
 ## </param>
 ## <param> name="role">
 ##	<summary>
-##	Role to use the xephyr domain.
+##	Role with which to assign types.
 ##	</summary>
 ## </summary>
 
@@ -183,7 +199,10 @@ template(`xephyr_domain_template',`
 
 	gen_require(`
 		attribute xephyr_domain;
+		attribute xephyr_preentry_domain;
+
 		role $3;
+
 		type $1;
 		type xdm_tmp_t;
 		type xephyr_exec_t;
@@ -198,7 +217,7 @@ template(`xephyr_domain_template',`
 	# Declarations
 	#
 
-	type $2_xephyr_preentry_t;
+	type $2_xephyr_preentry_t, xephyr_preentry_domain;
 	type $2_xephyr_preentry_exec_t;
 	userdom_user_application_domain($2_xephyr_preentry_t, $2_xephyr_preentry_exec_t)
 
@@ -221,22 +240,52 @@ template(`xephyr_domain_template',`
 	#
 
 	domtrans_pattern($1, $2_xephyr_preentry_exec_t, $2_xephyr_preentry_t)
-	domtrans_pattern($2_xephyr_preentry_t, xephyr_exec_t, $2_xephyr_t)
-
-	files_tmp_filetrans($2_xephyr_t, $2_xephyr_tmp_t, file)
-	allow $2_xephyr_t $2_xephyr_tmp_t : file manage_file_perms;
-
-	filetrans_pattern($2_xephyr_t, xdm_tmp_t, $2_xephyr_tmp_t, sock_file)
-	allow $2_xephyr_t $2_xephyr_tmp_t : sock_file { create_sock_file_perms delete_sock_file_perms };
-
-	fs_tmpfs_filetrans($2_xephyr_t, $2_xephyr_tmpfs_t, file)
-	allow { $2_xephyr_t xserver_t } $2_xephyr_tmpfs_t : file { read write };
-	allow xserver_t $2_xephyr_t : shm { unix_read read getattr associate unix_write write };
 
 	########################################
 	#
-	# xephyr_application local policy
+	# $2_xephyr_t policy
 	#
 
+	xserver_object_types_template($2_xephyr)
+	xserver_common_x_domain_template($2_xephyr, $2_xephyr_t)
+
+	fs_tmpfs_filetrans($2_xephyr_t, $2_xephyr_tmpfs_t, file)
+	allow $2_xephyr_t $2_xephyr_tmpfs_t : file { read write };
+
+	dontaudit $2_xephyr_t $2_xephyr_application : shm unix_read;
+
+	allow $2_xephyr_t $1 : fd use;
+
+	dontaudit $2_xephyr_t $2_xephyr_application : dir search;
+
+	files_tmp_filetrans($2_xephyr_t, $2_xephyr_tmp_t, file)
+	allow $2_xephyr_t $2_xephyr_tmp_t : file manage_file_perms;
+	filetrans_pattern($2_xephyr_t, xdm_tmp_t, $2_xephyr_tmp_t, sock_file)
+	allow $2_xephyr_t $2_xephyr_tmp_t : sock_file { create_sock_file_perms delete_sock_file_perms };
+
+	########################################
+	#
+	# $2_xephyr_preentry_t policy
+	#
+
+	allow $2_xephyr_preentry_t $1 : fd use;
+
+	domtrans_pattern($2_xephyr_preentry_t, xephyr_exec_t, $2_xephyr_t)
+
+	########################################
+	#
+	# $2_xephyr_application policy
+	#
+
+	allow $2_xephyr_application $1 : fd use;
+
 	allow $2_xephyr_application $2_xephyr_t : unix_stream_socket connectto;
+
+	########################################
+	#
+	# xserver_t policy
+	#
+
+	allow xserver_t $2_xephyr_tmpfs_t : file { read write };
+	allow xserver_t $2_xephyr_t : shm { unix_read read getattr associate unix_write write };
 ')

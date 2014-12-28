@@ -5,8 +5,12 @@ gen_require(`
 	type bin_t;
 	type shell_exec_t;
 	type user_devpts_t;
+	type var_lib_t;
 	type xdm_tmp_t;
 	type xserver_t;
+
+	type staff_t;
+	type user_t;
 ')
 
 ########################################
@@ -22,6 +26,8 @@ gen_require(`
 ## </desc>
 gen_tunable(xephyr_xshm, false)
 
+attribute xephyr_preentry_domain;
+
 attribute xephyr_domain;
 
 type xephyr_t, xephyr_domain;
@@ -33,6 +39,18 @@ userdom_user_tmp_file(xephyr_tmp_t)
 
 type xephyr_tmpfs_t;
 userdom_user_tmpfs_file(xephyr_tmpfs_t)
+
+# Just for xephyr_t
+#
+attribute xephyr_application;
+
+########################################
+#
+# Local policy
+#
+
+xephyr_role(staff_t, staff_r)
+xephyr_role(user_t, user_r)
 
 ########################################
 #
@@ -46,27 +64,49 @@ corecmd_read_bin_symlinks(xephyr_domain)
 can_exec(xephyr_domain, bin_t)
 can_exec(xephyr_domain, shell_exec_t)
 
+allow xephyr_domain user_devpts_t : chr_file { read write };
+
 xserver_read_user_xauth(xephyr_domain);
 
 xserver_stream_connect(xephyr_domain);
 
+files_read_usr_files(xephyr_domain)
 miscfiles_read_fonts(xephyr_domain);
-
 miscfiles_read_localization(xephyr_domain);
 
-files_read_usr_files(xephyr_domain)
+allow xephyr_domain var_lib_t : dir search;
+
+########################################
+#
+# xephyr_preentry_domain local policy
+#
+
+allow xephyr_preentry_domain user_devpts_t : chr_file { read write };
 
 ########################################
 #
 # xephyr_t local policy
 #
 
+xserver_object_types_template(xephyr)
+xserver_common_x_domain_template(xephyr, xephyr_t)
+
 files_tmp_filetrans(xephyr_t, xephyr_tmp_t, file)
 allow xephyr_t xephyr_tmp_t : file manage_file_perms;
-
 filetrans_pattern(xephyr_t, xdm_tmp_t, xephyr_tmp_t, sock_file)
 allow xephyr_t xephyr_tmp_t : sock_file { create_sock_file_perms delete_sock_file_perms };
 
+########################################
+#
+# xephyr_application local policy
+#
+
+allow xephyr_application xephyr_t : unix_stream_socket connectto;
+
+########################################
+#
+# Tunable policy
+#
 
 tunable_policy(`xephyr_xshm',`
 	allow xephyr_domain self : shm create_shm_perms;
