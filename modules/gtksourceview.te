@@ -1,6 +1,10 @@
 policy_module(gtksourceview, 1.00)
 
 
+gen_require(`
+	type ldconfig_t;
+')
+
 ########################################
 #
 # Declarations
@@ -14,3 +18,11 @@ files_type(gtksourceview_usr_lib_t)
 
 type gtksourceview_usr_share_t;
 files_type(gtksourceview_usr_share_t)
+
+########################################
+#
+# ldconfig_t policy
+#
+
+allow ldconfig_t gtksourceview_usr_lib_t : lnk_file read;
+allow ldconfig_t gtksourceview_usr_lib_t : file { getattr read open };
