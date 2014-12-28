@@ -1,0 +1,3 @@
+/usr/bin/ffmpeg			--	gen_context(system_u:object_r:ffmpeg_exec_t,s0)
+
+/usr/share/ffmpeg(/.*)?			gen_context(system_u:object_r:ffmpeg_usr_share_t,s0)

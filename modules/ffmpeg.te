@@ -1,0 +1,44 @@
+policy_module(ffmpeg, 1.00)
+
+
+gen_require(`
+	type staff_t;
+	type user_t;
+	type user_devpts_t;
+	type user_tty_device_t;
+	')
+
+########################################
+#
+# Declarations
+#
+
+attribute ffmpeg_domain;
+attribute ffmpeg_role_domain;
+
+type ffmpeg_exec_t;
+application_executable_file(ffmpeg_exec_t)
+
+type ffmpeg_usr_share_t;
+files_type(ffmpeg_usr_share_t)
+
+########################################
+#
+# Local policy
+#
+
+#ffmpeg_role_template( staff, staff_t, staff_r )
+#ffmpeg_role_template( user, user_t, user_r )
+
+########################################
+#
+# ffmpeg_role_domain policy
+#
+
+allow ffmpeg_role_domain { user_devpts_t user_tty_device_t } : chr_file { read write };
+
+optional_policy(`
+
+	xdg_read_videos_home(ffmpeg_role_domain)
+	xdg_create_videos_home(ffmpeg_role_domain)
+')

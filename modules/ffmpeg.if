@@ -1,0 +1,213 @@
+## <summary>ffmpeg policy</summary>
+## <desc>
+##	<p>
+##		Policy for ffmpeg.
+##	</p>
+## </desc>
+
+
+###############################
+## <summary>
+##	Make the given type available to create, read and write for ffmpeg.
+## </summary>
+## <param name="prefix">
+##	<summary>
+##	Prefix of the ffmpeg domain.
+##	</summary>
+## </param>
+## <param name="container">
+##	<summary>
+##	Type of the directory in which the type belongs.
+##	</summary>
+## </param>
+## <param name="type">
+##	<summary>
+##	Type of the content to be made available to ffmpeg.
+##	</summary>
+## </param>
+
+interface(`ffmpeg_content',`
+
+	gen_require(`
+		type $1_ffmpeg_t;
+	')
+
+	filetrans_pattern( $1_ffmpeg_t, $2, $3, file )
+	create_files_pattern( $1_ffmpeg_t, $2, $3 )
+	allow $1_ffmpeg_t $3 : file rw_file_perms;
+')
+
+
+###############################
+## <summary>
+##	Make the given type available to create, read and write for all ffmpeg domains.
+## </summary>
+## <param name="container">
+##	<summary>
+##	Type of the directory in which the type belongs.
+##	</summary>
+## </param>
+## <param name="type">
+##	<summary>
+##	Type of the content to be made available to ffmpeg.
+##	</summary>
+## </param>
+
+interface(`ffmpeg_content_universal',`
+
+	gen_require(`
+		attribute ffmpeg_domain;
+	')
+
+	filetrans_pattern( ffmpeg_domain, $1, $2, file )
+	create_files_pattern( ffmpeg_domain, $1, $2 )
+	allow ffmpeg_domain $2 : file rw_file_perms;
+')
+
+
+###############################
+## <summary>
+##	Read ffmpeg data.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read.
+##	</summary>
+## </param>
+
+interface(`ffmpeg_read_usr_share',`
+
+	gen_require(`
+		type ffmpeg_usr_share_t;
+	')
+
+	files_search_usr($1)
+	read_files_pattern( $1, ffmpeg_usr_share_t, ffmpeg_usr_share_t )
+')
+
+
+###############################
+## <summary>
+##	Transition to ffmpeg.
+## </summary>
+## <param name="prefix">
+##	<summary>
+##	Prefix of the ffmpeg domain.
+##	</summary>
+## </param>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary>
+## </param>
+
+interface(`ffmpeg_domtrans',`
+
+	gen_require(`
+		type $1_ffmpeg_t;
+		type ffmpeg_exec_t;
+	')
+
+	domtrans_pattern( $2, ffmpeg_exec_t, $1_ffmpeg_t )
+')
+
+
+###############################
+## <summary>
+##	Base template for ffmpeg.
+## </summary>
+## <param name="prefix">
+##	<summary>
+##	Prefix for the ffmpeg domain.
+##	</summary>
+## </param>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary>
+## </param>
+## <param name="role" optional="yes">
+##	<summary>
+##	Role with which to assign types.
+##	</summary>
+## </param>
+
+template(`ffmpeg_base_template',`
+
+	gen_require(`
+		attribute ffmpeg_domain;
+
+		type ffmpeg_exec_t;
+	')
+
+	########################################
+	#
+	# Declarations
+	#
+
+	type $1_ffmpeg_t, ffmpeg_domain;
+	userdom_user_application_domain( $1_ffmpeg_t, ffmpeg_exec_t )
+
+	########################################
+	#
+	# Local policy
+	#
+
+	ffmpeg_domtrans( $1, $2 )
+
+	########################################
+	#
+	# Optional policy
+	#
+
+	optional_policy(`
+
+		gen_require(`
+			role $3;
+		')
+
+		role $3 types $1_ffmpeg_t;
+	')
+')
+
+
+###############################
+## <summary>
+##	<p>
+##	Role template for ffmpeg.
+##	</p>
+##	<p>
+##	This allows the ffmpeg domain to read/create/write xdg_videos_home.
+##	</p>
+## </summary>
+## <param name="prefix">
+##	<summary>
+##	Prefix for the ffmpeg domain.
+##	</summary>
+## </param>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary>
+## </param>
+## <param name="role">
+##	<summary>
+##	Role with which to assign types.
+##	</summary>
+## </param>
+
+template(`ffmpeg_role_template',`
+
+	gen_require(`
+		attribute ffmpeg_role_domain;
+	')
+
+	ffmpeg_base_template( $1, $2, $3 )
+
+	########################################
+	#
+	# Declarations
+	#
+
+	typeattribute $1_ffmpeg_t ffmpeg_role_domain; 
+')
