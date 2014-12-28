@@ -1,0 +1,178 @@
+## <summary>gucharmap policy</summary>
+## <desc>
+##	<p>
+##		Policy for gucharmap.
+##	</p>
+## </desc>
+
+
+###############################
+## <summary>
+##	mmap libgucharmap.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to mmap.
+##	</summary>
+## </param>
+interface(`gucharmap_mmap',`
+
+	gen_require(`
+		type gucharmap_lib_t;
+	')
+
+	allow $1 gucharmap_lib_t : file mmap_file_perms;
+	allow $1 gucharmap_lib_t : lnk_file read_lnk_file_perms;
+')
+
+
+###############################
+## <summary>
+##	Transition to gucharmap.
+## </summary>
+## <param name="prefix">
+##	<summary>
+##	Prefix of the gucharmap domain.
+##	</summary>
+## </param>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary>
+## </param>
+
+interface(`gucharmap_domtrans',`
+
+	gen_require(`
+		type $1_gucharmap_t;
+		type gucharmap_exec_t;
+	')
+
+	domtrans_pattern( $2, gucharmap_exec_t, $1_gucharmap_t )
+')
+
+
+###############################
+## <summary>
+##	Base template for gucharmap.
+## </summary>
+## <param name="prefix">
+##	<summary>
+##	Prefix for the gucharmap domain.
+##	</summary>
+## </param>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary>
+## </param>
+## <param name="x_domain">
+##	<summary>
+##	Domain of the X server with which to connect.
+##	</summary>
+## </param>
+## <param name="role" optional="yes">
+##	<summary>
+##	Role with which to assign type.
+##	</summary>
+## </param>
+
+template(`gucharmap_base_template',`
+
+	gen_require(`
+		attribute gucharmap_domain;
+
+		type gucharmap_exec_t;
+	')
+
+	########################################
+	#
+	# Declarations
+	#
+
+	type $1_gucharmap_t, gucharmap_domain;
+	userdom_user_application_domain($1_gucharmap_t, gucharmap_exec_t)
+
+	########################################
+	#
+	# Local policy
+	#
+
+	domtrans_pattern( $2, gucharmap_exec_t, $1_gucharmap_t )
+
+	########################################
+	#
+	# $1_gucharmap_t policy
+	#
+
+	allow $1_gucharmap_t $3 : unix_stream_socket connectto;
+
+	########################################
+	#
+	# $3 policy
+	#
+
+	dontaudit $3 $1_gucharmap_t : shm { unix_read unix_write read write };
+
+	########################################
+	#
+	# Optional policy
+	#
+
+	optional_policy(`
+
+		gen_require(`
+			role $4;
+		')
+
+		role $4 types $1_gucharmap_t;
+	')
+')
+
+
+###############################
+## <summary>
+##	Role template for gucharmap.
+## </summary>
+## <param name="prefix">
+##	<summary>
+##	Prefix of the role.
+##	</summary>
+## </param>
+## <param name="domain">
+##	<summary>
+##	Domain of the role.
+##	</summary>
+## </param>
+## <param name="role">
+##	<summary>
+##	Role with which to assign type.
+##	</summary>
+## </param>
+
+template(`gucharmap_role_template',`
+
+	gen_require(`
+		attribute gucharmap_role_domain;
+
+		type $2;
+		type xserver_t;
+	')
+
+	gucharmap_base_template( $1, $2, xserver_t, $3 )
+
+	########################################
+	#
+	# Declarations
+	#
+
+	typeattribute $1_gucharmap_t gucharmap_role_domain;
+
+	########################################
+	#
+	# $1_gucharmap_t policy
+	#
+
+	xserver_object_types_template($1_gucharmap)
+	xserver_common_x_domain_template( $1_gucharmap, $1_gucharmap_t )
+')

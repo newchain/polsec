@@ -1,0 +1,77 @@
+policy_module(gucharmap, 1.00)
+
+
+gen_require(`
+	type ldconfig_t;
+')
+
+########################################
+#
+# Declarations
+#
+
+attribute gucharmap_domain;
+attribute gucharmap_role_domain;
+
+type gucharmap_exec_t;
+application_executable_file(gucharmap_exec_t)
+
+type gucharmap_lib_t;
+files_type(gucharmap_lib_t)
+
+########################################
+#
+# Local policy
+#
+
+gucharmap_role_template( staff, staff_t, staff_r )
+gucharmap_role_template( user, user_t, user_r )
+
+########################################
+#
+# gucharmap_domain policy
+#
+
+dontaudit gucharmap_domain self : shm { create unix_read unix_write read write destroy };
+fs_dontaudit_rw_tmpfs_files(gucharmap_domain)
+
+fs_dontaudit_getattr_xattr_fs(gucharmap_domain)
+
+optional_policy(`
+
+	miscfiles_read_gtk_etc(gucharmap_domain)
+	miscfiles_read_pango_etc(gucharmap_domain)
+')
+
+kernel_dontaudit_read_system_state(gucharmap_domain)
+
+files_read_usr_files(gucharmap_domain)
+miscfiles_read_fonts(gucharmap_domain)
+gucharmap_mmap(gucharmap_domain)
+miscfiles_read_localization(gucharmap_domain)
+
+########################################
+#
+# gucharmap_role_domain policy
+#
+
+optional_policy(`
+
+	userdom_read_gtk_config(gucharmap_role_domain)
+	userdom_read_icons_home(gucharmap_role_domain)
+	userdom_read_user_mime(gucharmap_role_domain)
+	userdom_read_user_themes(gucharmap_role_domain)
+')
+
+xserver_use_user_fonts(gucharmap_role_domain)
+xserver_read_user_xauth(gucharmap_role_domain)
+
+xserver_stream_connect(gucharmap_role_domain)
+
+########################################
+#
+# ldconfig_t policy
+#
+
+allow ldconfig_t gucharmap_lib_t : lnk_file read;
+allow ldconfig_t gucharmap_lib_t : file { getattr read open };
