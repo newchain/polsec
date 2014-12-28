@@ -17,11 +17,12 @@
 ## </param>
 
 interface(`zad_domain_transition_pattern',`
+
 	gen_require(`
-		type zad_t, zad_exec_t;
+		type zad_t;
+		type zad_exec_t;
 	')
 
-#	domain_transition_pattern($1, zad_exec_t, zad_t)
 	domtrans_pattern($1, zad_exec_t, zad_t)
 ')
 
@@ -30,6 +31,11 @@ interface(`zad_domain_transition_pattern',`
 ## <summary>
 ##	Run 0ad in zad domain.
 ## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to transition.
+##	</summary>
+## </param>
 ## <param name="role">
 ##	<summary>
 ##	Role to exec 0ad.
@@ -37,10 +43,12 @@ interface(`zad_domain_transition_pattern',`
 ## </param>
 
 interface(`zad_role',`
+
 	gen_require(`
-		type zad_t;
+		role $2;
 	')
 
 	zad_domain_transition_pattern($1)
+
 	role $2 types zad_t;
 ')

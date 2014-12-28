@@ -7,6 +7,9 @@ gen_require(`
 	type shell_exec_t;
 	type sysfs_t;
 	type user_devpts_t;
+
+	type staff_t;
+	type user_t;
 ')
 
 
@@ -19,6 +22,9 @@ gen_require(`
 ##	<p>
 ##	Allow pyrogenesis to execute writable pages.
 ##	</p>
+##	<p>
+##	This speeds up random map generation considerably.
+##	</p>
 ## </desc>
 gen_tunable(zad_execmem, false)
 
@@ -26,11 +32,11 @@ type zad_t;
 type zad_exec_t;
 userdom_user_application_domain(zad_t, zad_exec_t)
 
-type zad_bin_t;
-files_type(zad_bin_t);
+type pyrogenesis_exec_t;
+files_type(pyrogenesis_exec_t);
 
-type zad_data_t;
-files_type(zad_data_t);
+type zad_usr_share_t;
+files_type(zad_usr_share_t);
 
 type zad_cache_home_t;
 xdg_cache_home_content(zad_cache_home_t)
@@ -49,19 +55,30 @@ xdg_data_home_content(zad_data_home_t)
 # Local policy
 #
 
+zad_role(staff_t, staff_r)
+zad_role(user_t, user_r)
+
+########################################
+#
+# zad_t policy
+#
+
+xserver_object_types_template(zad)
+xserver_common_x_domain_template(zad, zad_t)
+
 allow zad_t self : process { getsched setsched signal };
 allow zad_t self : shm create_sem_perms;
 
 corecmd_search_bin(zad_t)
-can_exec(zad_t, zad_bin_t)
 allow zad_t shell_exec_t : file read_file_perms;
 
 allow zad_t dri_device_t : chr_file rw_chr_file_perms;
+allow zad_t user_devpts_t : chr_file { read write };
 
-# pyrogenesis segfaults if unable to list zad_data_t
-#
-list_dirs_pattern(zad_t, zad_data_t, zad_data_t)
-read_files_pattern(zad_t, zad_data_t, zad_data_t)
+optional_policy(`
+
+	miscfiles_read_dri_etc(zad_t)
+')
 
 xdg_cache_home_filetrans(zad_t, zad_cache_home_t, dir, "0ad")
 create_dirs_pattern(zad_t, zad_cache_home_t, zad_cache_home_t)
@@ -71,9 +88,23 @@ xdg_config_home_filetrans(zad_t, zad_config_home_t, dir, "0ad")
 create_dirs_pattern(zad_t, zad_config_home_t, zad_config_home_t)
 manage_files_pattern(zad_t, zad_config_home_t, zad_config_home_t)
 
+optional_policy(`
+
+	userdom_read_dri_home(zad_t)
+	userdom_dontaudit_search_icons_home(zad_t)
+	lxde_append_log(zad_t)
+	userdom_read_openal_home(zad_t)
+')
+
 xdg_data_home_filetrans(zad_t, zad_data_home_t, dir, "0ad")
 create_dirs_pattern(zad_t, zad_data_home_t, zad_data_home_t)
 manage_files_pattern(zad_t, zad_data_home_t, zad_data_home_t)
+
+optional_policy(`
+
+	lxde_append_log(zad_t)
+	userdom_read_openal_home(zad_t)
+')
 
 xserver_read_user_xauth(zad_t)
 
@@ -84,9 +115,16 @@ allow zad_t sysfs_t : dir list_dir_perms;
 
 xserver_stream_connect(zad_t)
 
+can_exec(zad_t, pyrogenesis_exec_t)
+
 miscfiles_read_localization(zad_t)
 
+# pyrogenesis segfaults if unable to list zad_usr_share_t
+#
+list_dirs_pattern(zad_t, zad_usr_share_t, zad_usr_share_t)
+allow zad_t zad_usr_share_t : file read_file_perms;
 
+#
 # audio stuff
 #
 dev_read_sound(zad_t)
@@ -98,17 +136,12 @@ alsa_domain(zad_t, zad_alsa_shm_t)
 
 fs_tmpfs_filetrans(zad_t, zad_alsa_shm_t, file)
 
+########################################
+#
+# Tunable policy
+#
 
 tunable_policy(`zad_execmem',`
 	
 	allow zad_t self : process execmem;
-')
-
-
-optional_policy(`
-
-	miscfiles_read_dri_etc(zad_t)
-
-	userdom_read_dri_home(zad_t)
-	userdom_read_openal_home(zad_t)
 ')
