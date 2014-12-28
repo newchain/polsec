@@ -142,10 +142,10 @@ interface(`pluma_manage_config_home',`
 interface(`pluma_mmap',`
 
 	gen_require(`
-		type pluma_usr_lib_t;
+		type pluma_lib_t;
 	')
 
-	mmap_files_pattern( $1, pluma_usr_lib_t, pluma_usr_lib_t )
+	mmap_files_pattern( $1, pluma_lib_t, pluma_lib_t )
 ')
 
 

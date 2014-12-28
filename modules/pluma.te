@@ -24,8 +24,8 @@ application_executable_file(pluma_exec_t)
 type pluma_config_home_t;
 xdg_config_home_content(pluma_config_home_t)
 
-type pluma_usr_lib_t;
-files_type(pluma_usr_lib_t)
+type pluma_lib_t;
+files_type(pluma_lib_t)
 
 type pluma_usr_share_t;
 files_type(pluma_usr_share_t)
@@ -73,7 +73,7 @@ optional_policy(`
 ')
 
 pluma_mmap(pluma_domain)
-allow pluma_domain pluma_usr_lib_t : dir list_dir_perms;
+allow pluma_domain pluma_lib_t : dir list_dir_perms;
 miscfiles_read_localization(pluma_domain)
 pluma_read_usr_share(pluma_domain)
 

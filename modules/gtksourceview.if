@@ -108,11 +108,11 @@ interface(`gtksourceview_manage_data_home',`
 interface(`gtksourceview_mmap',`
 
 	gen_require(`
-		type gtksourceview_usr_lib_t;
+		type gtksourceview_lib_t;
 	')
 
-	allow $1 gtksourceview_usr_lib_t : file mmap_file_perms;
-	allow $1 gtksourceview_usr_lib_t : lnk_file read_lnk_file_perms;
+	allow $1 gtksourceview_lib_t : file mmap_file_perms;
+	allow $1 gtksourceview_lib_t : lnk_file read_lnk_file_perms;
 ')
 
 
