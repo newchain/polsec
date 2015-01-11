@@ -28,11 +28,11 @@ gen_tunable(tlsdate_helper_connect_tor, false)
 
 type tlsdate_t;
 type tlsdate_exec_t;
-init_daemon_domain(tlsdate_t, tlsdate_exec_t)
+init_system_domain(tlsdate_t, tlsdate_exec_t)
 
 type tlsdate-helper_t;
 type tlsdate-helper_exec_t;
-init_daemon_domain(tlsdate-helper_t, tlsdate-helper_exec_t)
+init_system_domain(tlsdate-helper_t, tlsdate-helper_exec_t)
 
 type tlsdated_t;
 type tlsdated_exec_t;
