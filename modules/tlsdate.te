@@ -55,7 +55,7 @@ files_type(tlsdated_var_cache_t)
 # tlsdated_t local policy
 #
 
-allow tlsdated_t self : capability sys_time;
+allow tlsdated_t self : capability { sys_time setgid setuid };
 allow tlsdated_t self : fifo_file { read write };
 allow tlsdated_t self : netlink_route_socket { create bind };
 allow tlsdated_t self : unix_dgram_socket { create connect };
