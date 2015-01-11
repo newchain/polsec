@@ -75,10 +75,18 @@ allow gradm_domain { user_devpts_t user_tty_device_t } : chr_file { read write i
 #
 
 allow gradm_load_domain self : capability { dac_read_search dac_override };
+#
+# Presumably required to raise nofile limit when building policy.
+#
+allow gradm_load_domain self : process setrlimit;
 
 domain_use_interactive_fds(gradm_load_domain)
 
 grsec_read_policy(gradm_load_domain)
+#
+# Apparently required.
+#
+allow gradm_load_domain grsec_auth_t : file { read open };
 files_read_etc_files(gradm_load_domain)
 
 kernel_read_system_state(gradm_load_domain)
