@@ -17,8 +17,10 @@
 ## </param>
 
 interface(`slock_domtrans',`
+
 	gen_require(`
-		type slock_t, slock_exec_t;
+		type slock_t;
+		type slock_exec_t;
 	')
 
 	domtrans_pattern($1, slock_exec_t, slock_t)
@@ -31,15 +33,17 @@ interface(`slock_domtrans',`
 ## </summary>
 ## <param name="role">
 ##	<summary>
-##	Role from which to exec slock.
+##	Role for which to assign types.
 ##	</summary>
 ## </param>
 
 interface(`slock_role',`
+
 	gen_require(`
 		type slock_t;
 	')
 
 	slock_domtrans($1)
+
 	role $2 types slock_t;
 ')

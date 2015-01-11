@@ -2,12 +2,12 @@ policy_module(slock, 1.00)
 
 
 gen_require(`
-	type usr_t;
-
 	role staff_r;
-	type staff_t;
 	role user_r;
+
+	type staff_t;
 	type user_t;
+	type usr_t;
 ')
 
 
