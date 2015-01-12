@@ -17,6 +17,7 @@
 ## </param>
 
 interface(`znc_port_connect',`
+
 	gen_require(`
 		type znc_port_t;
 	')

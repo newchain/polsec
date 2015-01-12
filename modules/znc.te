@@ -1,4 +1,4 @@
-policy_module(znc, 1.0)
+policy_module(znc, 1.00)
 
 
 gen_require(`
@@ -20,6 +20,7 @@ gen_require(`
 ##	Allow znc to read local timezone.
 ##	</p>
 ## </desc>
+
 gen_tunable(znc_read_timezone, false)
 
 ## <desc>
@@ -27,6 +28,7 @@ gen_tunable(znc_read_timezone, false)
 ##	Allow use of webadmin module.
 ##	</p>
 ## </desc>
+
 gen_tunable(znc_webadmin, false)
 
 type znc_t;
@@ -36,24 +38,29 @@ init_daemon_domain(znc_t, znc_exec_t)
 type znc_initrc_exec_t;
 init_script_file(znc_initrc_exec_t)
 
-type znc_data_t;
-files_type(znc_data_t)
+type znc_usr_share_t;
+files_type(znc_usr_share_t)
 
 type znc_var_lib_t;
 files_type(znc_var_lib_t)
 
-type znc_port_t, port_type, defined_port_type;
+type znc_port_t, port_type, defined_port_type, unreserved_port_type;
 type znc_client_packet_t;
 corenet_client_packet(znc_client_packet_t)
 type znc_server_packet_t;
 corenet_server_packet(znc_server_packet_t)
-typeattribute znc_port_t unreserved_port_type;
 #portcon tcp 6697 gen_context(system_u:object_r:znc_port_t,s0)
 
 ########################################
 #
 # Local policy
 #
+
+sysnet_dns_name_resolve(znc_t)
+corenet_tcp_connect_ircd_port(znc_t)
+corenet_tcp_bind_generic_node(znc_t)
+allow znc_t znc_port_t : tcp_socket name_bind;
+allow znc_t self : tcp_socket { listen accept };
 
 allow znc_t self : fifo_file { write read };
 
@@ -69,12 +76,10 @@ create_dirs_pattern(znc_t, znc_var_lib_t, znc_var_lib_t)
 create_files_pattern(znc_t, znc_var_lib_t, znc_var_lib_t)
 rw_files_pattern(znc_t, znc_var_lib_t, znc_var_lib_t)
 
-sysnet_dns_name_resolve(znc_t)
-corenet_tcp_connect_ircd_port(znc_t)
-corenet_tcp_bind_generic_node(znc_t)
-allow znc_t znc_port_t : tcp_socket name_bind;
-allow znc_t self : tcp_socket { listen accept };
-
+########################################
+#
+# Tunable policy
+#
 
 tunable_policy(`znc_read_timezone',`
 
@@ -88,5 +93,5 @@ tunable_policy(! `znc_read_timezone',`
 
 tunable_policy(`znc_webadmin',`
 
-	read_files_pattern(znc_t, znc_data_t, znc_data_t)
+	read_files_pattern(znc_t, znc_usr_share_t, znc_usr_share_t)
 ')
