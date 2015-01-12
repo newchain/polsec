@@ -95,3 +95,24 @@ tunable_policy(`znc_webadmin',`
 
 	read_files_pattern(znc_t, znc_usr_share_t, znc_usr_share_t)
 ')
+
+########################################
+#
+# Optional policy
+#
+
+optional_policy(`
+
+	## <desc>
+	##	<p>
+	##	Allow znc to connect to socat.
+	##	</p>
+	## </desc>
+
+	gen_tunable(znc_connect_socat, false)
+
+	tunable_policy(`znc_connect_socat',`
+
+		socat_tcp__connect(znc_t)
+	')
+')
