@@ -1,0 +1,5 @@
+/etc/rc\.d/init\.d/socat	--	gen_context(system_u:object_r:socat_initrc_exec_t,s0)
+
+/usr/bin/socat			--	gen_context(system_u:object_r:socat_exec_t,s0)
+
+/var/run/socat(/.*)?			gen_context(system_u:object_r:socat_var_run_t,s0)

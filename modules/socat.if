@@ -1,0 +1,46 @@
+## <summary>socat policy</summary>
+## <desc>
+##	<p>
+##		Policy for socat.
+##	</p>
+## </desc>
+
+
+###############################
+## <summary>
+##	Connect to socat via tcpp.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to connect.
+##	</summary>
+## </param>
+
+interface(`socat_tcp__connect',`
+
+	gen_require(`
+		type socat_port_t;
+	')
+
+	allow $1 socat_port_t : tcp_socket name_connect;
+')
+
+
+###############################
+## <summary>
+##	Connect to socat via udp.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to connect.
+##	</summary>
+## </param>
+
+interface(`socat_udp__connect',`
+
+	gen_require(`
+		type socat_port_t;
+	')
+
+	allow $1 socat_port_t : udp_socket name_connect;
+')

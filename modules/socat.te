@@ -1,0 +1,152 @@
+policy_module(socat, 1.00)
+
+
+gen_require(`
+	attribute defined_port_type;
+	attribute port_type;
+	attribute unreserved_port_type;
+
+	type etc_t;
+	type initrc_t;
+	type net_conf_t;
+	type locale_t;
+	type var_run_t;
+')
+
+
+########################################
+#
+# Declarations
+#
+
+## <desc>
+##	<p>
+##	Allow socat to read local timezone.
+##	</p>
+## </desc>
+
+gen_tunable(socat_read_timezone, false)
+
+## <desc>
+##	<p>
+##	Allow socat to create TCP sockets.
+##	</p>
+## </desc>
+
+gen_tunable(socat_tcp_bind, true)
+
+## <desc>
+##	<p>
+##	Allow socat to connect to TCP sockets.
+##	</p>
+## </desc>
+
+gen_tunable(socat_tcp_connect, true)
+
+# <desc>
+#	<p>
+#	Allow socat to create UDP sockets.
+#	</p>
+# </desc>
+
+gen_tunable(socat_udp_bind, true)
+
+# <desc>
+#	<p>
+#	Allow socat to connect to UDP sockets.
+#	</p>
+# </desc>
+
+gen_tunable(socat_udp_connect, true)
+
+type socat_t;
+type socat_exec_t;
+init_daemon_domain(socat_t, socat_exec_t)
+
+type socat_initrc_exec_t;
+init_script_file(socat_initrc_exec_t)
+
+type socat_var_run_t;
+files_pid_file(socat_var_run_t)
+
+type socat_port_t, port_type, defined_port_type, unreserved_port_type;
+#portcon tcp ???? gen_context(system_u:object_r:socat_port_t,s0)
+
+########################################
+#
+# initrc_t policy
+#
+
+filetrans_pattern(initrc_t, var_run_t, socat_var_run_t, dir, "socat")
+
+########################################
+#
+# socat_t policy
+#
+
+allow socat_t self : netlink_route_socket create;
+
+logging_send_syslog_msg(socat_t)
+
+# nsswitch
+#
+#	auth_use_nsswitch grants dns lookup.
+#
+#	This is a Really Bad Thing when providing a path to tor.
+#
+allow socat_t etc_t : file { read getattr open };
+allow socat_t net_conf_t : file { read getattr open };
+
+########################################
+#
+# Tunable policy
+#
+
+tunable_policy(`socat_read_timezone',`
+
+	allow socat_t locale_t : file read_file_perms;
+')
+
+tunable_policy(`socat_tcp_bind',`
+
+	corenet_tcp_bind_generic_node(socat_t)
+	allow socat_t self : tcp_socket { bind create getattr accept listen shutdown };
+')
+
+tunable_policy(`socat_tcp_connect',`
+
+	allow socat_t self : tcp_socket { write read connect };
+')
+
+tunable_policy(`socat_udp_bind',`
+
+	corenet_udp_bind_generic_node(socat_t)
+	allow socat_t self : udp_socket { bind create getattr accept listen shutdown };
+')
+
+tunable_policy(`socat_udp_connect',`
+
+	allow socat_t self : udp_socket { write read connect };
+	allow socat_t self : unix_dgram_socket { create connect };
+')
+
+########################################
+#
+# Optional policy
+#
+
+optional_policy(`
+
+	## <desc>
+	##	<p>
+	##	Allow socat to connect to tor sockets.
+	##	</p>
+	## </desc>
+
+	gen_tunable(socat_tor_connect, false)
+
+	tunable_policy(`socat_tor_connect',`
+
+		corenet_tcp_connect_tor_port(socat_t)
+	')
+')
