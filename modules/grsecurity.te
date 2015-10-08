@@ -2,8 +2,11 @@ policy_module(grsecurity, 1.00)
 
 
 gen_require(`
+
+	type getty_t;
 	type init_t;
 	type kernel_t;
+	type newrole_t;
 	type sysctl_dev_t;
 	type sysctl_kernel_t;
 	type user_devpts_t;
@@ -16,21 +19,49 @@ gen_require(`
 #
 
 attribute gradm_domain;
+attribute gradm_learn_domain;
 attribute gradm_load_domain;
-
 attribute grsec_policy_edit_domain;
 
-type grsec_device_t;
-files_type(grsec_device_t)
+type grlearn_t;
+type grlearn_exec_t;
+application_domain(grlearn_t, grlearn_exec_t)
 
 type grsec_auth_t;
 files_auth_file(grsec_auth_t)
 
-gradm_load_template(init, initrc_t, system_r)
+type grsec_device_t;
+dev_node(grsec_device_t)
+ifdef(`enable_mls',`
+
+	# This is required in order to have
+	# differently trusted gradm domains,
+	# since they all write to /dev/grsec.
+	#
+	# If kernelspace grsec can't be trusted,
+	# we should burn All The Things, anyway.
+	# [And run. Run far, far away.]
+	#
+	mls_trusted_object(grsec_device_t)
+')
+
+gradm_load_template(init, initrc_t, system_r, iamadummy)
+
+type grlearn_var_run_t;
+files_type(grlearn_var_run_t)
 
 type grsecurity_initrc_exec_t;
 init_script_file(grsecurity_initrc_exec_t)
 init_daemon_domain(init_gradm_t, gradm_exec_t)
+
+type grsec_policy_learn_config_t;
+files_type(grsec_policy_learn_config_t)
+
+type grsec_policy_learn_log_t;
+files_type(grsec_policy_learn_log_t)
+
+type grsec_policy_learn_pipe_t;
+files_type(grsec_policy_learn_pipe_t)
 
 # Unless loading policy, gradm has
 # no business searching policy.
@@ -44,20 +75,29 @@ files_security_file(grsec_policy_t)
 type gradm_exec_t;
 application_executable_file(gradm_exec_t)
 
+
 ########################################
 #
 # Local policy
 #
 
-gradm_base_template(staff, staff_t, staff_r)
-gradm_load_template(sysadm, sysadm_t, sysadm_r)
+gradm_base_template(staff, staff_t, staff_r, staff)
+gradm_load_template(sysadm, sysadm_t, sysadm_r, sysadm)
+gradm_load_template(secadm, secadm_t, secadm_r, secadm)
+#gradm_auth(secadm)
 gradm_auth(sysadm)
+#gradm_manage(secadm)
 gradm_manage(sysadm)
 #
 # gradm can be used to transition to safer,
 # less privileged "special" roles.
 #
-gradm_base_template(user, user_t, user_r)
+gradm_base_template(user, user_t, user_r, user)
+
+typeattribute sysadm_gradm_t gradm_learn_domain;
+
+role sysadm_r types grlearn_t;
+
 
 ########################################
 #
@@ -68,6 +108,7 @@ allow gradm_domain self : capability ipc_lock;
 allow gradm_domain grsec_device_t : chr_file { write open };
 
 allow gradm_domain { user_devpts_t user_tty_device_t } : chr_file { read write ioctl getattr append };
+
 
 ########################################
 #
@@ -118,6 +159,110 @@ getattr_files_pattern(gradm_load_domain, sysctl_kernel_t, sysctl_kernel_t)
 kernel_search_vm_sysctl(gradm_load_domain)
 allow gradm_load_domain sysctl_vm_t : file getattr;
 
+
+########################################
+#
+# gradm_learn_domain local policy
+#
+
+gradm_learn(sysadm_r, sysadm, sysadm_gradm_t)
+grsec_read_grsec_policy_learn_log(gradm_learn_domain)
+
+domain_auto_transition_pattern(gradm_learn_domain, grlearn_exec_t, grlearn_t)
+
+allow gradm_learn_domain grlearn_t : process signal;
+
+allow gradm_learn_domain grsec_policy_learn_config_t : file { read open ioctl };
+
+filetrans_pattern(gradm_learn_domain, grsec_policy_root_t, grsec_policy_learn_pipe_t, fifo_file, ".grlearn.pipe")
+allow gradm_load_domain grsec_policy_learn_pipe_t : fifo_file { create open write read unlink };
+
+create_files_pattern(gradm_learn_domain, grsec_policy_t, grsec_policy_t)
+allow gradm_learn_domain grsec_policy_t : file { write append };
+allow gradm_learn_domain grsec_policy_t : dir create;
+
+
+ifdef(`enable_mls',`
+
+	# /dev/grsec
+	#
+	# gradm_learn_domain must be run as systemhigh
+	# if the learning isn't full, since it needs
+	# to read policy.
+	#
+#	mls_file_write_to_clearance(gradm_learn_domain)
+	#
+	# Hmm... /dev/grsec is systemlow-systemhigh,
+	# yet to_clearance doesn't work when gradm_learn_domain
+	# is in systemhigh...
+	#
+')
+	
+
+########################################
+#
+# grlearn_t policy
+#
+
+gen_require(`
+
+	type bin_t;
+')
+
+allow grlearn_t self : capability { ipc_lock sys_nice };
+allow grlearn_t self : process { setsched sigkill signal };
+
+
+grsec_read_policy(grlearn_t)
+
+create_files_pattern(grlearn_t, grsec_policy_learn_log_t, grsec_policy_learn_log_t)
+allow grlearn_t grsec_policy_learn_log_t : file { append write };
+auditallow grlearn_t grsec_policy_learn_log_t : file write;
+
+filetrans_pattern(grlearn_t, grsec_policy_root_t, grlearn_var_run_t, file, ".grlearn.pid")
+allow grlearn_t grlearn_var_run_t : file { create write open read unlink };
+
+
+allow grlearn_t bin_t : dir getattr;
+
+
+allow grlearn_t getty_t : fd use;
+allow grlearn_t newrole_t : fd use;
+allow grlearn_t user_tty_device_t : chr_file { read write append ioctl };
+
+
+allow grlearn_t grsec_device_t : chr_file { read open };
+
+# { self:bin /dev/null }
+#
+allow grlearn_t gradm_learn_domain : fd use;
+
+#allow grlearn_t grsec_policy_root_t : dir search;
+allow grlearn_t grsec_policy_learn_config_t : file { read open ioctl };
+
+allow grlearn_t grsec_policy_learn_config_t : file read;
+allow grlearn_t user_tty_device_t : chr_file getattr;
+
+allow grlearn_t grsec_policy_learn_pipe_t : fifo_file { write open };
+
+
+
+
+ifdef(`enable_mls',`
+
+	# no read up...
+	#
+	range_transition gradm_learn_domain grlearn_exec_t : process mls_systemhigh;
+	mls_rangetrans_target(grlearn_t)
+
+	# tty (not strictly necessary--
+	# perhaps a boolean is in order)
+	#
+	mls_fd_use_all_levels(grlearn_t)
+	mls_file_write_all_levels(grlearn_t)
+')
+
+
 ########################################
 #
 # grsec_policy_edit_domain policy
@@ -125,9 +270,10 @@ allow gradm_load_domain sysctl_vm_t : file getattr;
 
 grsec_manage_policy(grsec_policy_edit_domain)
 
+
 ########################################
 #
 # kernel_t policy
 #
 
-filetrans_pattern(kernel_t, device_t, grsec_device_t, chr_file, "grsecurity")
+filetrans_add_pattern(kernel_t, device_t, grsec_device_t, chr_file, "grsecurity")

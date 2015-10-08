@@ -1,5 +1,52 @@
 ###############################
 ## <summary>
+##	Search grsec policy root dir.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to search.
+##	</summary>
+## </param>
+
+interface(`grsec_search_grsec_policy_root',`
+
+	gen_require(`
+
+		type grsec_policy_root_t;
+	')
+
+	files_search_etc($1)
+
+	allow $1 grsec_policy_root_t : dir search;
+')
+
+
+###############################
+## <summary>
+##	Read grsec learning logs.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain from which to read.
+##	</summary>
+## </param>
+
+interface(`grsec_read_grsec_policy_learn_log',`
+
+	gen_require(`
+
+		type grsec_policy_learn_log_t;
+	')
+
+	grsec_search_grsec_policy_root($1)
+
+	allow $1 grsec_policy_learn_log_t : dir search;
+	allow $1 grsec_policy_learn_log_t : file { read open };
+')
+
+
+###############################
+## <summary>
 ##	Read grsec policy.
 ## </summary>
 ## <param name="domain">
@@ -11,12 +58,15 @@
 interface(`grsec_read_policy',`
 
 	gen_require(`
+
 		type grsec_policy_root_t;
 		type grsec_policy_t;
 	')
 
-	files_search_etc($1)
-	list_dirs_pattern($1, grsec_policy_root_t, grsec_policy_t)
+	grsec_search_grsec_policy_root($1)
+
+	allow $1 grsec_policy_t : dir list_dir_perms;
+
 	allow $1 grsec_policy_root_t : dir list_dir_perms;
 	allow $1 grsec_policy_t : file read_file_perms;
 ')
@@ -35,11 +85,12 @@ interface(`grsec_read_policy',`
 interface(`grsec_manage_policy',`
 
 	gen_require(`
-		type grsec_policy_root_t;
+
 		type grsec_policy_t;
 	')
 
-	files_search_etc($1)
+	grsec_search_grsec_policy_root($1)
+
 	filetrans_pattern( $1, grsec_policy_root_t, grsec_policy_t, { dir file } )
 	manage_dirs_pattern( $1, { grsec_policy_root_t grsec_policy_t }, grsec_policy_t )
 	manage_files_pattern( $1, { grsec_policy_root_t grsec_policy_t }, grsec_policy_t )
@@ -68,6 +119,58 @@ interface(`gradm_auth',`
 	')
 
 	allow $1_gradm_t grsec_auth_t : file { read open };
+')
+
+
+###############################
+## <summary>
+##	Learn RBAC policy.
+## </summary>
+## <param name="role">
+##	<summary>
+##	Role to assign types.
+##	</summary>
+## </param>
+## <param name="prefix">
+##	<summary>
+##	Prefix associated with the role.
+##	</summary>
+## </param>
+## <param name="domain">
+##	<summary>
+##	gradm domain from which to transition.
+##	</summary>
+## </param>
+
+interface(`gradm_learn',`
+
+	gen_require(`
+
+		attribute gradm_learn_domain;
+
+		type grlearn_t;
+		type $3;
+	')
+
+	typeattribute $3 gradm_learn_domain;
+
+	role $1 types grlearn_t;
+
+	ifdef(`enable_mls',`
+
+		# Transition for grlearn
+		#
+		mls_rangetrans_source($3)
+
+		# /dev/grsec
+		#
+		# gradm_learn_domain must be run as systemhigh
+		# if the learning isn't full, since it must
+		# read existing policy.
+		#
+		mls_file_write_to_clearance($3)
+		mls_file_write_all_levels($3)
+	')
 ')
 
 
@@ -120,10 +223,16 @@ interface(`gradm_manage',`
 ##	Role with which to assign types.
 ##	</summary>
 ## </param>
+## <param name="role_prefix" optional="yes">
+##	<summary>
+##	Prefix associated with the role.
+##	</summary>
+## </param>
 
 template(`gradm_base_template',`
 
 	gen_require(`
+
 		attribute gradm_domain;
 		role $3;
 		type $2;
@@ -140,12 +249,29 @@ template(`gradm_base_template',`
 
 	role $3 types $1_gradm_t;
 
+
 	########################################
 	#
 	# Local policy
 	#
 
 	domtrans_pattern($2, gradm_exec_t, $1_gradm_t)
+
+
+	########################################
+	#
+	# $1_gradm_t local policy
+	#
+
+	optional_policy(`
+
+		gen_require(`
+
+			type $4_screen_t;
+		')
+
+		allow $1_gradm_t $4_screen_t : fd use;
+	')
 ')
 
 
@@ -174,10 +300,15 @@ template(`gradm_base_template',`
 ##	Role with which to assign private types.
 ##	</summary>
 ## </param>
+## <param name="role_prefix" optional="yes">
+##	<summary>
+##	Prefix associated with the role.
+##	</summary>
+## </param>
 
 template(`gradm_auth_template',`
 
-	gradm_base_template($1, $2, $3)
+	gradm_base_template($1, $2, $3, $4)
 
 	gradm_auth($1)
 ')
@@ -203,14 +334,20 @@ template(`gradm_auth_template',`
 ##	Role with which to assign private types.
 ##	</summary>
 ## </param>
+## <param name="role_prefix" optional="yes">
+##	<summary>
+##	Prefix associated with the role.
+##	</summary>
+## </param>
 
 template(`gradm_load_template',`
 
 	gen_require(`
+
 		attribute gradm_load_domain;
 	')
 
-	gradm_base_template($1, $2, $3)
+	gradm_base_template($1, $2, $3, $4)
 
 	########################################
 	#
@@ -218,4 +355,15 @@ template(`gradm_load_template',`
 	#
 
 	typeattribute $1_gradm_t gradm_load_domain;
+
+	########################################
+	#
+	# Local policy
+	#
+
+	ifdef(`enable_mls',`
+
+		range_transition $2 gradm_exec_t : process mls_systemhigh;
+		mls_rangetrans_target($1_gradm_t)
+	')
 ')

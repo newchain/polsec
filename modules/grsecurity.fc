@@ -1,9 +1,12 @@
-/dev/grsec				gen_context(system_u:object_r:grsec_device_t,s0)
+/dev/grsec				gen_context(system_u:object_r:grsec_device_t,mls_systemlow-mls_systemhigh)
 
-/etc/grsec			-d	gen_context(system_u:object_r:grsec_policy_root_t,s0)
-/etc/grsec/pw			--	gen_context(system_u:object_r:grsec_auth_t,s0)
+/etc/grsec			-d	gen_context(system_u:object_r:grsec_policy_root_t,mls_systemlow-mls_systemhigh)
+/etc/grsec/learn_config		--	gen_context(system_u:object_r:grsec_policy_learn_config_t,mls_systemlow-mls_systemhigh)
+/etc/grsec/log(/.*)?			gen_context(system_u:object_r:grsec_policy_learn_log_t,mls_systemhigh)
+/etc/grsec/pw			--	gen_context(system_u:object_r:grsec_auth_t,mls_systemlow-mls_systemhigh)
 /etc/grsec/.*				gen_context(system_u:object_r:grsec_policy_t,mls_systemhigh)
 
-/etc/rc\.d/init\.d/grsecurity	--	gen_context(system_u:object_r:grsecurity_initrc_exec_t,s0)
+/etc/rc\.d/init\.d/grsecurity	--	gen_context(system_u:object_r:grsecurity_initrc_exec_t,mls_systemlow-mls_systemhigh)
 
-/sbin/gradm			--	gen_context(system_u:object_r:gradm_exec_t,s0)
+/sbin/gradm			--	gen_context(system_u:object_r:gradm_exec_t,mls_systemlow)
+/sbin/grlearn			--	gen_context(system_u:object_r:grlearn_exec_t,mls_systemlow-mls_systemhigh)
