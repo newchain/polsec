@@ -1,0 +1,33 @@
+#include <tunables/global>
+
+
+/bin/less {
+
+	/dev/tty			r,
+
+
+	/etc/ld.so.cache		r,
+	/etc/locale.alias		r,
+
+
+audit deny	@{HOME}/.**		r,
+owner		@{HOME}/.lesshst	rw,
+owner		@{HOME}/**		r,
+
+
+	/lib/terminfo/x/*		r,
+	/lib/@{multiarch}/libc-2.??.so		mr,
+	/lib/@{multiarch}/libtinfo.so.[1-9]*	mr,
+
+	/usr/lib/locale/*/LC_*			r,
+	/usr/lib/locale/*/LC_MESSAGES/		r,
+	/usr/lib/locale/*/LC_MESSAGES/SYS_LC_MESSAGES	r,
+	/usr/lib/locale/locale-archive		r,
+	/usr/lib/@{multiarch}/gconv/gconv-modules.cache	r,
+
+
+	/usr/share/locale/locale.alias	r,
+
+
+	#include <local/usr.bin.less>
+}

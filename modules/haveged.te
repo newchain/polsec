@@ -1,0 +1,61 @@
+policy_module(haveged, 1)
+
+
+gen_require(`
+
+	type locale_t;
+')
+
+
+########################################
+#
+# Declarations
+#
+
+type haveged_t;
+type haveged_exec_t;
+init_daemon_domain(haveged_t, haveged_exec_t)
+
+type haveged_etc_t;
+files_config_file(haveged_etc_t)
+
+type haveged_var_run_t;
+files_pid_file(haveged_var_run_t)
+
+
+########################################
+#
+# Local policy
+#
+
+allow haveged_t self : capability sys_admin;
+
+
+dev_read_rand(haveged_t)
+dev_write_rand(haveged_t)
+
+# dir:read devices/system/cpu
+# file:read devices/system/cpu/cpu\d+/cache/index0/level
+#
+dev_read_sysfs(haveged_t)
+
+files_pid_filetrans(haveged_t, haveged_var_run_t, file, "haveged.pid")
+allow haveged_t haveged_var_run_t : file { create write open getattr unlink };
+
+# { read open getattr } random/poolsize
+# write random/write_wakeup_threshold
+#
+kernel_rw_kernel_sysctl(haveged_t)
+
+# cpuinfo
+#
+kernel_read_system_state(haveged_t)
+
+logging_send_syslog_msg(haveged_t)
+ifdef(`enable_mls',`
+
+	mls_socket_write_to_clearance(haveged_t)
+')
+
+
+dontaudit haveged_t locale_t : file { read getattr open };

@@ -1,0 +1,5 @@
+/etc/haveged\.conf	--	gen_context(system_u:object_r:haveged_etc_t,mls_systemlow)
+
+/usr/sbin/haveged	--	gen_context(system_u:object_r:haveged_exec_t,mls_systemlow)
+
+/var/run/haveged\.pid	--	gen_context(system_u:object_r:haveged_var_run_t,mls_systemlow)

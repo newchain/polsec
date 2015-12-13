@@ -1,0 +1,26 @@
+#include <tunables/global>
+
+
+/bin/cat {
+
+	/**				r,
+
+#	/etc/ld.so.cache		r,
+
+
+	/lib/@{multiarch}/libc-2.??.so	mr,
+
+#	/usr/lib/locale/*/LC_*		r,
+#	/usr/lib/locale/locale-archive	r,
+
+#	/usr/lib/@{multiarch}/gconv/gconv-modules.cache	r,
+
+#	/usr/share/locale/locale.alias	r,
+
+
+	capability dac_read_search,
+audit	capability sys_ptrace,
+
+
+	#include <local/bin.cat>
+}
