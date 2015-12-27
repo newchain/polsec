@@ -1,0 +1,11 @@
+define(`rinetd_highlimit',
+
+	mls_systemhigh
+)
+
+
+/etc/rinetd\.conf		--	gen_context(system_u:object_r:rinetd_etc_t,mls_systemlow-rinetd_highlimit)
+
+/usr/sbin/rinetd		--	gen_context(system_u:object_r:rinetd_exec_t,mls_systemlow-rinetd_highlimit)
+
+/var/run/rinetd\.pid		--	gen_context(system_u:object_r:rinetd_var_run_t,mls_systemlow-rinetd_highlimit)

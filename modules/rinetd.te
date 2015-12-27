@@ -1,0 +1,70 @@
+policy_module(rinetd, 1)
+
+
+gen_require(`
+
+	type locale_t;
+')
+
+
+define(`rinetd_highlimit',mls_systemhigh)
+
+
+########################################
+#
+# Declarations
+#
+
+type rinetd_t;
+type rinetd_exec_t;
+ifdef(`enable_mls',`
+
+	ifelse(rinetd_highlimit,mls_systemhigh,
+	  `init_daemon_domain(rinetd_t, rinetd_exec_t)',
+	  `init_ranged_daemon_domain(rinetd_t, rinetd_exec_t, mls_systemlow - rinetd_highlimit )'
+	)',
+
+	`init_daemon_domain(rinetd_t, rinetd_exec_t)
+')
+
+type rinetd_etc_t;
+files_config_file(rinetd_etc_t)
+
+type rinetd_var_run_t;
+files_pid_file(rinetd_var_run_t)
+
+
+########################################
+#
+# Local policy
+#
+
+allow rinetd_t self : process signal;
+
+
+auth_use_nsswitch(rinetd_t)
+
+files_pid_filetrans(rinetd_t, rinetd_var_run_t, file, "rinetd.pid")
+allow rinetd_t rinetd_var_run_t : file { write create open getattr };
+
+logging_send_syslog_msg(rinetd_t)
+ifdef(`enable_mls',`
+
+	ifelse(rinetd_highlimit,mls_systemhigh,
+	  `mls_socket_write_to_clearance(rinetd_t)',
+	  `mls_socket_write_all_levels(rinetd_t)'
+	)
+')
+
+
+allow rinetd_t rinetd_etc_t : file { read open getattr };
+
+dontaudit rinetd_t locale_t : file { read open getattr };
+
+
+########################################
+#
+# Network policy
+#
+
+allow rinetd_t self : tcp_socket { listen accept };
